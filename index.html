@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio — Industrial Design</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #141414;
+      --card: #090909;
+      --text: #E4E4E4;
+      --text-dim: #555;
+      --text-mid: #888;
+      --border: #1f1f1f;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html {
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 500;
+      min-height: 100vh;
+      cursor: default;
+    }
+
+    /* Remove pointer finger everywhere */
+    * { cursor: default !important; }
+    .float-card, .gallery-view { cursor: none !important; }
+
+    /* ─── SEARCH OVERLAY ─────────────────────────────── */
+    .search-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(10, 10, 10, 0.97);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 120px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .search-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .search-overlay input {
+      width: 560px;
+      max-width: 90vw;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--text-dim);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 12px 0;
+      outline: none;
+    }
+
+    .search-overlay input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .search-close {
+      position: absolute;
+      top: 28px;
+      right: 40px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+    }
+
+    .search-results {
+      width: 560px;
+      max-width: 90vw;
+      margin-top: 32px;
+    }
+
+    .search-result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--text-mid);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      transition: color 0.15s;
+    }
+
+    .search-result-item:hover {
+      color: var(--text);
+    }
+
+    /* ─── HEADER ─────────────────────────────────────── */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 36px 48px;
+    }
+
+    .nav-left {
+      display: flex;
+      gap: 72px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 34px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      cursor: default;
+      transition: color 0.15s;
+    }
+
+    .nav-link:hover {
+      color: var(--text-mid);
+    }
+
+    .nav-right {
+      display: flex;
+      gap: 72px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 44px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-mid);
+    }
+
+    /* ─── MAIN ───────────────────────────────────────── */
+    main {
+      padding-top: 130px;
+    }
+
+    /* ─── PROJECT LIST ───────────────────────────────── */
+    .projects-list {
+      width: 100%;
+    }
+
+    /* ─── PROJECT ITEM ───────────────────────────────── */
+    .project-item {
+      margin-bottom: 0;
+      transition: background 0.3s ease;
+    }
+
+    .project-row {
+      display: flex;
+      align-items: center;
+      padding: 30px 200px;
+      cursor: pointer;
+      user-select: none;
+      gap: 20px;
+    }
+
+    .project-item:not(.open) .project-row:hover .project-title {
+      color: var(--text-mid);
+    }
+
+    .project-title {
+      font-size: 44px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--text);
+      flex: 1;
+      transition: font-size 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  letter-spacing 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  color 0.15s;
+      line-height: 1;
+    }
+
+    .project-item.open .project-title {
+      font-size: 76px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+
+    .project-year {
+      font-size: 36px;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+      transition: color 0.2s, font-size 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .project-item.open .project-year {
+      font-size: 76px;
+      color: var(--text);
+    }
+
+    /* ─── PROJECT CONTENT (EXPANDED) ────────────────── */
+    .project-content {
+      max-height: 0;
+      overflow: hidden;
+      /* Visual styling always present — only height animates, so box never flashes away */
+      background: var(--card);
+      margin: 0 32px;
+      border-radius: 20px;
+      transition: max-height 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  margin-bottom 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .project-item.open .project-content {
+      /* max-height set precisely by JS to eliminate dead-zone */
+      margin-bottom: 8px;
+    }
+
+    .project-content-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 56px;
+      padding: 40px 120px 80px 56px;
+    }
+
+    /* Text side */
+    .project-text {
+      padding-top: 4px;
+    }
+
+    .project-description {
+      font-size: 24px;
+      line-height: 1.75;
+      color: var(--text);
+      margin-bottom: 52px;
+      font-weight: 400;
+    }
+
+    .project-meta-block {
+      margin-bottom: 32px;
+    }
+
+    .project-meta-label {
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .project-meta-value {
+      font-size: 22px;
+      line-height: 1.7;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* Image carousel side */
+    .project-carousel {
+      padding-top: 4px;
+    }
+
+    .carousel-track-wrapper {
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 10px;
+      height: 65vh;
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .carousel-slide {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+      width: 100%;
+    }
+
+    .carousel-img-wrap {
+      height: 100%;
+      flex-shrink: 0;
+      background: var(--card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-img-wrap img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+
+    .carousel-placeholder {
+      height: 100%;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .carousel-placeholder span {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .carousel-footer {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .dot.active {
+      background: var(--text);
+      transform: scale(1.3);
+    }
+
+    .carousel-hint {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── ABOUT SECTION ─────────────────────────────── */
+    .about-section {
+      display: none;
+    }
+
+    .about-section.visible {
+      display: block;
+    }
+
+    .about-item {
+      margin-bottom: 0;
+    }
+
+    .about-row {
+      display: flex;
+      align-items: center;
+      padding: 30px 200px;
+      cursor: default;
+      user-select: none;
+      gap: 20px;
+    }
+
+    .about-title {
+      font-size: 44px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--text);
+      flex: 1;
+      transition: font-size 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  letter-spacing 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  color 0.15s;
+      line-height: 1;
+    }
+
+    .about-item.open .about-title {
+      font-size: 76px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+
+    .about-content {
+      max-height: 0;
+      overflow: hidden;
+      background: var(--card);
+      margin: 0 32px;
+      border-radius: 20px;
+      transition: max-height 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  margin-bottom 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .about-item.open .about-content {
+      margin-bottom: 8px;
+    }
+
+    .about-content-inner {
+      padding: 40px 120px 80px 56px;
+    }
+
+    .about-bio-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 56px;
+      padding: 40px 120px 80px 56px;
+    }
+
+    .about-bio-text {
+      padding-top: 4px;
+    }
+
+    .about-bio-images {
+      padding-top: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .about-bio-img-wrap {
+      aspect-ratio: 3/4;
+      background: var(--bg);
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .about-bio-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .about-bio-img-wrap.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-bio-img-wrap.placeholder span {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .about-section p {
+      font-size: 20px;
+      line-height: 1.75;
+      color: var(--text-mid);
+      font-weight: 400;
+    }
+
+    /* ─── GALLERY VIEW ──────────────────────────────── */
+    .gallery-view {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000;
+      overflow: hidden;
+      cursor: none;
+      perspective: 900px;
+    }
+
+    #galleryCursor {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.18s ease, height 0.18s ease, opacity 0.18s ease;
+      display: none;
+    }
+
+    #galleryCursor.dragging {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+    }
+
+    .gallery-view.active {
+      display: block;
+    }
+
+    .float-card {
+      position: absolute;
+      border-radius: 0;
+      overflow: hidden;
+      background: var(--card);
+      will-change: transform, opacity;
+      cursor: none;
+      transform-origin: center center;
+    }
+
+    .float-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* ─── SCROLLBAR ─────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2a2a2a;
+      border-radius: 2px;
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────── */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .project-item {
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .project-item:nth-child(1)  { animation-delay: 0.04s; }
+    .project-item:nth-child(2)  { animation-delay: 0.08s; }
+    .project-item:nth-child(3)  { animation-delay: 0.12s; }
+    .project-item:nth-child(4)  { animation-delay: 0.16s; }
+    .project-item:nth-child(5)  { animation-delay: 0.20s; }
+    .project-item:nth-child(6)  { animation-delay: 0.24s; }
+    .project-item:nth-child(7)  { animation-delay: 0.28s; }
+    .project-item:nth-child(8)  { animation-delay: 0.32s; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav {
+        padding: 18px 20px;
+      }
+
+      .project-row {
+        padding: 16px 20px;
+      }
+
+      .project-content-inner {
+        grid-template-columns: 1fr;
+        padding: 4px 20px 36px 20px;
+        gap: 32px;
+      }
+
+      .carousel-track {
+        height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <button class="search-close nav-btn" id="searchClose">CLOSE</button>
+    <input type="text" id="searchInput" placeholder="Search projects…" autocomplete="off" />
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-link" id="navProjects">PROJECTS</a>
+        <a class="nav-link" id="navGallery">GALLERY</a>
+        <a class="nav-link" id="navAbout">ABOUT</a>
+      </div>
+      <div class="nav-right">
+        <button class="nav-btn" id="expandToggle">EXPAND</button>
+        <button class="nav-btn" id="searchToggle">SEARCH</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div id="projectsView">
+      <div class="projects-list" id="projectsList"></div>
+    </div>
+
+    <div id="galleryView" class="gallery-view"></div>
+    <div id="galleryCursor"></div>
+
+    <div class="about-section" id="aboutSection">
+      <div class="about-item" id="aboutBio">
+        <div class="about-row">
+          <span class="about-title">Biography</span>
+        </div>
+        <div class="about-content">
+          <div class="about-bio-inner">
+            <div class="about-bio-text">
+              <p>
+                Industrial designer focused on the intersection of material honesty and functional precision.
+                Each project begins with a clear problem and ends with an object that justifies its own existence —
+                nothing added without reason, nothing removed without consequence.
+              </p>
+              <br>
+              <p>
+                An independent design practice working across product, furniture, and spatial objects.
+                Studio Colby Design operates at the boundary between craft and manufacturing —
+                building things that are made well, last long, and carry a clear point of view.
+              </p>
+            </div>
+            <div class="about-bio-images">
+              <!-- Replace src with your image paths, e.g. "images/portrait.jpg" -->
+              <div class="about-bio-img-wrap placeholder"><span>Image</span></div>
+              <div class="about-bio-img-wrap placeholder"><span>Image</span></div>
+              <div class="about-bio-img-wrap placeholder"><span>Image</span></div>
+              <div class="about-bio-img-wrap placeholder"><span>Image</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="about-item" id="aboutContact">
+        <div class="about-row">
+          <span class="about-title">Contact</span>
+        </div>
+        <div class="about-content">
+          <div class="about-content-inner">
+            <p>studio@colbydesign.com</p>
+            <br>
+            <p>Instagram — @colbydesign</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ─── PROJECT DATA ──────────────────────────────────────────────────────────
+    // Edit this array to add/modify/remove projects.
+    // For images: add paths relative to this file (e.g. "images/bass-speaker-1.jpg")
+    // or full URLs. Leave the images array empty to show placeholders.
+
+    // Extra images shown only in the gallery sphere (not tied to a project).
+    // Note: HEIC files may not display in Chrome/Firefox — convert to JPG/PNG for best results.
+    const GALLERY_IMAGES = [
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/5PC%20RENDER%20NO%20BACKGROUND.9.png',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_0249.jpg',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_0284.JPG',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_2584.HEIC',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_2644.heic',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_3026.HEIC',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_3084.HEIC',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_6841.HEIC',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/IMG_7226.HEIC',
+      'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/Screenshot%202024-04-19%20095222.png',
+    ];
+
+    const PROJECTS = [
+      {
+        id: 'multi-tool',
+        title: 'Multi Tool Project',
+        year: 2025,
+        description: 'A versatile multi-tool designed for everyday carry and professional field use. The form consolidates twelve functions into a single machined body without compromising the individual utility of any tool.',
+        materials: 'Titanium frame, D2 tool steel blades, carbon fiber inlays, stainless hardware',
+        process: 'CAD Design (Fusion 360), CNC machining, heat treatment, hand finishing, anodizing',
+        images: [
+          // Add image paths here, e.g.: ['images/multi-tool-1.jpg', 'images/multi-tool-2.jpg']
+          // Each inner array is one "slide" shown at a time
+          [],
+        ]
+      },
+      {
+        id: 'umbrella',
+        title: 'Umbrella',
+        year: 2025,
+        description: 'A structural reimagination of the everyday umbrella. The form reduces visual clutter by internalizing the rib mechanism, producing a canopy with no exposed hardware and a silhouette that reads as a single continuous surface.',
+        materials: 'Carbon fiber composite ribs, UV-stabilised ripstop nylon, anodized 7075 aluminium shaft, machined brass ferrule',
+        process: 'Structural FEA, rapid prototyping, injection moulded ABS components, field weather testing',
+        images: [
+          [],
+        ]
+      },
+      {
+        id: 'motorized-dolly',
+        title: 'Motorized Dolly',
+        year: 2025,
+        description: 'A low-profile motorized camera dolly built for controlled, repeatable linear motion on set. Emphasis on rigidity-to-weight ratio and silent operation.',
+        materials: 'Welded 6061 aluminium frame, NEMA 17 stepper motors, polyurethane track wheels, 3D printed ABS mounts',
+        process: 'CAD design, MIG welding, motor controller programming (Arduino), load testing',
+        images: [
+          [],
+        ]
+      },
+      {
+        id: 'bass-speaker',
+        title: 'Bass Speaker',
+        year: 2025,
+        description: 'I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.',
+        materials: 'CNC cut Baltic Birch plywood, epoxy, rubber feet, 3D prints, paint, 18" subwoofer components, lifting hardware',
+        process: 'CAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.',
+        images: [
+          // Two images side by side on slide 1 — replace src paths with your own
+          // ['images/bass-1.jpg', 'images/bass-2.jpg'],
+          // ['images/bass-3.jpg'],
+          [],
+        ]
+      },
+      {
+        id: 'pathway-to-heaven',
+        title: 'Pathway To Heaven',
+        year: 2025,
+        description: 'A suspended walkway installation exploring the tension between structural transparency and perceived mass. The form uses minimal material to create the impression of floating horizontal planes.',
+        materials: 'Structural steel, tempered glass, stainless cable tension system, powder coat finish',
+        process: 'Structural engineering collaboration, scale modelling, fabrication drawings, site installation',
+        images: [
+          [],
+        ]
+      },
+      {
+        id: 'rail-light',
+        title: 'Rail Light',
+        year: 2025,
+        description: 'A modular track lighting system designed around a single extrusion profile. The fixture slides, locks, and rotates without tools — the interaction is part of the product.',
+        materials: 'Extruded 6063 aluminium track, die-cast housing, high-CRI LED modules, PMMA diffuser',
+        process: 'Extrusion profile design, thermal simulation, prototype validation, photometric testing',
+        images: [
+          [],
+        ]
+      },
+      {
+        id: 'i-beam-bracelet',
+        title: 'I Beam Bracelet',
+        year: 2025,
+        description: 'A wearable that borrows its cross-section from structural steel I-beam geometry. The form maximizes surface area and visual weight while keeping mass low — the industrial reference is deliberate.',
+        materials: 'Grade 5 titanium, hand brushed finish, silk-anodized interior channel',
+        process: 'CNC machining from solid billet, 5-axis finishing passes, abrasive progression, anodizing',
+        images: [
+          [],
+        ]
+      },
+    ];
+
+    // ─── STATE ─────────────────────────────────────────────────────────────────
+    let allExpanded = false;
+    let currentView = 'projects'; // 'projects' | 'about'
+
+    // ─── RENDER ────────────────────────────────────────────────────────────────
+    function buildCarousel(images, projectId) {
+      // images: array of slides, each slide is an array of image paths
+      // If all slides are empty, show placeholder
+      const hasImages = images.some(slide => slide && slide.length > 0);
+
+      const container = document.createElement('div');
+      container.className = 'project-carousel';
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'carousel-track-wrapper';
+
+      const track = document.createElement('div');
+      track.className = 'carousel-track';
+
+      const slides = hasImages ? images : [[]];
+      let currentSlide = 0;
+
+      slides.forEach((slideImages, si) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+
+        if (!slideImages || slideImages.length === 0) {
+          // Placeholder
+          const ph = document.createElement('div');
+          ph.className = 'carousel-placeholder';
+          const span = document.createElement('span');
+          span.textContent = 'Image';
+          ph.appendChild(span);
+
+          // Add a second placeholder for visual balance
+          const ph2 = document.createElement('div');
+          ph2.className = 'carousel-placeholder';
+          const span2 = document.createElement('span');
+          span2.textContent = 'Image';
+          ph2.appendChild(span2);
+
+          slide.appendChild(ph);
+          slide.appendChild(ph2);
+        } else {
+          slideImages.forEach(src => {
+            const wrap = document.createElement('div');
+            wrap.className = 'carousel-img-wrap';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = '';
+            img.loading = 'lazy';
+            wrap.appendChild(img);
+            slide.appendChild(wrap);
+          });
+        }
+
+        track.appendChild(slide);
+      });
+
+      wrapper.appendChild(track);
+      container.appendChild(wrapper);
+
+      // Footer: dots + hint
+      const footer = document.createElement('div');
+      footer.className = 'carousel-footer';
+
+      const dotsEl = document.createElement('div');
+      dotsEl.className = 'carousel-dots';
+
+      slides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          goToSlide(i);
+        });
+        dotsEl.appendChild(dot);
+      });
+
+      const hint = document.createElement('div');
+      hint.className = 'carousel-hint';
+      if (slides.length > 1) {
+        hint.textContent = 'Click on the images to go to the next. Dots to navigate.';
+      }
+
+      footer.appendChild(dotsEl);
+      if (slides.length > 1) footer.appendChild(hint);
+      container.appendChild(footer);
+
+      // Click to advance
+      wrapper.addEventListener('click', () => {
+        goToSlide((currentSlide + 1) % slides.length);
+      });
+
+      function goToSlide(idx) {
+        currentSlide = idx;
+        track.style.transform = `translateX(calc(-${idx * 100}% - ${idx * 10}px))`;
+        dotsEl.querySelectorAll('.dot').forEach((d, i) => {
+          d.classList.toggle('active', i === idx);
+        });
+      }
+
+      return container;
+    }
+
+    function buildProjectItem(project) {
+      const item = document.createElement('div');
+      item.className = 'project-item';
+      item.id = 'project-' + project.id;
+      item.dataset.title = project.title.toLowerCase();
+
+      // Row
+      const row = document.createElement('div');
+      row.className = 'project-row';
+
+      const title = document.createElement('div');
+      title.className = 'project-title';
+      title.textContent = project.title;
+
+      const year = document.createElement('div');
+      year.className = 'project-year';
+      year.textContent = project.year;
+
+      row.appendChild(title);
+      row.appendChild(year);
+
+      // Content
+      const content = document.createElement('div');
+      content.className = 'project-content';
+
+      const inner = document.createElement('div');
+      inner.className = 'project-content-inner';
+
+      // Text column
+      const textCol = document.createElement('div');
+      textCol.className = 'project-text';
+
+      const desc = document.createElement('p');
+      desc.className = 'project-description';
+      desc.textContent = project.description;
+      textCol.appendChild(desc);
+
+      if (project.materials) {
+        const mb1 = document.createElement('div');
+        mb1.className = 'project-meta-block';
+        mb1.innerHTML = `<div class="project-meta-label">Materials</div><div class="project-meta-value">${project.materials}</div>`;
+        textCol.appendChild(mb1);
+      }
+
+      if (project.process) {
+        const mb2 = document.createElement('div');
+        mb2.className = 'project-meta-block';
+        mb2.innerHTML = `<div class="project-meta-label">Process</div><div class="project-meta-value">${project.process}</div>`;
+        textCol.appendChild(mb2);
+      }
+
+      // Carousel column
+      const carousel = buildCarousel(project.images, project.id);
+
+      inner.appendChild(textCol);
+      inner.appendChild(carousel);
+      content.appendChild(inner);
+
+      item.appendChild(row);
+      item.appendChild(content);
+
+      // Toggle on row click — set precise max-height to eliminate animation dead zone
+      row.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        const contentEl = item.querySelector('.project-content');
+        const innerEl   = item.querySelector('.project-content-inner');
+        if (isOpen) {
+          contentEl.style.maxHeight = '0';
+          item.classList.remove('open');
+        } else {
+          item.classList.add('open');
+          // Measure exact height after class applied, then set max-height to that value
+          requestAnimationFrame(() => {
+            contentEl.style.maxHeight = innerEl.scrollHeight + 'px';
+          });
+        }
+        updateExpandButton();
+      });
+
+      return item;
+    }
+
+    function renderProjects(list) {
+      const container = document.getElementById('projectsList');
+      container.innerHTML = '';
+      list.forEach(p => container.appendChild(buildProjectItem(p)));
+    }
+
+    function updateExpandButton() {
+      const items = document.querySelectorAll('.project-item');
+      const openCount = document.querySelectorAll('.project-item.open').length;
+      const btn = document.getElementById('expandToggle');
+      if (openCount === items.length && items.length > 0) {
+        btn.textContent = 'CLOSE';
+        allExpanded = true;
+      } else {
+        btn.textContent = 'EXPAND';
+        allExpanded = false;
+      }
+    }
+
+    // ─── EXPAND / CLOSE ALL ────────────────────────────────────────────────────
+    document.getElementById('expandToggle').addEventListener('click', () => {
+      const items = document.querySelectorAll('.project-item');
+      if (allExpanded) {
+        items.forEach(i => {
+          i.querySelector('.project-content').style.maxHeight = '0';
+          i.classList.remove('open');
+        });
+        document.getElementById('expandToggle').textContent = 'EXPAND';
+        allExpanded = false;
+      } else {
+        items.forEach(i => {
+          i.classList.add('open');
+          requestAnimationFrame(() => {
+            const inner = i.querySelector('.project-content-inner');
+            i.querySelector('.project-content').style.maxHeight = inner.scrollHeight + 'px';
+          });
+        });
+        document.getElementById('expandToggle').textContent = 'CLOSE';
+        allExpanded = true;
+      }
+    });
+
+    // Nav listeners handled by showView() above
+
+    // ─── SEARCH ────────────────────────────────────────────────────────────────
+    const searchOverlay = document.getElementById('searchOverlay');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    document.getElementById('searchToggle').addEventListener('click', () => {
+      searchOverlay.classList.add('active');
+      searchInput.value = '';
+      searchResults.innerHTML = '';
+      searchInput.focus();
+    });
+
+    document.getElementById('searchClose').addEventListener('click', () => {
+      searchOverlay.classList.remove('active');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') searchOverlay.classList.remove('active');
+    });
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      searchResults.innerHTML = '';
+
+      if (!q) return;
+
+      const matches = PROJECTS.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.materials && p.materials.toLowerCase().includes(q))
+      );
+
+      if (matches.length === 0) {
+        searchResults.innerHTML = '<div style="font-size:12px;color:var(--text-dim);letter-spacing:0.08em;padding-top:12px;">No results</div>';
+        return;
+      }
+
+      matches.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerHTML = `<span>${p.title}</span><span>${p.year}</span>`;
+        div.addEventListener('click', () => {
+          searchOverlay.classList.remove('active');
+          // Show projects view
+          document.getElementById('projectsView').style.display = '';
+          document.getElementById('aboutSection').classList.remove('visible');
+          // Open that project
+          const el = document.getElementById('project-' + p.id);
+          if (el) {
+            el.classList.add('open');
+            requestAnimationFrame(() => {
+              const inner = el.querySelector('.project-content-inner');
+              el.querySelector('.project-content').style.maxHeight = inner.scrollHeight + 'px';
+            });
+            updateExpandButton();
+            setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+          }
+        });
+        searchResults.appendChild(div);
+      });
+    });
+
+    // ─── GALLERY ───────────────────────────────────────────────────────────────
+    let galleryBuilt = false;
+    let floatCards = [];
+    let rafId = null;
+    let sphereRotX = 0, sphereRotY = 0;
+    let targetRotX  = 0, targetRotY  = 0;   // lerp targets for fluid drag deceleration
+    let sphereZoom = 1.0;
+    let dragActive = false, dragStartX = 0, dragStartY = 0;
+    let dragRotX = 0, dragRotY = 0;
+    let autoRotating = true;
+    let snapTargetX = null, snapTargetY = null;
+    let mouseX = 0, mouseY = 0;
+
+    function buildGallery() {
+      const container = document.getElementById('galleryView');
+      container.innerHTML = '';
+      floatCards = [];
+
+      // Flatten: every individual image gets its own card.
+      // Projects with no images contribute 3 placeholder cards each.
+      // Standalone GALLERY_IMAGES are appended at the end.
+      const entries = [];
+      PROJECTS.forEach(project => {
+        const allImgs = (project.images || []).flatMap(slide => slide.filter(Boolean));
+        if (allImgs.length > 0) {
+          allImgs.forEach(src => entries.push({ project, src }));
+        } else {
+          // 1 placeholder per project (down from 3) to keep card count lower
+          entries.push({ project, src: null });
+        }
+      });
+      // Gallery-only images — only first 8
+      GALLERY_IMAGES.slice(0, 8).forEach(src => entries.push({ project: null, src }));
+
+      const n = entries.length;
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+      entries.forEach(({ project, src }, i) => {
+        // Fibonacci sphere unit coordinates
+        const ny_fib = 1 - (i / (n - 1)) * 2;
+        const r_fib  = Math.sqrt(1 - ny_fib * ny_fib);
+        const theta  = goldenAngle * i;
+        let nx = r_fib * Math.cos(theta);
+        let ny = ny_fib;
+        let nz = r_fib * Math.sin(theta);
+
+        // More jitter for clustering and random floating
+        const jitter = 0.48;
+        nx += (Math.random() - 0.5) * jitter;
+        ny += (Math.random() - 0.5) * jitter;
+        nz += (Math.random() - 0.5) * jitter;
+        // Pushed outward with wider variance (0.85–1.65) — images float further from center
+        const dist = 0.85 + Math.random() * 0.80;
+        const len  = Math.sqrt(nx * nx + ny * ny + nz * nz);
+        nx = (nx / len) * dist;
+        ny = (ny / len) * dist;
+        nz = (nz / len) * dist;
+
+        const card = document.createElement('div');
+        card.className = 'float-card';
+        card.style.width = '240px';
+        card.style.height = '178px';
+
+        if (src) {
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = '';
+          img.onerror = () => { img.style.display = 'none'; }; // hide unsupported formats (HEIC)
+          card.appendChild(img);
+        }
+        // No label on placeholder — just the dark card background
+
+        card.addEventListener('click', () => {
+          if (Math.abs(sphereRotY - dragRotY) > 4 || Math.abs(sphereRotX - dragRotX) > 4) return;
+
+          // Compute rotation angles that bring this card to the front of the sphere.
+          // Normalize direction first (cards may be at varying radial distances after jitter).
+          const clen = Math.sqrt(nx * nx + ny * ny + nz * nz);
+          const nnx = nx / clen, nny = ny / clen, nnz = nz / clen;
+          const tY = -Math.atan2(nnx, nnz) * 180 / Math.PI;
+          const tX = -Math.atan2(nny, Math.sqrt(nnx * nnx + nnz * nnz)) * 180 / Math.PI;
+
+          // Normalise target Y so we rotate the short way (avoid full-loop spin)
+          let deltaY = ((tY - sphereRotY) % 360 + 540) % 360 - 180;
+          snapTargetY = sphereRotY + deltaY;
+          snapTargetX = Math.max(-60, Math.min(60, tX));
+          autoRotating = false;
+        });
+
+        container.appendChild(card);
+        const entry = { el: card, nx, ny, nz, project, hovering: false, hoverScale: 1.0 };
+        card.addEventListener('mouseenter', () => { entry.hovering = true; });
+        card.addEventListener('mouseleave', () => { entry.hovering = false; });
+        floatCards.push(entry);
+      });
+
+      galleryBuilt = true;
+    }
+
+    function animateGallery() {
+      if (snapTargetX !== null) {
+        // Snap-to-front: drive both target and displayed rotation toward snap
+        targetRotX += (snapTargetX - targetRotX) * 0.07;
+        targetRotY += (snapTargetY - targetRotY) * 0.07;
+        if (Math.abs(snapTargetX - targetRotX) < 0.1 && Math.abs(snapTargetY - targetRotY) < 0.1) {
+          targetRotX = snapTargetX; targetRotY = snapTargetY;
+          sphereRotX = targetRotX; sphereRotY = targetRotY;
+          snapTargetX = null; snapTargetY = null;
+          autoRotating = true;
+        }
+      } else if (autoRotating) {
+        targetRotY += 0.03;
+      }
+      // Fluid lag: lerp displayed rotation toward target (matches tosen 0.2 factor)
+      sphereRotY += (targetRotY - sphereRotY) * 0.2;
+      sphereRotX += (targetRotX - sphereRotX) * 0.2;
+
+      const rx = sphereRotX * Math.PI / 180;
+      const ry = sphereRotY * Math.PI / 180;
+      const sinX = Math.sin(rx), cosX = Math.cos(rx);
+      const sinY = Math.sin(ry), cosY = Math.cos(ry);
+
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const radius = Math.min(cx, cy) * 0.62;
+
+      // Project each card and compute depth
+      const withDepth = floatCards.map(card => {
+        // Rotate around Y axis then X axis
+        const x1 =  card.nx * cosY + card.nz * sinY;
+        const z1 = -card.nx * sinY + card.nz * cosY;
+        const y2 =  card.ny * cosX - z1   * sinX;
+        const z2 =  card.ny * sinX + z1   * cosX;
+        return { card, px: x1, py: y2, pz: z2 };
+      });
+
+      // Sort back-to-front for painter's algorithm
+      withDepth.sort((a, b) => a.pz - b.pz);
+
+      withDepth.forEach(({ card, px, py, pz }, sortIdx) => {
+        const depthScale = 0.80 + pz * 0.09;   // 0.71 (back) → 0.89 (front) — matches tosen exactly
+        const opacity    = 1.0;                // flat full opacity, like tosen
+
+        // Base position on fixed-radius sphere, then scale everything outward from
+        // center by sphereZoom — cards stay the same relative spacing (camera zoom).
+        const baseTx = cx + px * radius - 120;
+        const baseTy = cy + py * radius - 89;
+        const tx    = cx + (baseTx - cx) * sphereZoom;
+        const ty    = cy + (baseTy - cy) * sphereZoom;
+
+        // Hover scale: lerp toward 1.2 when hovered, 1.0 otherwise
+        const targetHS = card.hovering ? 1.2 : 1.0;
+        card.hoverScale += (targetHS - card.hoverScale) * 0.1;
+        const scale = depthScale * sphereZoom * card.hoverScale;
+
+        card.el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+        card.el.style.opacity   = opacity.toFixed(3);
+        card.el.style.zIndex    = sortIdx;
+      });
+
+      rafId = requestAnimationFrame(animateGallery);
+    }
+
+    const galleryEl = document.getElementById('galleryView');
+    galleryEl.addEventListener('mousedown', (e) => {
+      if (currentView !== 'gallery') return;
+      dragActive = true;
+      snapTargetX = null; snapTargetY = null;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      dragRotX = targetRotX;   // start from current target, not displayed (avoids snap)
+      dragRotY = targetRotY;
+      autoRotating = false;
+      galleryCursor.classList.add('dragging');
+    });
+    const galleryCursor = document.getElementById('galleryCursor');
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      galleryCursor.style.left = e.clientX + 'px';
+      galleryCursor.style.top  = e.clientY + 'px';
+      if (!dragActive) return;
+      // Set target rotation — animateGallery lerps sphereRot toward it for fluid lag
+      targetRotY = dragRotY + (e.clientX - dragStartX) * 0.08;
+      targetRotX = dragRotX - (e.clientY - dragStartY) * 0.06;
+      targetRotX = Math.max(-60, Math.min(60, targetRotX));
+    });
+    document.addEventListener('mouseup', () => {
+      if (!dragActive) return;
+      dragActive = false;
+      autoRotating = true;
+      galleryCursor.classList.remove('dragging');
+    });
+    galleryEl.addEventListener('wheel', e => {
+      if (currentView !== 'gallery') return;
+      e.preventDefault();
+      sphereZoom = Math.max(0.45, Math.min(1.8, sphereZoom - e.deltaY * 0.00007));
+    }, { passive: false });
+
+    // ─── ABOUT ACCORDION ───────────────────────────────────────────────────────
+    document.querySelectorAll('.about-item').forEach(item => {
+      const row = item.querySelector('.about-row');
+      const contentEl = item.querySelector('.about-content');
+      const innerEl = item.querySelector('.about-content-inner');
+      row.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        if (isOpen) {
+          contentEl.style.maxHeight = '0';
+          item.classList.remove('open');
+        } else {
+          item.classList.add('open');
+          requestAnimationFrame(() => {
+            contentEl.style.maxHeight = innerEl.scrollHeight + 'px';
+          });
+        }
+      });
+    });
+
+    // ─── VIEW SWITCHING ────────────────────────────────────────────────────────
+    function showView(view) {
+      const projectsView = document.getElementById('projectsView');
+      const aboutSection = document.getElementById('aboutSection');
+      const galleryView = document.getElementById('galleryView');
+
+      projectsView.style.display = 'none';
+      aboutSection.classList.remove('visible');
+      galleryView.classList.remove('active');
+      galleryCursor.style.display = 'none';
+
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+
+      if (view === 'projects') {
+        projectsView.style.display = '';
+        currentView = 'projects';
+      } else if (view === 'about') {
+        aboutSection.classList.add('visible');
+        currentView = 'about';
+      } else if (view === 'gallery') {
+        galleryView.classList.add('active');
+        galleryCursor.style.display = 'block';
+        currentView = 'gallery';
+        if (!galleryBuilt) buildGallery();
+        sphereRotX = 0;
+        sphereRotY = 0;
+        autoRotating = true;
+        animateGallery();
+      }
+    }
+
+    function transitionGalleryToProjects() {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      autoRotating = false;
+
+      // Reveal projects view behind the gallery overlay
+      const projectsView = document.getElementById('projectsView');
+      projectsView.style.display = '';
+
+      // Fly each card toward its project row, then shrink to nothing
+      floatCards.forEach(card => {
+        const rowEl = card.project ? document.getElementById('project-' + card.project.id) : null;
+        const rect = rowEl
+          ? rowEl.getBoundingClientRect()
+          : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+        const tx = rect.left + rect.width / 2 - 100;
+        const ty = rect.top  + rect.height / 2 - 74;
+        card.el.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease 0.2s';
+        card.el.style.transform  = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(0)`;
+        card.el.style.opacity    = '0';
+      });
+
+      setTimeout(() => {
+        document.getElementById('galleryView').classList.remove('active');
+        galleryBuilt = false; // rebuild fresh next gallery visit
+        currentView = 'projects';
+      }, 700);
+    }
+
+    document.getElementById('navProjects').addEventListener('click', () => {
+      if (currentView === 'gallery') transitionGalleryToProjects();
+      else showView('projects');
+    });
+    document.getElementById('navGallery').addEventListener('click', () => showView('gallery'));
+    document.getElementById('navAbout').addEventListener('click', () => showView('about'));
+
+    window.addEventListener('resize', () => {
+      // Sphere positions are computed from viewport dimensions each frame — no rebuild needed
+    });
+
+    // ─── INIT ─────────────────────────────────────────────────────────────────
+    renderProjects(PROJECTS);
+  </script>
+</body>
+</html>
