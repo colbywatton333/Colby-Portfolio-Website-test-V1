@@ -1,0 +1,16 @@
+node_modules/
+ENTRY-VIDEO/
+*.ai
+*.mov
+desktop.ini
+DESIGNING THE WEBSITE/
+PORTFOLIO WEBSITE IMAGE SAMPLES/
+PORTFOLIO WEBSITE image display stduies.ai
+PORTFOLIO WEBSITE.ai
+Timeline 1.mov
+screenshot-all-open.png
+screenshot-collapsed.png
+screenshot-one-open.png
+screenshot.js
+package.json
+package-lock.json

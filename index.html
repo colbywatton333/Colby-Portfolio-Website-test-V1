@@ -39,6 +39,60 @@
     /* Remove pointer finger everywhere */
     * { cursor: default !important; }
     .float-card, .gallery-view { cursor: none !important; }
+    #entryScreen, #entryScreen * { cursor: none !important; }
+
+    /* ─── ENTRY SCREEN ───────────────────────────────── */
+    #entryScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #000;
+      cursor: none !important;
+      transition: opacity 0.7s ease-in;
+    }
+    @keyframes entryFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    #projectsView {
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+    #entryScreen.fade-out {
+      pointer-events: none;
+    }
+    #entryVideo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: entryFadeIn 1.2s ease 0.3s forwards;
+    }
+    #enterBtn {
+      position: absolute;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: transparent;
+      border: none;
+      color: rgba(228,228,228,0.75);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: none !important;
+      padding: 12px 24px;
+      pointer-events: auto;
+      transition: color 0.2s ease;
+      opacity: 0;
+      animation: entryFadeIn 1s ease 1s forwards;
+    }
+    #enterBtn:hover {
+      color: #fff;
+    }
 
     /* ─── SEARCH OVERLAY ─────────────────────────────── */
     .search-overlay {
@@ -123,6 +177,8 @@
       right: 0;
       z-index: 100;
       background: var(--bg);
+      opacity: 0;
+      transition: opacity 0.9s ease;
       border-bottom: 1px solid var(--border);
     }
 
@@ -500,7 +556,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: #000;
+      background: var(--bg);
       overflow: hidden;
       cursor: none;
       perspective: 900px;
@@ -508,12 +564,12 @@
 
     #galleryCursor {
       position: fixed;
-      width: 12px;
-      height: 12px;
+      width: 16px;
+      height: 16px;
       background: #fff;
       border-radius: 50%;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 100000;
       transform: translate(-50%, -50%);
       transition: width 0.18s ease, height 0.18s ease, opacity 0.18s ease;
       display: none;
@@ -545,6 +601,182 @@
       object-fit: cover;
       display: block;
       pointer-events: none;
+    }
+
+    /* ─── NAVIGATION SPHERE ─────────────────────────── */
+    .nav-sphere-view {
+      background: #0a0a0a;
+    }
+
+    .category-label {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform, opacity;
+      transform-origin: center center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .category-label span {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: rgba(228, 228, 228, 0.55);
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border: 1px solid rgba(228, 228, 228, 0.1);
+      border-radius: 2px;
+      background: rgba(10, 10, 10, 0.5);
+    }
+
+    .nav-float-card {
+      position: absolute;
+      border-radius: 0;
+      overflow: hidden;
+      background: var(--card);
+      will-change: transform, opacity;
+      transform-origin: center center;
+    }
+
+    .nav-float-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* ─── LIGHTBOX ───────────────────────────────────── */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+
+    #lightbox.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 10, 0.92);
+      backdrop-filter: blur(24px) saturate(0.4);
+      -webkit-backdrop-filter: blur(24px) saturate(0.4);
+    }
+
+    .lightbox-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    .lightbox-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #lightboxImg {
+      max-width: 88vw;
+      max-height: 78vh;
+      object-fit: contain;
+      border-radius: 6px;
+      display: block;
+      transform: scale(0.94);
+      opacity: 0;
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+    }
+
+    #lightbox.active #lightboxImg {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    #lightboxImg.navigating {
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.1s ease, transform 0.1s ease;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 32px;
+      right: 40px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      padding: 8px 0;
+      transition: color 0.2s ease;
+      z-index: 2;
+    }
+
+    .lightbox-close:hover { color: var(--text); }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      font-size: 16px;
+      transition: background 0.2s ease;
+      z-index: 2;
+    }
+
+    .lightbox-nav:hover { background: rgba(255, 255, 255, 0.14); }
+
+    .lightbox-prev { right: calc(100% + 20px); }
+    .lightbox-next { left: calc(100% + 20px); }
+
+    .lightbox-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .lightbox-caption {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--text-mid);
+    }
+
+    .lightbox-counter {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      #lightboxImg { max-width: 96vw; max-height: 70vh; }
+      .lightbox-prev { right: auto; left: 8px; }
+      .lightbox-next { left: auto; right: 8px; }
     }
 
     /* ─── SCROLLBAR ─────────────────────────────────── */
@@ -610,6 +842,14 @@
 </head>
 <body>
 
+  <!-- ENTRY SCREEN -->
+  <div id="entryScreen">
+    <video id="entryVideo" autoplay muted playsinline loop>
+      <source src="ENTRY-VIDEO/ENTRY-VIDEO.mov" type="video/mp4">
+    </video>
+    <button id="enterBtn">ENTER</button>
+  </div>
+
   <!-- SEARCH OVERLAY -->
   <div class="search-overlay" id="searchOverlay">
     <button class="search-close nav-btn" id="searchClose">CLOSE</button>
@@ -624,10 +864,12 @@
         <a class="nav-link" id="navProjects">PROJECTS</a>
         <a class="nav-link" id="navGallery">GALLERY</a>
         <a class="nav-link" id="navAbout">ABOUT</a>
+        <a class="nav-link" id="navNavigation">NAVIGATION</a>
       </div>
       <div class="nav-right">
         <button class="nav-btn" id="expandToggle">EXPAND</button>
         <button class="nav-btn" id="searchToggle">SEARCH</button>
+        <button class="nav-btn" id="muteToggle">MUTE</button>
       </div>
     </nav>
   </header>
@@ -638,7 +880,12 @@
       <div class="projects-list" id="projectsList"></div>
     </div>
 
+    <audio id="bgMusic" loop>
+      <source src="ENTRY-AUDIO/Tears in the Rain.mp3" type="audio/mpeg">
+    </audio>
+
     <div id="galleryView" class="gallery-view"></div>
+    <div id="navigationView" class="gallery-view nav-sphere-view"></div>
     <div id="galleryCursor"></div>
 
     <div class="about-section" id="aboutSection">
@@ -686,6 +933,23 @@
     </div>
   </main>
 
+  <!-- LIGHTBOX -->
+  <div id="lightbox">
+    <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+    <button class="lightbox-close" id="lightboxClose">CLOSE</button>
+    <div class="lightbox-inner">
+      <div class="lightbox-stage">
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev">&#8592;</button>
+        <img id="lightboxImg" src="" alt="">
+        <button class="lightbox-nav lightbox-next" id="lightboxNext">&#8594;</button>
+      </div>
+      <div class="lightbox-meta">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ─── PROJECT DATA ──────────────────────────────────────────────────────────
     // Edit this array to add/modify/remove projects.
@@ -710,6 +974,7 @@
     const PROJECTS = [
       {
         id: 'multi-tool',
+        categories: ['Objects', 'Mechanics'],
         title: 'Multi Tool Project',
         year: 2025,
         description: 'A versatile multi-tool designed for everyday carry and professional field use. The form consolidates twelve functions into a single machined body without compromising the individual utility of any tool.',
@@ -723,6 +988,7 @@
       },
       {
         id: 'umbrella',
+        categories: ['Objects'],
         title: 'Umbrella',
         year: 2025,
         description: 'A structural reimagination of the everyday umbrella. The form reduces visual clutter by internalizing the rib mechanism, producing a canopy with no exposed hardware and a silhouette that reads as a single continuous surface.',
@@ -734,6 +1000,7 @@
       },
       {
         id: 'motorized-dolly',
+        categories: ['Mechanics'],
         title: 'Motorized Dolly',
         year: 2025,
         description: 'A low-profile motorized camera dolly built for controlled, repeatable linear motion on set. Emphasis on rigidity-to-weight ratio and silent operation.',
@@ -745,6 +1012,7 @@
       },
       {
         id: 'bass-speaker',
+        categories: ['Objects'],
         title: 'Bass Speaker',
         year: 2025,
         description: 'I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.',
@@ -759,6 +1027,7 @@
       },
       {
         id: 'pathway-to-heaven',
+        categories: ['Installation'],
         title: 'Pathway To Heaven',
         year: 2025,
         description: 'A suspended walkway installation exploring the tension between structural transparency and perceived mass. The form uses minimal material to create the impression of floating horizontal planes.',
@@ -770,6 +1039,7 @@
       },
       {
         id: 'rail-light',
+        categories: ['Objects', 'Installation'],
         title: 'Rail Light',
         year: 2025,
         description: 'A modular track lighting system designed around a single extrusion profile. The fixture slides, locks, and rotates without tools — the interaction is part of the product.',
@@ -781,6 +1051,7 @@
       },
       {
         id: 'i-beam-bracelet',
+        categories: ['Objects', 'Furniture'],
         title: 'I Beam Bracelet',
         year: 2025,
         description: 'A wearable that borrows its cross-section from structural steel I-beam geometry. The form maximizes surface area and visual weight while keeping mass low — the industrial reference is deliberate.',
@@ -797,7 +1068,7 @@
     let currentView = 'projects'; // 'projects' | 'about'
 
     // ─── RENDER ────────────────────────────────────────────────────────────────
-    function buildCarousel(images, projectId) {
+    function buildCarousel(images, projectId, projectTitle) {
       // images: array of slides, each slide is an array of image paths
       // If all slides are empty, show placeholder
       const hasImages = images.some(slide => slide && slide.length > 0);
@@ -813,6 +1084,19 @@
 
       const slides = hasImages ? images : [[]];
       let currentSlide = 0;
+
+      // Build flat array of all images for this carousel (for lightbox)
+      const allImages = [];
+      slides.forEach(slideImages => {
+        if (slideImages && slideImages.length > 0) {
+          slideImages.forEach(src => {
+            allImages.push({ src, caption: projectTitle || '' });
+          });
+        }
+      });
+
+      // Track flat index across slides for lightbox
+      let flatIndexOffset = 0;
 
       slides.forEach((slideImages, si) => {
         const slide = document.createElement('div');
@@ -836,7 +1120,8 @@
           slide.appendChild(ph);
           slide.appendChild(ph2);
         } else {
-          slideImages.forEach(src => {
+          slideImages.forEach((src, imgIdx) => {
+            const flatIdx = flatIndexOffset + imgIdx;
             const wrap = document.createElement('div');
             wrap.className = 'carousel-img-wrap';
             const img = document.createElement('img');
@@ -844,8 +1129,16 @@
             img.alt = '';
             img.loading = 'lazy';
             wrap.appendChild(img);
+            // Click on image opens lightbox
+            wrap.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (allImages.length > 0) {
+                openLightbox(allImages, flatIdx);
+              }
+            });
             slide.appendChild(wrap);
           });
+          flatIndexOffset += slideImages.length;
         }
 
         track.appendChild(slide);
@@ -874,14 +1167,16 @@
       const hint = document.createElement('div');
       hint.className = 'carousel-hint';
       if (slides.length > 1) {
-        hint.textContent = 'Click on the images to go to the next. Dots to navigate.';
+        hint.textContent = 'Click images to view full size. Dots to navigate slides.';
+      } else if (allImages.length > 0) {
+        hint.textContent = 'Click images to view full size.';
       }
 
       footer.appendChild(dotsEl);
-      if (slides.length > 1) footer.appendChild(hint);
+      footer.appendChild(hint);
       container.appendChild(footer);
 
-      // Click to advance
+      // Wrapper click advances slide (only if not clicking an image wrap)
       wrapper.addEventListener('click', () => {
         goToSlide((currentSlide + 1) % slides.length);
       });
@@ -949,7 +1244,7 @@
       }
 
       // Carousel column
-      const carousel = buildCarousel(project.images, project.id);
+      const carousel = buildCarousel(project.images, project.id, project.title);
 
       inner.appendChild(textCol);
       inner.appendChild(carousel);
@@ -1039,7 +1334,77 @@
       searchOverlay.classList.remove('active');
     });
 
+  // ── LIGHTBOX ──────────────────────────────────────────
+  let lbImages = [];
+  let lbIndex = 0;
+  let lbOpen = false;
+
+  function openLightbox(images, startIndex = 0) {
+    if (!images || images.length === 0) return;
+    lbImages = images;
+    lbIndex = startIndex;
+    lbOpen = true;
+    document.body.style.overflow = 'hidden';
+    const lb = document.getElementById('lightbox');
+    lb.classList.add('active');
+    loadLightboxImage();
+  }
+
+  function closeLightbox() {
+    lbOpen = false;
+    document.body.style.overflow = '';
+    const lb = document.getElementById('lightbox');
+    lb.classList.remove('active');
+    const img = document.getElementById('lightboxImg');
+    lb.addEventListener('transitionend', () => { img.src = ''; }, { once: true });
+  }
+
+  function navigateLightbox(dir) {
+    if (!lbImages.length) return;
+    const img = document.getElementById('lightboxImg');
+    img.classList.add('navigating');
+    setTimeout(() => {
+      lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
+      loadLightboxImage();
+      img.classList.remove('navigating');
+    }, 110);
+  }
+
+  function loadLightboxImage() {
+    const img = document.getElementById('lightboxImg');
+    const caption = document.getElementById('lightboxCaption');
+    const counter = document.getElementById('lightboxCounter');
+    const item = lbImages[lbIndex];
+    img.src = item.src;
+    img.alt = item.caption || '';
+    caption.textContent = item.caption || '';
+    counter.textContent = lbImages.length > 1 ? `${lbIndex + 1} / ${lbImages.length}` : '';
+    img.onerror = () => {
+      if (lbImages.length > 1) navigateLightbox(1);
+    };
+  }
+
+  // Lightbox controls
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxBackdrop').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(-1); });
+  document.getElementById('lightboxNext').addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(1); });
+
+  // Touch swipe for lightbox
+  let lbTouchStartX = 0;
+  document.getElementById('lightboxImg').addEventListener('touchstart', (e) => { lbTouchStartX = e.touches[0].clientX; }, { passive: true });
+  document.getElementById('lightboxImg').addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - lbTouchStartX;
+    if (Math.abs(dx) > 50) navigateLightbox(dx > 0 ? -1 : 1);
+  });
+
     document.addEventListener('keydown', (e) => {
+      if (lbOpen) {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigateLightbox(-1);
+        if (e.key === 'ArrowRight') navigateLightbox(1);
+        return;
+      }
       if (e.key === 'Escape') searchOverlay.classList.remove('active');
     });
 
@@ -1085,10 +1450,201 @@
       });
     });
 
+    // ─── NAVIGATION SPHERE ─────────────────────────────────────────────────────
+    const CATEGORY_CENTERS = {
+      'Objects':      { nx:  0.05, ny: -0.25, nz:  1.0  },
+      'Furniture':    { nx:  1.0,  ny:  0.15, nz:  0.1  },
+      'Installation': { nx:  0.1,  ny:  0.85, nz: -0.5  },
+      'Mechanics':    { nx: -1.0,  ny: -0.15, nz:  0.35 },
+    };
+    Object.values(CATEGORY_CENTERS).forEach(c => {
+      const len = Math.sqrt(c.nx*c.nx + c.ny*c.ny + c.nz*c.nz);
+      c.nx /= len; c.ny /= len; c.nz /= len;
+    });
+
+    let navBuilt = false;
+    let navCards = [];
+    let navRafId = null;
+    let navSphereRotX = 0, navSphereRotY = 0;
+    let navTargetRotX = 0, navTargetRotY = 0;
+    let navSphereZoom = 1.0;
+    let navDragActive = false, navDragStartX = 0, navDragStartY = 0;
+    let navDragRotX = 0, navDragRotY = 0;
+    let navAutoRotating = true;
+
+    function buildNavigation() {
+      const container = document.getElementById('navigationView');
+      container.innerHTML = '';
+      navCards = [];
+
+      // Category label nodes
+      ['Objects', 'Furniture', 'Installation', 'Mechanics'].forEach(cat => {
+        const c = CATEGORY_CENTERS[cat];
+        const dist = 0.88;
+        const el = document.createElement('div');
+        el.className = 'category-label';
+        const span = document.createElement('span');
+        span.textContent = cat;
+        el.appendChild(span);
+        container.appendChild(el);
+        navCards.push({ el, nx: c.nx * dist, ny: c.ny * dist, nz: c.nz * dist, hovering: false, hoverScale: 1.0, isLabel: true });
+      });
+
+      // Project image cards — clustered near their categories
+      PROJECTS.forEach(project => {
+        const allImgs = (project.images || []).flatMap(s => s.filter(Boolean));
+        const cats = project.categories || ['Objects'];
+
+        // Average category centers
+        let cx = 0, cy = 0, cz = 0;
+        cats.forEach(cat => {
+          const c = CATEGORY_CENTERS[cat] || CATEGORY_CENTERS['Objects'];
+          cx += c.nx; cy += c.ny; cz += c.nz;
+        });
+        const clen = Math.sqrt(cx*cx + cy*cy + cz*cz);
+        cx /= clen; cy /= clen; cz /= clen;
+
+        const srcs = allImgs.length > 0 ? allImgs : [null];
+        srcs.forEach(src => {
+          const jitter = 0.28;
+          let nx = cx + (Math.random()-0.5)*jitter;
+          let ny = cy + (Math.random()-0.5)*jitter;
+          let nz = cz + (Math.random()-0.5)*jitter;
+          const dist = 0.75 + Math.random() * 0.40;
+          const len = Math.sqrt(nx*nx + ny*ny + nz*nz);
+          nx = (nx/len)*dist; ny = (ny/len)*dist; nz = (nz/len)*dist;
+
+          const card = document.createElement('div');
+          card.className = 'nav-float-card';
+          card.style.width  = '180px';
+          card.style.height = '134px';
+
+          if (src) {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = '';
+            img.onerror = () => { img.style.display = 'none'; };
+            card.appendChild(img);
+            card.addEventListener('click', () => { openLightbox([{ src, caption: project.title }], 0); });
+          }
+
+          container.appendChild(card);
+          const entry = { el: card, nx, ny, nz, hovering: false, hoverScale: 1.0, isLabel: false };
+          card.addEventListener('mouseenter', () => { entry.hovering = true; });
+          card.addEventListener('mouseleave', () => { entry.hovering = false; });
+          navCards.push(entry);
+        });
+      });
+
+      // GALLERY_IMAGES scattered across the sphere
+      GALLERY_IMAGES.slice(0, 6).forEach(src => {
+        let nx = (Math.random()-0.5)*2;
+        let ny = (Math.random()-0.5)*1.2;
+        let nz = (Math.random()-0.5)*2;
+        const dist = 0.7 + Math.random() * 0.55;
+        const len = Math.sqrt(nx*nx + ny*ny + nz*nz);
+        nx = (nx/len)*dist; ny = (ny/len)*dist; nz = (nz/len)*dist;
+
+        const card = document.createElement('div');
+        card.className = 'nav-float-card';
+        card.style.width  = '160px';
+        card.style.height = '120px';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        img.onerror = () => { img.style.display = 'none'; };
+        card.appendChild(img);
+        card.addEventListener('click', () => { openLightbox([{ src, caption: '' }], 0); });
+
+        container.appendChild(card);
+        const entry = { el: card, nx, ny, nz, hovering: false, hoverScale: 1.0, isLabel: false };
+        card.addEventListener('mouseenter', () => { entry.hovering = true; });
+        card.addEventListener('mouseleave', () => { entry.hovering = false; });
+        navCards.push(entry);
+      });
+
+      navBuilt = true;
+    }
+
+    function animateNavigation() {
+      if (navAutoRotating) navTargetRotY += 0.025;
+      navSphereRotY += (navTargetRotY - navSphereRotY) * 0.2;
+      navSphereRotX += (navTargetRotX - navSphereRotX) * 0.2;
+
+      const rx = navSphereRotX * Math.PI / 180;
+      const ry = navSphereRotY * Math.PI / 180;
+      const sinX = Math.sin(rx), cosX = Math.cos(rx);
+      const sinY = Math.sin(ry), cosY = Math.cos(ry);
+
+      const vcx = window.innerWidth / 2;
+      const vcy = window.innerHeight / 2;
+      const radius = Math.min(vcx, vcy) * 0.65;
+
+      const withDepth = navCards.map(card => {
+        const x1 =  card.nx * cosY + card.nz * sinY;
+        const z1 = -card.nx * sinY + card.nz * cosY;
+        const y2 =  card.ny * cosX - z1 * sinX;
+        const z2 =  card.ny * sinX + z1 * cosX;
+        return { card, px: x1, py: y2, pz: z2 };
+      });
+
+      withDepth.sort((a, b) => a.pz - b.pz);
+
+      withDepth.forEach(({ card, px, py, pz }, sortIdx) => {
+        const depthScale = 0.78 + pz * 0.10;
+        const depthOpacity = card.isLabel ? Math.max(0.05, 0.35 + pz * 0.55) : 1.0;
+
+        const halfW = card.isLabel ? 60 : 90;
+        const halfH = card.isLabel ? 16 : 67;
+        const baseTx = vcx + px * radius - halfW;
+        const baseTy = vcy + py * radius - halfH;
+        const tx = vcx + (baseTx - vcx) * navSphereZoom;
+        const ty = vcy + (baseTy - vcy) * navSphereZoom;
+
+        const targetHS = (!card.isLabel && card.hovering) ? 1.18 : 1.0;
+        card.hoverScale += (targetHS - card.hoverScale) * 0.1;
+        const scale = depthScale * navSphereZoom * card.hoverScale;
+
+        card.el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+        card.el.style.opacity   = Math.min(1, depthOpacity).toFixed(3);
+        card.el.style.zIndex    = sortIdx;
+      });
+
+      navRafId = requestAnimationFrame(animateNavigation);
+    }
+
+    const navigationEl = document.getElementById('navigationView');
+    navigationEl.addEventListener('mousedown', (e) => {
+      if (currentView !== 'navigation') return;
+      navDragActive = true;
+      navDragStartX = e.clientX; navDragStartY = e.clientY;
+      navDragRotX = navTargetRotX; navDragRotY = navTargetRotY;
+      navAutoRotating = false;
+      galleryCursor.classList.add('dragging');
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!navDragActive) return;
+      navTargetRotY = navDragRotY + (e.clientX - navDragStartX) * 0.08;
+      navTargetRotX = navDragRotX - (e.clientY - navDragStartY) * 0.06;
+      navTargetRotX = Math.max(-60, Math.min(60, navTargetRotX));
+    });
+    document.addEventListener('mouseup', () => {
+      if (!navDragActive) return;
+      navDragActive = false;
+      navAutoRotating = true;
+      galleryCursor.classList.remove('dragging');
+    });
+    navigationEl.addEventListener('wheel', e => {
+      if (currentView !== 'navigation') return;
+      e.preventDefault();
+      navSphereZoom = Math.max(0.45, Math.min(2.0, navSphereZoom - e.deltaY * 0.00008));
+    }, { passive: false });
+
     // ─── GALLERY ───────────────────────────────────────────────────────────────
     let galleryBuilt = false;
     let floatCards = [];
     let rafId = null;
+    let lastSnappedCard = null;
     let sphereRotX = 0, sphereRotY = 0;
     let targetRotX  = 0, targetRotY  = 0;   // lerp targets for fluid drag deceleration
     let sphereZoom = 1.0;
@@ -1102,6 +1658,8 @@
       const container = document.getElementById('galleryView');
       container.innerHTML = '';
       floatCards = [];
+      lastSnappedCard = null;
+
 
       // Flatten: every individual image gets its own card.
       // Projects with no images contribute 3 placeholder cards each.
@@ -1160,6 +1718,18 @@
         card.addEventListener('click', () => {
           if (Math.abs(sphereRotY - dragRotY) > 4 || Math.abs(sphereRotX - dragRotX) > 4) return;
 
+          if (card === lastSnappedCard) {
+            // Second click on same card — open lightbox if it has an image
+            if (src) {
+              const caption = project ? project.title : '';
+              openLightbox([{ src, caption }], 0);
+            }
+            return;
+          }
+
+          // First click — snap card to front
+          lastSnappedCard = card;
+
           // Compute rotation angles that bring this card to the front of the sphere.
           // Normalize direction first (cards may be at varying radial distances after jitter).
           const clen = Math.sqrt(nx * nx + ny * ny + nz * nz);
@@ -1209,7 +1779,7 @@
 
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2;
-      const radius = Math.min(cx, cy) * 0.62;
+      const radius = Math.min(cx, cy) * 0.48;
 
       // Project each card and compute depth
       const withDepth = floatCards.map(card => {
@@ -1225,8 +1795,8 @@
       withDepth.sort((a, b) => a.pz - b.pz);
 
       withDepth.forEach(({ card, px, py, pz }, sortIdx) => {
-        const depthScale = 0.80 + pz * 0.09;   // 0.71 (back) → 0.89 (front) — matches tosen exactly
-        const opacity    = 1.0;                // flat full opacity, like tosen
+        const depthScale = 0.80 + pz * 0.09;   // 0.71 (back) → 0.89 (front)
+        const opacity    = 1.0;                // flat full opacity
 
         // Base position on fixed-radius sphere, then scale everything outward from
         // center by sphereZoom — cards stay the same relative spacing (camera zoom).
@@ -1308,13 +1878,16 @@
       const projectsView = document.getElementById('projectsView');
       const aboutSection = document.getElementById('aboutSection');
       const galleryView = document.getElementById('galleryView');
+      const navigationView = document.getElementById('navigationView');
 
       projectsView.style.display = 'none';
       aboutSection.classList.remove('visible');
       galleryView.classList.remove('active');
+      navigationView.classList.remove('active');
       galleryCursor.style.display = 'none';
 
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      if (navRafId) { cancelAnimationFrame(navRafId); navRafId = null; }
 
       if (view === 'projects') {
         projectsView.style.display = '';
@@ -1331,6 +1904,14 @@
         sphereRotY = 0;
         autoRotating = true;
         animateGallery();
+      } else if (view === 'navigation') {
+        navigationView.classList.add('active');
+        galleryCursor.style.display = 'block';
+        currentView = 'navigation';
+        if (!navBuilt) buildNavigation();
+        navSphereRotX = 0; navSphereRotY = 0;
+        navAutoRotating = true;
+        animateNavigation();
       }
     }
 
@@ -1368,9 +1949,34 @@
     });
     document.getElementById('navGallery').addEventListener('click', () => showView('gallery'));
     document.getElementById('navAbout').addEventListener('click', () => showView('about'));
+    document.getElementById('navNavigation').addEventListener('click', () => showView('navigation'));
 
     window.addEventListener('resize', () => {
       // Sphere positions are computed from viewport dimensions each frame — no rebuild needed
+    });
+
+    // ─── ENTRY SCREEN ─────────────────────────────────────────────────────────
+    const entryScreen = document.getElementById('entryScreen');
+    galleryCursor.style.display = 'block';
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.4;
+
+    const muteToggle = document.getElementById('muteToggle');
+    muteToggle.addEventListener('click', () => {
+      bgMusic.muted = !bgMusic.muted;
+      muteToggle.textContent = bgMusic.muted ? 'UNMUTE' : 'MUTE';
+    });
+
+    entryScreen.addEventListener('click', () => {
+      entryScreen.style.opacity = '0';
+      entryScreen.style.pointerEvents = 'none';
+      document.querySelector('header').style.opacity = '1';
+      document.getElementById('projectsView').style.opacity = '1';
+      bgMusic.play();
+      entryScreen.addEventListener('transitionend', () => {
+        entryScreen.style.display = 'none';
+        galleryCursor.style.display = 'none';
+      }, { once: true });
     });
 
     // ─── INIT ─────────────────────────────────────────────────────────────────
