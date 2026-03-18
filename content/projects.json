@@ -1,0 +1,350 @@
+{
+  "projects": [
+    {
+      "id": "bass-speaker",
+      "categories": ["Object", "Sound"],
+      "title": "Bass Speaker",
+      "year": 2025,
+      "description": "I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.",
+      "materials": "CNC cut Baltic Birch plywood, epoxy, rubber feet, 3D prints, paint, 18\" subwoofer components, lifting hardware",
+      "process": "CAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.",
+      "images": [
+        ["IMAGES/BASS-SPEAKER/IMG_0249.jpg", "IMAGES/BASS-SPEAKER/IMG_0850.jpg"],
+        ["IMAGES/BASS-SPEAKER/IMG_6658.jpeg", "IMAGES/BASS-SPEAKER/IMG_6661.png"],
+        ["IMAGES/BASS-SPEAKER/IMG_6662.jpeg"],
+        ["IMAGES/BASS-SPEAKER/IMG_6841.png", "IMAGES/BASS-SPEAKER/IMG_7226.png"],
+        ["IMAGES/BASS-SPEAKER/water-053.jpg"]
+      ]
+    },
+    {
+      "id": "pathway-to-heaven",
+      "categories": ["Installation", "Architectural"],
+      "title": "Pathway To Heaven",
+      "year": 2024,
+      "description": "A suspended walkway installation exploring the tension between structural transparency and perceived mass. The form uses minimal material to create the impression of floating horizontal planes.",
+      "materials": "Structural steel, tempered glass, stainless cable tension system, powder coat finish",
+      "process": "Structural engineering collaboration, scale modelling, fabrication drawings, site installation",
+      "images": [
+        ["IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06078.jpg", "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06119.jpg"],
+        ["IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06154.jpg", "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06165.jpg"],
+        ["IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06169.jpg", "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06170.jpg"],
+        ["IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06173.jpg", "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06174.jpg"],
+        ["IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06181.jpg", "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06184.jpg"],
+        ["IMAGES/PATHWAY-TO-HEAVEN/IMG_3868.jpg", "IMAGES/PATHWAY-TO-HEAVEN/IMG_3873.jpg"],
+        ["IMAGES/PATHWAY-TO-HEAVEN/IMG_3884.jpg"]
+      ]
+    },
+    {
+      "id": "modular-aluminum-assembly-system",
+      "categories": ["Furniture", "Mechanical"],
+      "title": "Modular Aluminum Assembly System",
+      "year": 2024,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/5PC RENDER.51.jpg", "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/4PC RENDER.49.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MODULAR SYSTEM EXPLODED RENDER.48.jpg", "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MODULAR SYSTEM EXPLODED RENDER.52.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MODULAR SYSTEM EXPLODED RENDER.64.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06535-22.jpg", "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06547-26.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06629.jpg", "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06630.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/IMG_3828.jpg", "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/IMG_6900.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MASS PAGE 1@300x-100.jpg", "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MASS PAGE 1_1@300x-100.jpg"],
+        ["IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/untitled.28.jpg"]
+      ]
+    },
+    {
+      "id": "hull-chair",
+      "categories": ["Furniture", "Mechanical"],
+      "title": "Hull Chair",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/HULL-CHAIR/DSC06611.jpg"],
+        ["IMAGES/HULL-CHAIR/IMG_2346.jpg", "IMAGES/HULL-CHAIR/IMG_2347.jpg"],
+        ["IMAGES/HULL-CHAIR/IMG_3282.jpg", "IMAGES/HULL-CHAIR/IMG_3661.jpeg"],
+        ["IMAGES/HULL-CHAIR/fdjhfd.jpg"]
+      ]
+    },
+    {
+      "id": "kanami-sound-boy",
+      "categories": ["Object", "Sound"],
+      "title": "KA-NA-MI RADIO Sound Boy",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/KANAMI -SOUND-BOY/ANTENNA SOUND BOY DRAWING-CLEAR.png"],
+        ["IMAGES/KANAMI -SOUND-BOY/IMG_1377.jpeg"],
+        ["IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 220927.png", "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 235824.png"],
+        ["IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 001027.png", "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 120230.png"],
+        ["IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png", "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121249.png"]
+      ]
+    },
+    {
+      "id": "light-table",
+      "categories": ["Furniture", "Object"],
+      "title": "Light Table",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/LIGHT-TABLE/IMG_4370.jpeg"],
+        ["IMAGES/LIGHT-TABLE/IMG_4421.jpeg", "IMAGES/LIGHT-TABLE/IMG_4422.jpeg"],
+        ["IMAGES/LIGHT-TABLE/IMG_4423.jpeg", "IMAGES/LIGHT-TABLE/IMG_4424.jpeg"],
+        ["IMAGES/LIGHT-TABLE/IMG_4426.jpeg", "IMAGES/LIGHT-TABLE/IMG_4427.jpeg"],
+        ["IMAGES/LIGHT-TABLE/IMG_4427BW.jpeg"]
+      ]
+    },
+    {
+      "id": "sarcophagus-hull",
+      "categories": ["Object", "Installation"],
+      "title": "Sarcophagus Hull",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/SARCOPHAGUS-HULL/IMG_1265.PNG", "IMAGES/SARCOPHAGUS-HULL/IMG_1335.PNG"],
+        ["IMAGES/SARCOPHAGUS-HULL/IMG_1336.PNG"],
+        ["IMAGES/SARCOPHAGUS-HULL/IMG_1498.jpeg", "IMAGES/SARCOPHAGUS-HULL/IMG_1500.jpeg"],
+        ["IMAGES/SARCOPHAGUS-HULL/IMG_1521.jpeg", "IMAGES/SARCOPHAGUS-HULL/IMG_1570.jpeg"],
+        ["IMAGES/SARCOPHAGUS-HULL/IMG_1691.jpeg", "IMAGES/SARCOPHAGUS-HULL/IMG_1697.jpeg"],
+        ["IMAGES/SARCOPHAGUS-HULL/IMG_1699.jpeg"]
+      ]
+    },
+    {
+      "id": "poly-chair",
+      "categories": ["Furniture", "Mechanical"],
+      "title": "Poly Chair",
+      "year": 2023,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/POLY-CHAIR/FINAL EXPORT-1.JPG", "IMAGES/POLY-CHAIR/FINAL EXPORT-fgdfg2.JPG"],
+        ["IMAGES/POLY-CHAIR/IMG_0104.png"]
+      ]
+    },
+    {
+      "id": "glycerin-mask",
+      "categories": ["Object"],
+      "title": "Glycerin Mask",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/GLYCERIN-MASK/GLYCERIN MASK.png"],
+        ["IMAGES/GLYCERIN-MASK/IMG_4205.jpg", "IMAGES/GLYCERIN-MASK/IMG_4350.jpeg"],
+        ["IMAGES/GLYCERIN-MASK/IMG_4420.jpg"]
+      ]
+    },
+    {
+      "id": "sound-table",
+      "categories": ["Sound", "Mechanical"],
+      "title": "Sound Table",
+      "year": 2023,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/SOUND-TABLE/IMG_9417.jpeg"],
+        ["IMAGES/SOUND-TABLE/Photo 2023-06-24, 2 46 50 AM.jpg", "IMAGES/SOUND-TABLE/Photo 2023-06-26, 2 55 12 PM.jpg"]
+      ]
+    },
+    {
+      "id": "t1-plates",
+      "categories": ["Object", "Manufacturing"],
+      "title": "T1 Plates",
+      "year": 2024,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/T1-PLATES/ANODIZED PLATES 1.jpg", "IMAGES/T1-PLATES/IMG_8482.jpg"],
+        ["IMAGES/T1-PLATES/322B9AF8-84B5-4270-BFB2-491BB14996C2.JPG"]
+      ]
+    },
+    {
+      "id": "water-misting-system",
+      "categories": ["Installation", "Mechanical", "Lighting"],
+      "title": "Water Misting System",
+      "year": 2024,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/WATER-MISTING-SYSTEM/water-07.jpg", "IMAGES/WATER-MISTING-SYSTEM/water-26.jpg"],
+        ["IMAGES/WATER-MISTING-SYSTEM/water-42.jpg", "IMAGES/WATER-MISTING-SYSTEM/water-44.jpg"],
+        ["IMAGES/WATER-MISTING-SYSTEM/water-48.jpg"]
+      ]
+    },
+    {
+      "id": "rail-light",
+      "categories": ["Lighting"],
+      "title": "Rail Light",
+      "year": 2023,
+      "description": "A modular track lighting system designed around a single extrusion profile. The fixture slides, locks, and rotates without tools — the interaction is part of the product.",
+      "materials": "Extruded 6063 aluminium track, die-cast housing, high-CRI LED modules, PMMA diffuser",
+      "process": "Extrusion profile design, thermal simulation, prototype validation, photometric testing",
+      "images": [
+        ["IMAGES/RAIL-LIGHT/IMG_6609.jpeg", "IMAGES/RAIL-LIGHT/IMG_7105.jpeg"]
+      ]
+    },
+    {
+      "id": "i-beam-bracelet",
+      "categories": ["Object"],
+      "title": "I-Beam Bracelet",
+      "year": 2023,
+      "description": "A wearable that borrows its cross-section from structural steel I-beam geometry. The form maximizes surface area and visual weight while keeping mass low — the industrial reference is deliberate.",
+      "materials": "Grade 5 titanium, hand brushed finish, silk-anodized interior channel",
+      "process": "CNC machining from solid billet, 5-axis finishing passes, abrasive progression, anodizing",
+      "images": [
+        ["IMAGES/I-BEAM-BRACELET/Photo 2022-07-30, 9 42 04 PM.jpg", "IMAGES/I-BEAM-BRACELET/Photo 2023-06-27, 11 53 37 AM.jpg"],
+        ["IMAGES/I-BEAM-BRACELET/unnamed.jpg"]
+      ]
+    },
+    {
+      "id": "motorized-camera-dolly",
+      "categories": ["Mechanical", "Object"],
+      "title": "Motorized Camera Dolly",
+      "year": 2025,
+      "description": "A low-profile motorized camera dolly built for controlled, repeatable linear motion on set. Emphasis on rigidity-to-weight ratio and silent operation.",
+      "materials": "Welded 6061 aluminium frame, NEMA 17 stepper motors, polyurethane track wheels, 3D printed ABS mounts",
+      "process": "CAD design, MIG welding, motor controller programming (Arduino), load testing",
+      "images": [
+        ["IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 232946.png", "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 234941.png"]
+      ]
+    },
+    {
+      "id": "multi-tool",
+      "categories": ["Object", "Mechanical"],
+      "title": "Multi Tool Project",
+      "year": 2025,
+      "description": "A versatile multi-tool designed for everyday carry and professional field use. The form consolidates twelve functions into a single machined body without compromising the individual utility of any tool.",
+      "materials": "Titanium frame, D2 tool steel blades, carbon fiber inlays, stainless hardware",
+      "process": "CAD Design (Fusion 360), CNC machining, heat treatment, hand finishing, anodizing",
+      "images": [
+        ["IMAGES/MULTITOOL-PROJECT/IMG_4525.PNG", "IMAGES/MULTITOOL-PROJECT/IMG_4706.jpeg"]
+      ]
+    },
+    {
+      "id": "whistler-church-pews",
+      "categories": ["Furniture", "Mechanical"],
+      "title": "Whistler Church Pews",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/WHISTLER-CHUCH-PEWS/Screenshot 2025-09-25 144014.PNG"]
+      ]
+    },
+    {
+      "id": "black-box",
+      "categories": ["Sound", "Object"],
+      "title": "Black Box",
+      "year": 2023,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/BLACK BOX/Screenshot 2023-08-03 100851.png"]
+      ]
+    },
+    {
+      "id": "chair-one",
+      "categories": ["Furniture"],
+      "title": "Chair One",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        ["IMAGES/CHAIR-ONE/CHAIR ONE copy.PNG"]
+      ]
+    },
+    {
+      "id": "chair-press",
+      "categories": ["Mechanical", "Manufacturing"],
+      "title": "Chair Press",
+      "year": 2024,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": []
+    },
+    {
+      "id": "kids-screwdriver-toy",
+      "categories": ["Electrical", "Mechanical"],
+      "title": "Kids Screwdriver Toy",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": []
+    },
+    {
+      "id": "shell-chair",
+      "categories": ["Furniture"],
+      "title": "Shell Chair",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": []
+    },
+    {
+      "id": "tool-cart",
+      "categories": ["Furniture"],
+      "title": "Tool Cart",
+      "year": 2023,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": []
+    },
+    {
+      "id": "umbrella",
+      "categories": ["Object"],
+      "title": "Umbrella",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": []
+    },
+    {
+      "id": "smoke-goggles",
+      "categories": ["Object", "Mechanical"],
+      "title": "Smoke Goggles",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": []
+    }
+  ],
+  "galleryImages": [
+    "IMAGES/BASS-SPEAKER/IMG_0249.jpg",
+    "IMAGES/BASS-SPEAKER/IMG_6841.png",
+    "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06078.jpg",
+    "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06169.jpg",
+    "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/5PC RENDER.51.jpg",
+    "IMAGES/HULL-CHAIR/DSC06611.jpg",
+    "IMAGES/LIGHT-TABLE/IMG_4370.jpeg",
+    "IMAGES/SARCOPHAGUS-HULL/IMG_1498.jpeg",
+    "IMAGES/POLY-CHAIR/FINAL EXPORT-1.JPG",
+    "IMAGES/GLYCERIN-MASK/GLYCERIN MASK.png",
+    "IMAGES/SOUND-TABLE/IMG_9417.jpeg",
+    "IMAGES/WATER-MISTING-SYSTEM/water-07.jpg",
+    "IMAGES/RAIL-LIGHT/IMG_6609.jpeg",
+    "IMAGES/I-BEAM-BRACELET/Photo 2022-07-30, 9 42 04 PM.jpg",
+    "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png"
+  ]
+}

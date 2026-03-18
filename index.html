@@ -18,7 +18,7 @@
       --text-dim: #555;
       --text-mid: #888;
       --border: #1f1f1f;
-      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      --font: Arial, sans-serif;
     }
 
     html {
@@ -186,21 +186,21 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 36px 48px;
+      padding: 10px 10.4vw;
     }
 
     .nav-left {
       display: flex;
-      gap: 72px;
+      gap: 32px;
       align-items: center;
     }
 
     .nav-link {
       color: var(--text);
       text-decoration: none;
-      font-size: 34px;
-      font-weight: 400;
-      letter-spacing: 0.01em;
+      font-size: clamp(14px, 1.33vw, 34px);
+      font-weight: 600;
+      letter-spacing: 0.05em;
       cursor: default;
       transition: color 0.15s;
     }
@@ -211,7 +211,7 @@
 
     .nav-right {
       display: flex;
-      gap: 72px;
+      gap: 32px;
       align-items: center;
     }
 
@@ -220,9 +220,9 @@
       border: none;
       color: var(--text);
       font-family: var(--font);
-      font-size: 44px;
-      font-weight: 400;
-      letter-spacing: 0.01em;
+      font-size: clamp(14px, 1.33vw, 34px);
+      font-weight: 600;
+      letter-spacing: 0.05em;
       cursor: pointer;
       padding: 0;
       transition: color 0.15s;
@@ -232,9 +232,81 @@
       color: var(--text-mid);
     }
 
+    /* ─── CATEGORY BAR ───────────────────────────────── */
+    #categoryBar {
+      padding: 6px 10.4vw 8px;
+      border-top: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #categoryBar::-webkit-scrollbar { display: none; }
+
+    #categoryFilters {
+      display: flex;
+      gap: clamp(16px, 1.1vw, 28px);
+      flex-wrap: nowrap;
+      min-width: max-content;
+    }
+
+    .cat-filter {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font);
+      font-size: clamp(12px, 1.33vw, 34px);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .cat-filter.active { color: var(--text); }
+    .cat-filter:hover { color: var(--text-mid); }
+
+    /* ─── BOTTOM BAR ─────────────────────────────────── */
+    #bottomBar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 48px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      z-index: 100;
+    }
+
+    .bottom-right {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    #bottomBar button {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    #bottomBar button:hover { color: var(--text); }
+
     /* ─── MAIN ───────────────────────────────────────── */
     main {
-      padding-top: 130px;
+      padding-top: 140px;
+      padding-bottom: 60px;
     }
 
     /* ─── PROJECT LIST ───────────────────────────────── */
@@ -251,10 +323,33 @@
     .project-row {
       display: flex;
       align-items: center;
-      padding: 30px 200px;
+      padding: 10px 10.4vw;
       cursor: pointer;
       user-select: none;
-      gap: 20px;
+      gap: 0;
+    }
+
+    .project-cat {
+      font-size: clamp(14px, 1.45vw, 37px);
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      min-width: 5.6vw;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .project-cat:last-of-type {
+      min-width: 20.5vw;
+    }
+
+    .project-row:hover .project-cat {
+      opacity: 1;
+    }
+
+    .project-item.open .project-cat {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .project-item:not(.open) .project-row:hover .project-title {
@@ -262,33 +357,40 @@
     }
 
     .project-title {
-      font-size: 44px;
+      font-size: clamp(14px, 1.45vw, 37px);
       font-weight: 400;
-      letter-spacing: 0.01em;
+      letter-spacing: 0;
       color: var(--text);
       flex: 1;
+      border-right: 1px solid var(--border);
+      padding-right: 2vw;
       transition: font-size 0.42s cubic-bezier(0.4, 0, 0.2, 1),
                   letter-spacing 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-color 0.2s,
                   color 0.15s;
-      line-height: 1;
+      line-height: 1.2;
     }
 
     .project-item.open .project-title {
-      font-size: 76px;
-      font-weight: 500;
-      letter-spacing: -0.03em;
+      font-size: clamp(36px, 2.19vw, 56px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      border-right-color: transparent;
     }
 
     .project-year {
-      font-size: 36px;
-      color: var(--text);
-      letter-spacing: 0.04em;
+      font-size: clamp(14px, 1.45vw, 37px);
+      color: var(--text-dim);
+      letter-spacing: 0;
       flex-shrink: 0;
+      min-width: 12.2vw;
+      text-align: right;
       transition: color 0.2s, font-size 0.42s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .project-item.open .project-year {
-      font-size: 76px;
+      font-size: clamp(36px, 2.19vw, 56px);
+      font-weight: 700;
       color: var(--text);
     }
 
@@ -307,6 +409,29 @@
     .project-item.open .project-content {
       /* max-height set precisely by JS to eliminate dead-zone */
       margin-bottom: 8px;
+    }
+
+    /* Fade breathing room above and below open project row */
+    .project-item.open .project-row::before,
+    .project-item.open .project-row::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 40px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .project-item.open .project-row {
+      position: relative;
+    }
+    .project-item.open .project-row::before {
+      bottom: 100%;
+      background: linear-gradient(to top, var(--bg), transparent);
+    }
+    .project-item.open .project-row::after {
+      top: 100%;
+      background: linear-gradient(to bottom, var(--bg), transparent);
     }
 
     .project-content-inner {
@@ -453,16 +578,16 @@
     .about-row {
       display: flex;
       align-items: center;
-      padding: 30px 200px;
+      padding: 10px 48px;
       cursor: default;
       user-select: none;
-      gap: 20px;
+      gap: 16px;
     }
 
     .about-title {
-      font-size: 44px;
+      font-size: 13px;
       font-weight: 400;
-      letter-spacing: 0.01em;
+      letter-spacing: 0.02em;
       color: var(--text);
       flex: 1;
       transition: font-size 0.42s cubic-bezier(0.4, 0, 0.2, 1),
@@ -621,10 +746,10 @@
 
     .category-label span {
       font-family: var(--font);
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.18em;
-      color: rgba(228, 228, 228, 0.55);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--text);
       text-transform: uppercase;
       padding: 6px 14px;
       border: 1px solid rgba(228, 228, 228, 0.1);
@@ -862,16 +987,15 @@
     <nav>
       <div class="nav-left">
         <a class="nav-link" id="navProjects">PROJECTS</a>
-        <a class="nav-link" id="navGallery">GALLERY</a>
         <a class="nav-link" id="navAbout">ABOUT</a>
-        <a class="nav-link" id="navNavigation">NAVIGATION</a>
       </div>
       <div class="nav-right">
-        <button class="nav-btn" id="expandToggle">EXPAND</button>
         <button class="nav-btn" id="searchToggle">SEARCH</button>
-        <button class="nav-btn" id="muteToggle">MUTE</button>
       </div>
     </nav>
+    <div id="categoryBar">
+      <div id="categoryFilters"></div>
+    </div>
   </header>
 
   <!-- MAIN -->
@@ -950,6 +1074,16 @@
     </div>
   </div>
 
+  <!-- BOTTOM BAR -->
+  <div id="bottomBar">
+    <button id="expandToggle">EXPAND</button>
+    <button id="discoverBtn">DISCOVER MY POINT OF VIEW</button>
+    <div class="bottom-right">
+      <button id="galleryBtn">GALLERY</button>
+      <button id="muteToggle">MUTE</button>
+    </div>
+  </div>
+
   <script>
     // ─── PROJECT DATA ──────────────────────────────────────────────────────────
     // Edit this array to add/modify/remove projects.
@@ -971,97 +1105,7 @@
       'PORTFOLIO%20WEBSITE%20IMAGE%20SAMPLES/Screenshot%202024-04-19%20095222.png',
     ];
 
-    const PROJECTS = [
-      {
-        id: 'multi-tool',
-        categories: ['Objects', 'Mechanics'],
-        title: 'Multi Tool Project',
-        year: 2025,
-        description: 'A versatile multi-tool designed for everyday carry and professional field use. The form consolidates twelve functions into a single machined body without compromising the individual utility of any tool.',
-        materials: 'Titanium frame, D2 tool steel blades, carbon fiber inlays, stainless hardware',
-        process: 'CAD Design (Fusion 360), CNC machining, heat treatment, hand finishing, anodizing',
-        images: [
-          // Add image paths here, e.g.: ['images/multi-tool-1.jpg', 'images/multi-tool-2.jpg']
-          // Each inner array is one "slide" shown at a time
-          [],
-        ]
-      },
-      {
-        id: 'umbrella',
-        categories: ['Objects'],
-        title: 'Umbrella',
-        year: 2025,
-        description: 'A structural reimagination of the everyday umbrella. The form reduces visual clutter by internalizing the rib mechanism, producing a canopy with no exposed hardware and a silhouette that reads as a single continuous surface.',
-        materials: 'Carbon fiber composite ribs, UV-stabilised ripstop nylon, anodized 7075 aluminium shaft, machined brass ferrule',
-        process: 'Structural FEA, rapid prototyping, injection moulded ABS components, field weather testing',
-        images: [
-          [],
-        ]
-      },
-      {
-        id: 'motorized-dolly',
-        categories: ['Mechanics'],
-        title: 'Motorized Dolly',
-        year: 2025,
-        description: 'A low-profile motorized camera dolly built for controlled, repeatable linear motion on set. Emphasis on rigidity-to-weight ratio and silent operation.',
-        materials: 'Welded 6061 aluminium frame, NEMA 17 stepper motors, polyurethane track wheels, 3D printed ABS mounts',
-        process: 'CAD design, MIG welding, motor controller programming (Arduino), load testing',
-        images: [
-          [],
-        ]
-      },
-      {
-        id: 'bass-speaker',
-        categories: ['Objects'],
-        title: 'Bass Speaker',
-        year: 2025,
-        description: 'I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.',
-        materials: 'CNC cut Baltic Birch plywood, epoxy, rubber feet, 3D prints, paint, 18" subwoofer components, lifting hardware',
-        process: 'CAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.',
-        images: [
-          // Two images side by side on slide 1 — replace src paths with your own
-          // ['images/bass-1.jpg', 'images/bass-2.jpg'],
-          // ['images/bass-3.jpg'],
-          [],
-        ]
-      },
-      {
-        id: 'pathway-to-heaven',
-        categories: ['Installation'],
-        title: 'Pathway To Heaven',
-        year: 2025,
-        description: 'A suspended walkway installation exploring the tension between structural transparency and perceived mass. The form uses minimal material to create the impression of floating horizontal planes.',
-        materials: 'Structural steel, tempered glass, stainless cable tension system, powder coat finish',
-        process: 'Structural engineering collaboration, scale modelling, fabrication drawings, site installation',
-        images: [
-          [],
-        ]
-      },
-      {
-        id: 'rail-light',
-        categories: ['Objects', 'Installation'],
-        title: 'Rail Light',
-        year: 2025,
-        description: 'A modular track lighting system designed around a single extrusion profile. The fixture slides, locks, and rotates without tools — the interaction is part of the product.',
-        materials: 'Extruded 6063 aluminium track, die-cast housing, high-CRI LED modules, PMMA diffuser',
-        process: 'Extrusion profile design, thermal simulation, prototype validation, photometric testing',
-        images: [
-          [],
-        ]
-      },
-      {
-        id: 'i-beam-bracelet',
-        categories: ['Objects', 'Furniture'],
-        title: 'I Beam Bracelet',
-        year: 2025,
-        description: 'A wearable that borrows its cross-section from structural steel I-beam geometry. The form maximizes surface area and visual weight while keeping mass low — the industrial reference is deliberate.',
-        materials: 'Grade 5 titanium, hand brushed finish, silk-anodized interior channel',
-        process: 'CNC machining from solid billet, 5-axis finishing passes, abrasive progression, anodizing',
-        images: [
-          [],
-        ]
-      },
-    ];
+    let PROJECTS = [];
 
     // ─── STATE ─────────────────────────────────────────────────────────────────
     let allExpanded = false;
@@ -1210,7 +1254,17 @@
       year.className = 'project-year';
       year.textContent = project.year;
 
+      const cats = project.categories || [];
+      const cat1 = document.createElement('div');
+      cat1.className = 'project-cat';
+      cat1.textContent = cats[0] || '';
+      const cat2 = document.createElement('div');
+      cat2.className = 'project-cat';
+      cat2.textContent = cats[1] || '';
+
       row.appendChild(title);
+      row.appendChild(cat1);
+      row.appendChild(cat2);
       row.appendChild(year);
 
       // Content
@@ -1278,6 +1332,32 @@
       const container = document.getElementById('projectsList');
       container.innerHTML = '';
       list.forEach(p => container.appendChild(buildProjectItem(p)));
+    }
+
+    function buildCategoryFilters() {
+      const cats = new Set();
+      PROJECTS.forEach(p => (p.categories || []).forEach(c => cats.add(c)));
+      const el = document.getElementById('categoryFilters');
+      el.innerHTML = '';
+      const allBtn = document.createElement('button');
+      allBtn.className = 'cat-filter active';
+      allBtn.textContent = 'All';
+      allBtn.addEventListener('click', () => { setActiveFilter('All'); renderProjects(PROJECTS); });
+      el.appendChild(allBtn);
+      cats.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-filter';
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          setActiveFilter(cat);
+          renderProjects(PROJECTS.filter(p => (p.categories || []).includes(cat)));
+        });
+        el.appendChild(btn);
+      });
+    }
+
+    function setActiveFilter(active) {
+      document.querySelectorAll('.cat-filter').forEach(b => b.classList.toggle('active', b.textContent === active));
     }
 
     function updateExpandButton() {
@@ -1452,10 +1532,15 @@
 
     // ─── NAVIGATION SPHERE ─────────────────────────────────────────────────────
     const CATEGORY_CENTERS = {
-      'Objects':      { nx:  0.05, ny: -0.25, nz:  1.0  },
-      'Furniture':    { nx:  1.0,  ny:  0.15, nz:  0.1  },
-      'Installation': { nx:  0.1,  ny:  0.85, nz: -0.5  },
-      'Mechanics':    { nx: -1.0,  ny: -0.15, nz:  0.35 },
+      'Object':        { nx:  0.0,  ny: -0.3,  nz:  1.0  },
+      'Furniture':     { nx:  1.0,  ny:  0.1,  nz:  0.2  },
+      'Installation':  { nx:  0.1,  ny:  0.9,  nz: -0.4  },
+      'Mechanical':    { nx: -1.0,  ny: -0.1,  nz:  0.3  },
+      'Sound':         { nx:  0.0,  ny: -1.0,  nz: -0.3  },
+      'Lighting':      { nx: -0.4,  ny:  0.6,  nz:  0.7  },
+      'Manufacturing': { nx: -0.7,  ny: -0.5,  nz: -0.5  },
+      'Electrical':    { nx:  0.8,  ny: -0.6,  nz:  0.0  },
+      'Architectural': { nx:  0.3,  ny:  0.9,  nz:  0.3  },
     };
     Object.values(CATEGORY_CENTERS).forEach(c => {
       const len = Math.sqrt(c.nx*c.nx + c.ny*c.ny + c.nz*c.nz);
@@ -1477,9 +1562,11 @@
       container.innerHTML = '';
       navCards = [];
 
-      // Category label nodes
-      ['Objects', 'Furniture', 'Installation', 'Mechanics'].forEach(cat => {
+      // Category label nodes — auto-generated from current project data
+      const uniqueCats = [...new Set(PROJECTS.flatMap(p => p.categories || []))];
+      uniqueCats.forEach(cat => {
         const c = CATEGORY_CENTERS[cat];
+        if (!c) return;
         const dist = 0.88;
         const el = document.createElement('div');
         el.className = 'category-label';
@@ -1498,15 +1585,16 @@
         // Average category centers
         let cx = 0, cy = 0, cz = 0;
         cats.forEach(cat => {
-          const c = CATEGORY_CENTERS[cat] || CATEGORY_CENTERS['Objects'];
+          const c = CATEGORY_CENTERS[cat] || { nx: 0, ny: 0, nz: 1 };
           cx += c.nx; cy += c.ny; cz += c.nz;
         });
         const clen = Math.sqrt(cx*cx + cy*cy + cz*cz);
         cx /= clen; cy /= clen; cz /= clen;
 
-        const srcs = allImgs.length > 0 ? allImgs : [null];
+        // One card per project max (keeps total under 25)
+        const srcs = allImgs.length > 0 ? [allImgs[0]] : [null];
         srcs.forEach(src => {
-          const jitter = 0.28;
+          const jitter = 0.10;
           let nx = cx + (Math.random()-0.5)*jitter;
           let ny = cy + (Math.random()-0.5)*jitter;
           let nz = cz + (Math.random()-0.5)*jitter;
@@ -1516,8 +1604,8 @@
 
           const card = document.createElement('div');
           card.className = 'nav-float-card';
-          card.style.width  = '180px';
-          card.style.height = '134px';
+          card.style.width  = '160px';
+          card.style.height = '120px';
 
           if (src) {
             const img = document.createElement('img');
@@ -1536,40 +1624,15 @@
         });
       });
 
-      // GALLERY_IMAGES scattered across the sphere
-      GALLERY_IMAGES.slice(0, 6).forEach(src => {
-        let nx = (Math.random()-0.5)*2;
-        let ny = (Math.random()-0.5)*1.2;
-        let nz = (Math.random()-0.5)*2;
-        const dist = 0.7 + Math.random() * 0.55;
-        const len = Math.sqrt(nx*nx + ny*ny + nz*nz);
-        nx = (nx/len)*dist; ny = (ny/len)*dist; nz = (nz/len)*dist;
-
-        const card = document.createElement('div');
-        card.className = 'nav-float-card';
-        card.style.width  = '160px';
-        card.style.height = '120px';
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = '';
-        img.onerror = () => { img.style.display = 'none'; };
-        card.appendChild(img);
-        card.addEventListener('click', () => { openLightbox([{ src, caption: '' }], 0); });
-
-        container.appendChild(card);
-        const entry = { el: card, nx, ny, nz, hovering: false, hoverScale: 1.0, isLabel: false };
-        card.addEventListener('mouseenter', () => { entry.hovering = true; });
-        card.addEventListener('mouseleave', () => { entry.hovering = false; });
-        navCards.push(entry);
-      });
+      // Navigation sphere capped at 25 project cards — no extra gallery images needed
 
       navBuilt = true;
     }
 
     function animateNavigation() {
-      if (navAutoRotating) navTargetRotY += 0.025;
-      navSphereRotY += (navTargetRotY - navSphereRotY) * 0.2;
-      navSphereRotX += (navTargetRotX - navSphereRotX) * 0.2;
+      if (navAutoRotating) navTargetRotY += 0.055;
+      navSphereRotY += (navTargetRotY - navSphereRotY) * 0.35;
+      navSphereRotX += (navTargetRotX - navSphereRotX) * 0.35;
 
       const rx = navSphereRotX * Math.PI / 180;
       const ry = navSphereRotY * Math.PI / 180;
@@ -1578,7 +1641,7 @@
 
       const vcx = window.innerWidth / 2;
       const vcy = window.innerHeight / 2;
-      const radius = Math.min(vcx, vcy) * 0.65;
+      const radius = Math.min(vcx, vcy) * 0.52;
 
       const withDepth = navCards.map(card => {
         const x1 =  card.nx * cosY + card.nz * sinY;
@@ -1594,8 +1657,8 @@
         const depthScale = 0.78 + pz * 0.10;
         const depthOpacity = card.isLabel ? Math.max(0.05, 0.35 + pz * 0.55) : 1.0;
 
-        const halfW = card.isLabel ? 60 : 90;
-        const halfH = card.isLabel ? 16 : 67;
+        const halfW = card.isLabel ? 60 : 80;
+        const halfH = card.isLabel ? 16 : 60;
         const baseTx = vcx + px * radius - halfW;
         const baseTy = vcy + py * radius - halfH;
         const tx = vcx + (baseTx - vcx) * navSphereZoom;
@@ -1624,8 +1687,8 @@
     });
     document.addEventListener('mousemove', (e) => {
       if (!navDragActive) return;
-      navTargetRotY = navDragRotY + (e.clientX - navDragStartX) * 0.08;
-      navTargetRotX = navDragRotX - (e.clientY - navDragStartY) * 0.06;
+      navTargetRotY = navDragRotY + (e.clientX - navDragStartX) * 0.16;
+      navTargetRotX = navDragRotX - (e.clientY - navDragStartY) * 0.12;
       navTargetRotX = Math.max(-60, Math.min(60, navTargetRotX));
     });
     document.addEventListener('mouseup', () => {
@@ -1637,7 +1700,7 @@
     navigationEl.addEventListener('wheel', e => {
       if (currentView !== 'navigation') return;
       e.preventDefault();
-      navSphereZoom = Math.max(0.45, Math.min(2.0, navSphereZoom - e.deltaY * 0.00008));
+      navSphereZoom = Math.max(0.45, Math.min(2.0, navSphereZoom - e.deltaY * 0.0004));
     }, { passive: false });
 
     // ─── GALLERY ───────────────────────────────────────────────────────────────
@@ -1661,21 +1724,15 @@
       lastSnappedCard = null;
 
 
-      // Flatten: every individual image gets its own card.
-      // Projects with no images contribute 3 placeholder cards each.
-      // Standalone GALLERY_IMAGES are appended at the end.
+      // Use one representative image per project (first available), capped at 25 total.
       const entries = [];
       PROJECTS.forEach(project => {
         const allImgs = (project.images || []).flatMap(slide => slide.filter(Boolean));
-        if (allImgs.length > 0) {
-          allImgs.forEach(src => entries.push({ project, src }));
-        } else {
-          // 1 placeholder per project (down from 3) to keep card count lower
-          entries.push({ project, src: null });
-        }
+        const src = allImgs.length > 0 ? allImgs[0] : null;
+        entries.push({ project, src });
       });
-      // Gallery-only images — only first 8
-      GALLERY_IMAGES.slice(0, 8).forEach(src => entries.push({ project: null, src }));
+      // Trim to 25 maximum
+      entries.splice(25);
 
       const n = entries.length;
       const goldenAngle = Math.PI * (3 - Math.sqrt(5));
@@ -1947,9 +2004,9 @@
       if (currentView === 'gallery') transitionGalleryToProjects();
       else showView('projects');
     });
-    document.getElementById('navGallery').addEventListener('click', () => showView('gallery'));
     document.getElementById('navAbout').addEventListener('click', () => showView('about'));
-    document.getElementById('navNavigation').addEventListener('click', () => showView('navigation'));
+    document.getElementById('galleryBtn').addEventListener('click', () => showView('gallery'));
+    document.getElementById('discoverBtn').addEventListener('click', () => showView('navigation'));
 
     window.addEventListener('resize', () => {
       // Sphere positions are computed from viewport dimensions each frame — no rebuild needed
@@ -1980,7 +2037,14 @@
     });
 
     // ─── INIT ─────────────────────────────────────────────────────────────────
-    renderProjects(PROJECTS);
+    fetch('content/projects.json')
+      .then(r => r.json())
+      .then(data => {
+        PROJECTS = data.projects || [];
+        renderProjects(PROJECTS);
+        buildCategoryFilters();
+      })
+      .catch(() => renderProjects([]));
   </script>
 </body>
 </html>
