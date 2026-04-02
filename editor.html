@@ -1,0 +1,3492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Layout Editor</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #141414;
+    --panel: #1a1a1a;
+    --panel-border: #2a2a2a;
+    --text: #E4E4E4;
+    --text-dim: #888;
+    --accent: #3b82f6;
+    --accent-dim: rgba(59, 130, 246, 0.4);
+    --danger: #ef4444;
+    --success: #22c55e;
+    --font: Arial, sans-serif;
+  }
+  html.light-mode {
+    --bg: #F1ECE5;
+    --panel: #E8E3DC;
+    --panel-border: #D4CFC8;
+    --text: #1A1A1A;
+    --text-dim: #777;
+    --text-mid: #555;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top Bar ── */
+  #topBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--panel-border);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    z-index: 100;
+  }
+  #topBar select, #topBar button, #topBar label {
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text);
+    background: #222;
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #topBar select { min-width: 200px; }
+  #topBar button:hover { background: #333; }
+  #topBar .sep { width: 1px; height: 24px; background: var(--panel-border); margin: 0 4px; }
+  #topBar label { display: flex; align-items: center; gap: 4px; cursor: pointer; border: none; background: none; }
+  #topBar label input { accent-color: var(--accent); }
+  .btn-save { background: #1a3a1a !important; border-color: #2a5a2a !important; margin-left: auto; }
+  .btn-save:hover { background: #2a5a2a !important; }
+  .btn-danger { background: #3a1a1a !important; border-color: #5a2a2a !important; }
+  .btn-danger:hover { background: #5a2a2a !important; }
+
+  /* ── Main Layout ── */
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Left Panel: Image Library ── */
+  #imageLibrary {
+    width: 200px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #imageLibrary .panel-title {
+    padding: 10px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--panel-border);
+  }
+  #imageList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  #imageList .img-thumb {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    border-radius: 3px;
+    cursor: grab;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+    display: block;
+    background: #222;
+  }
+  #imageList .img-thumb:hover { opacity: 1; }
+  #imageList .img-wrap { position: relative; }
+  #imageList .img-delete {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+  }
+  #imageList .img-wrap:hover .img-delete { display: flex; }
+  #imageList .img-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .no-images { padding: 12px; font-size: 11px; color: var(--text-dim); text-align: center; }
+
+  /* ── Canvas Area ── */
+  #canvasWrapper {
+    flex: 1;
+    overflow: auto;
+    background: #141414;
+    display: block;
+    padding: 0;
+  }
+
+  /* ── Site Context (WYSIWYG live-site simulation) ── */
+  #siteContext {
+    min-height: 100%;
+    font-family: Arial, sans-serif;
+    font-weight: 500;
+    color: #E4E4E4;
+    font-size: 12px;
+  }
+  #mockNav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px var(--ctx-pad, 17%);
+    border-bottom: 1px solid #1f1f1f;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  #mockNavLinks { display: flex; gap: 40px; color: #555; }
+  .smc-row, #mockActiveRow {
+    display: flex;
+    align-items: center;
+    padding: 18px var(--ctx-pad, 17%);
+    border-bottom: 1px solid #1f1f1f;
+    gap: 40px;
+    font-size: clamp(6px, 0.98vw, 20px);
+  }
+  .smc-row { opacity: 0.22; cursor: default; }
+  .mrow-title { flex: 1; }
+  .mrow-cat { min-width: 11vw; flex-shrink: 0; color: #555; }
+  .mrow-year { text-align: right; flex-shrink: 0; color: #E4E4E4; }
+  #mockActiveRow {
+    border-left: 2px solid rgba(255,255,255,0.3);
+    padding-left: calc(var(--ctx-pad, 17%) - 2px);
+    background: rgba(255,255,255,0.02);
+  }
+  #accordionPanel {
+    padding: 36px var(--ctx-pad, 17%) 56px;
+    border-bottom: 1px solid #1f1f1f;
+  }
+  #mockFooterRow {
+    padding: 48px var(--ctx-pad, 17%);
+    border-top: 1px solid #1f1f1f;
+    font-size: 11px;
+    color: #333;
+    display: flex;
+    gap: 40px;
+  }
+
+  #canvas {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    background: #141414;
+    cursor: default;
+  }
+
+  /* ── Canvas Elements ── */
+  .canvas-el {
+    position: absolute;
+    cursor: move;
+    outline: 1px solid rgba(255,255,255,0.07);
+  }
+  .canvas-el:hover { outline: 1px dashed rgba(59,130,246,0.4); }
+  .canvas-el.selected { outline: 1px solid rgba(59,130,246,0.75); }
+  .inline-edit-active { box-sizing: border-box; }
+  .group-bbox {
+    position: absolute;
+    outline: 1px dashed rgba(59,130,246,0.5);
+    pointer-events: none;
+    z-index: 45;
+  }
+  .snap-guide {
+    position: absolute;
+    background: rgba(236,72,153,0.6);
+    pointer-events: none;
+    z-index: 200;
+  }
+  .snap-guide.horizontal { height: 1px; left: 0; right: 0; }
+  .snap-guide.vertical { width: 1px; top: 0; bottom: 0; }
+  .canvas-el img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+  .canvas-el .text-content {
+    width: 100%;
+    pointer-events: none;
+  }
+
+  /* ── Resize Handles ── */
+  .resize-handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border: 1px solid #fff;
+    z-index: 50;
+  }
+  .resize-handle.nw { top: -4px; left: -4px; cursor: nw-resize; }
+  .resize-handle.ne { top: -4px; right: -4px; cursor: ne-resize; }
+  .resize-handle.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+  .resize-handle.se { bottom: -4px; right: -4px; cursor: se-resize; }
+  .resize-handle.n  { top: -4px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+  .resize-handle.s  { bottom: -4px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+  .resize-handle.w  { top: 50%; left: -4px; transform: translateY(-50%); cursor: w-resize; }
+  .resize-handle.e  { top: 50%; right: -4px; transform: translateY(-50%); cursor: e-resize; }
+
+  /* ── Crop Mode ── */
+  :root {
+    --crop-accent: #f59e0b;
+    --crop-accent-dim: rgba(245, 158, 11, 0.4);
+  }
+  .canvas-el.crop-active { outline: 2px solid var(--crop-accent) !important; }
+  .canvas-el.crop-active:hover { outline-color: var(--crop-accent) !important; }
+  .crop-handle {
+    position: absolute;
+    background: var(--crop-accent);
+    border: 1px solid #fff;
+    z-index: 51;
+    border-radius: 2px;
+  }
+  .crop-handle.crop-top    { left: 50%; transform: translateX(-50%); width: 28px; height: 5px; cursor: n-resize; }
+  .crop-handle.crop-bottom { left: 50%; transform: translateX(-50%); width: 28px; height: 5px; cursor: s-resize; }
+  .crop-handle.crop-left   { top: 50%; transform: translateY(-50%); width: 5px; height: 28px; cursor: w-resize; }
+  .crop-handle.crop-right  { top: 50%; transform: translateY(-50%); width: 5px; height: 28px; cursor: e-resize; }
+  .crop-overlay {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+    z-index: 48;
+  }
+  .btn-crop { transition: background 0.15s, color 0.15s; }
+  .btn-crop.active { background: #f59e0b !important; color: #000 !important; border-color: #d97706 !important; }
+  .btn-crop-action {
+    font-size: 11px !important;
+    padding: 3px 8px !important;
+    background: #1a2a1a !important;
+    border-color: #2a4a2a !important;
+    color: #6ee7b7 !important;
+    transition: background 0.15s;
+  }
+  .btn-crop-action:hover { background: #2a4a2a !important; }
+  .align-btn {
+    padding: 3px 5px;
+    font-size: 13px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.12s, color 0.12s;
+  }
+  .align-btn:hover { background: var(--accent); color: #fff; }
+
+  /* ── Right Panel: Properties ── */
+  #propertyPanel {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-left: 1px solid var(--panel-border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  #propertyPanel .panel-title {
+    padding: 10px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--panel-border);
+  }
+  #propFields {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .prop-group { display: flex; flex-direction: column; gap: 3px; }
+  .prop-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .prop-row { display: flex; gap: 6px; }
+  .prop-row .prop-group { flex: 1; }
+  .prop-input {
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text);
+    background: #222;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    padding: 4px 6px;
+    width: 100%;
+    outline: none;
+  }
+  .prop-input:focus { border-color: var(--accent); }
+  textarea.prop-input { resize: vertical; min-height: 60px; }
+  select.prop-input { cursor: pointer; }
+  .no-selection { padding: 20px 12px; font-size: 11px; color: var(--text-dim); text-align: center; }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 13px;
+    z-index: 999;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #toast.success { background: #1a3a1a; color: var(--success); border: 1px solid #2a5a2a; }
+  #toast.error { background: #3a1a1a; color: var(--danger); border: 1px solid #5a2a2a; }
+
+  /* ── Page Bar ── */
+  #pageBar {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--panel-border);
+    flex-shrink: 0;
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+  #pageBar.visible { display: flex; }
+  .page-tab {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 4px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .page-tab:hover { background: #222; color: var(--text); }
+  .page-tab.active {
+    background: #222;
+    color: var(--text);
+    border-color: var(--panel-border);
+  }
+  .page-tab-add, .page-tab-del {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .page-tab-add:hover { background: #1a3a1a; color: var(--success); }
+  .page-tab-del { color: #666; }
+  .page-tab-del:hover { background: #3a1a1a; color: var(--danger); }
+  .page-tab-del:disabled { opacity: 0.3; cursor: default; }
+  .page-tab-del:disabled:hover { background: none; color: #666; }
+  .page-bar-sep { width: 1px; height: 16px; background: var(--panel-border); margin: 0 4px; }
+
+  /* ── About/Archive Editor ── */
+  /* ── WYSIWYG About Editor ── */
+  .aw-item {
+    border-bottom: 1px solid #1f1f1f;
+  }
+  .aw-row {
+    display: flex;
+    align-items: center;
+    padding: 18px var(--ctx-pad, 17%);
+    cursor: pointer;
+    user-select: none;
+  }
+  .aw-row:hover {
+    background: rgba(255,255,255,0.02);
+  }
+  .aw-title {
+    font-size: clamp(6px, 0.98vw, 20px);
+    font-weight: 500;
+    color: #E4E4E4;
+    flex: 1;
+    line-height: 1.2;
+  }
+  .aw-title-input {
+    font-size: clamp(6px, 0.98vw, 20px);
+    font-weight: 500;
+    color: #E4E4E4;
+    flex: 1;
+    line-height: 1.2;
+    background: transparent;
+    border: 1px solid var(--accent);
+    outline: none;
+    padding: 2px 6px;
+    font-family: var(--font);
+    border-radius: 2px;
+  }
+  .aw-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 var(--ctx-pad, 17%);
+    opacity: 0;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s ease 0.1s;
+  }
+  .aw-item.aw-open .aw-content {
+    max-height: 4000px;
+    padding: 24px var(--ctx-pad, 17%) 40px;
+    opacity: 1;
+    overflow: visible;
+  }
+  .aw-bio-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.8fr;
+    gap: 56px;
+  }
+  .aw-bio-text {
+    padding-top: 4px;
+  }
+  .aw-bio-images {
+    padding-top: 4px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-content: start;
+  }
+  .aw-contact-inner {
+    padding: 0;
+  }
+  .aw-contact-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .aw-contact-line .aw-para {
+    flex: 1;
+  }
+  .aw-remove-line {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 6px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .aw-contact-line:hover .aw-remove-line {
+    opacity: 1;
+  }
+  .aw-para-row {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .aw-para-row .aw-para { flex: 1; }
+  .aw-remove-para {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 4px 6px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .aw-para-row:hover .aw-remove-para { opacity: 0.7; }
+  .aw-remove-para:hover { opacity: 1 !important; }
+  .aw-para {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #888;
+    font-weight: 400;
+    cursor: text;
+    padding: 4px 6px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.15s;
+    margin-bottom: 8px;
+    min-height: 1.75em;
+  }
+  .aw-para:hover {
+    border-color: rgba(59, 130, 246, 0.25);
+  }
+  .aw-para:focus {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.04);
+  }
+  .aw-para:empty::before {
+    content: 'Click to type...';
+    color: #444;
+    pointer-events: none;
+  }
+  .aw-inline-btn {
+    background: none;
+    border: 1px dashed #333;
+    border-radius: 4px;
+    color: #555;
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .aw-inline-btn:hover {
+    color: var(--success);
+    border-color: var(--success);
+  }
+  .aw-add-btn {
+    display: block;
+    width: calc(100% - var(--ctx-pad, 17%) * 2);
+    margin: 16px auto;
+    padding: 12px;
+    background: none;
+    border: 1px dashed #333;
+    border-radius: 6px;
+    color: #555;
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .aw-add-btn:hover { background: #1a3a1a; color: var(--success); }
+  .about-img-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .about-img-slot {
+    aspect-ratio: 3/4;
+    background: #1a1a1a;
+    border: 1px dashed var(--panel-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.15s;
+  }
+  .about-img-slot:hover { border-color: var(--accent); }
+  .about-img-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about-img-slot .slot-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .about-img-slot .remove-img {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .about-img-slot:hover .remove-img { display: flex; }
+  .about-add-section {
+    width: 100%;
+    padding: 12px;
+    background: none;
+    border: 1px dashed var(--panel-border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .about-add-section:hover { background: #1a3a1a; color: var(--success); }
+  .about-line-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .about-line-row input { flex: 1; }
+  .about-line-row button {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 4px;
+  }
+
+  /* ── Modal Overlay ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 24px;
+    width: 480px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-box h3 {
+    font-size: 14px;
+    margin-bottom: 16px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .modal-field { margin-bottom: 12px; }
+  .modal-field label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .modal-field input, .modal-field textarea {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text);
+    background: #222;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    padding: 6px 8px;
+    outline: none;
+  }
+  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--accent); }
+  .modal-field textarea { resize: vertical; min-height: 60px; }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+  .modal-actions button {
+    font-family: var(--font);
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--panel-border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .modal-btn-cancel { background: #222; color: var(--text); }
+  .modal-btn-cancel:hover { background: #333; }
+  .modal-btn-primary { background: #1a3a1a; color: var(--success); border-color: #2a5a2a; }
+  .modal-btn-primary:hover { background: #2a5a2a; }
+
+  /* ── Upload Button in Image Library ── */
+  .upload-btn {
+    display: none;
+    width: 100%;
+    padding: 8px;
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: none;
+    border: 1px dashed var(--panel-border);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .upload-btn:hover { background: #1a3a1a; color: var(--success); border-color: #2a5a2a; }
+  .upload-btn.visible { display: block; }
+
+  /* ── Preview Overlay ── */
+  #previewOverlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: var(--bg);
+    overflow-y: auto;
+    display: none;
+    padding: 60px 17vw;
+  }
+  #previewOverlay.active { display: block; }
+  #previewClose {
+    position: fixed; top: 16px; right: 24px; z-index: 201;
+    font-family: var(--font); font-size: 12px;
+    color: var(--text-dim); background: #222; border: 1px solid var(--panel-border);
+    border-radius: 4px; padding: 6px 14px; cursor: pointer;
+  }
+  #previewClose:hover { color: var(--text); background: #333; }
+
+  /* ── Device Preview Buttons ── */
+  .device-btn {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    color: var(--text-dim) !important;
+    background: #222 !important;
+    border: 1px solid var(--panel-border) !important;
+  }
+  .device-btn.active {
+    background: #1a2a3a !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+  }
+  .device-btn:hover { color: var(--text) !important; }
+
+  /* ── Canvas device guide ── */
+  #deviceGuide {
+    position: absolute;
+    top: 0; bottom: 0;
+    border-right: 1px dashed rgba(59,130,246,0.4);
+    pointer-events: none;
+    z-index: 60;
+    display: none;
+  }
+  #deviceGuideLabel {
+    position: absolute;
+    top: 8px; right: 4px;
+    font-size: 9px;
+    color: rgba(59,130,246,0.6);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* ── Context Menu ── */
+  #ctxMenu {
+    position: fixed;
+    z-index: 500;
+    background: var(--panel);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 4px 0;
+    min-width: 170px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+    display: none;
+  }
+  #ctxMenu.active { display: block; }
+  .ctx-item {
+    padding: 8px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ctx-item:hover { background: #2a2a2a; }
+  .ctx-item.danger { color: var(--danger); }
+  .ctx-sep { height: 1px; background: var(--panel-border); margin: 3px 0; }
+  .ctx-icon { width: 14px; text-align: center; font-size: 12px; opacity: 0.7; }
+
+  /* ── Preview: device frame ── */
+  #previewDeviceFrame {
+    margin: 0 auto;
+    transition: max-width 0.3s ease;
+    overflow: visible;
+  }
+  .preview-device-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 202;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 5px 10px;
+  }
+  .preview-device-bar button {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text-dim);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+  .preview-device-bar button.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.08);
+  }
+  .preview-device-bar button:hover:not(.active) { color: var(--text); }
+
+  /* ── Mock project list rows in preview ── */
+  .mock-row {
+    display: flex;
+    padding: 14px 17vw;
+    border-top: 1px solid #1f1f1f;
+    opacity: 0.25;
+    gap: 40px;
+    align-items: center;
+  }
+  .mock-row-title { flex: 1; font-size: 13px; color: var(--text); }
+  .mock-row-cat { font-size: 11px; color: var(--text-dim); }
+  .mock-row-year { font-size: 11px; color: var(--text-dim); margin-left: auto; }
+  .mock-row.open-indicator {
+    opacity: 1;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+  }
+  .mock-row.open-indicator .mock-row-title { color: var(--text); }
+
+  /* ── Text-on-image anchor line ── */
+  .anchor-line {
+    position: absolute;
+    pointer-events: none;
+    z-index: 55;
+    border-top: 1px dashed rgba(59,130,246,0.35);
+    transform-origin: left center;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── Top Bar ── -->
+<div id="topBar">
+  <select id="projectSelector"><option value="">Select a project...</option></select>
+  <button id="btnNewProject" style="background:#1a3a1a;border-color:#2a5a2a">+ New</button>
+  <button id="btnEditProject" style="display:none">Edit Info</button>
+  <div class="sep"></div>
+  <button id="btnAddText">+ Text</button>
+  <button id="btnAddImage">+ Image</button>
+  <button id="btnDelete" class="btn-danger">Delete</button>
+  <button id="btnCrop" class="btn-crop" style="display:none">Crop</button>
+  <button id="btnCropApply" class="btn-crop-action" style="display:none" title="Permanently crop — resizes element to match">Apply</button>
+  <button id="btnCropMask" class="btn-crop-action" style="display:none" title="Mask — non-destructive, reversible">Mask</button>
+  <div class="sep"></div>
+  <span id="alignGroup" style="display:none">
+    <button class="align-btn" data-align="left" title="Align Left">⫷</button>
+    <button class="align-btn" data-align="centerH" title="Align Center">⫿</button>
+    <button class="align-btn" data-align="right" title="Align Right">⫸</button>
+    <button class="align-btn" data-align="top" title="Align Top">⊤</button>
+    <button class="align-btn" data-align="centerV" title="Align Middle">⊡</button>
+    <button class="align-btn" data-align="bottom" title="Align Bottom">⊥</button>
+    <button class="align-btn" data-align="distH" title="Distribute Horizontal">⇔</button>
+    <button class="align-btn" data-align="distV" title="Distribute Vertical">⇕</button>
+  </span>
+  <div class="sep"></div>
+  <button id="btnUndo">Undo</button>
+  <button id="btnRedo">Redo</button>
+  <div class="sep"></div>
+  <label><input type="checkbox" id="gridToggle"> Snap</label>
+  <div class="sep"></div>
+  <button class="device-btn active" data-device="1440" title="Desktop (1440px)">🖥 1440</button>
+  <button class="device-btn" data-device="1024" title="Laptop (1024px)">💻 1024</button>
+  <button class="device-btn" data-device="768" title="Tablet (768px)">⬜ 768</button>
+  <button class="device-btn" data-device="375" title="Mobile (375px)">📱 375</button>
+  <div class="sep"></div>
+  <button id="btnThemeToggle" title="Toggle light/dark mode">☀</button>
+  <button id="btnPreview">Preview</button>
+  <button id="btnSave" class="btn-save">Save</button>
+</div>
+
+<!-- ── Page Bar ── -->
+<div id="pageBar">
+  <span style="margin-right:4px">Pages:</span>
+  <div id="pageTabs"></div>
+  <div class="page-bar-sep"></div>
+  <button class="page-tab-add" id="btnAddPage">+ Page</button>
+  <button class="page-tab-del" id="btnDelPage" disabled>− Page</button>
+  <div class="page-bar-sep"></div>
+  <label style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:4px;">
+    Page Height
+    <input type="number" id="pageHeightInput" style="width:60px;font-size:11px;background:#222;border:1px solid var(--panel-border);color:var(--text);padding:2px 4px;border-radius:3px;" placeholder="auto" min="200" step="10">
+    <span style="font-size:10px;color:var(--text-dim)">px</span>
+  </label>
+</div>
+
+<!-- Context Menu -->
+<div id="ctxMenu">
+  <div class="ctx-item" id="ctxAddText"><span class="ctx-icon">T</span>Add text overlay</div>
+  <div class="ctx-item" id="ctxCrop"><span class="ctx-icon">✂</span>Crop / Mask</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" id="ctxBringFwd"><span class="ctx-icon">↑</span>Bring forward</div>
+  <div class="ctx-item" id="ctxSendBck"><span class="ctx-icon">↓</span>Send back</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="ctxDelete"><span class="ctx-icon">✕</span>Delete</div>
+</div>
+
+<!-- ── Main Layout ── -->
+<div id="main">
+  <!-- Left: Image Library -->
+  <div id="imageLibrary">
+    <div class="panel-title">Image Library</div>
+    <button class="upload-btn" id="btnUploadImage">+ Upload Image</button>
+    <input type="file" id="imageFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml,.svg,.png,.jpg,.jpeg,.gif,.webp" multiple style="display:none">
+    <div id="imageList"><div class="no-images">Select a project</div></div>
+  </div>
+
+  <!-- Center: Canvas (WYSIWYG site simulation) -->
+  <div id="canvasWrapper">
+    <div id="siteContext">
+      <!-- Mock nav -->
+      <div id="mockNav">
+        <span id="mockNavLogo">STUDIO COLBY</span>
+        <div id="mockNavLinks"><span>Work</span><span>About</span><span>Archive</span></div>
+      </div>
+      <!-- Faded project rows above -->
+      <div id="mockRowsAbove"></div>
+      <!-- Active (open) project row -->
+      <div id="mockActiveRow">
+        <span class="mrow-title" id="mockRowTitle">—</span>
+        <span class="mrow-cat" id="mockRowCat">—</span>
+        <span class="mrow-year" id="mockRowYear">—</span>
+      </div>
+      <!-- Accordion panel with canvas inside -->
+      <div id="accordionPanel">
+        <div id="canvas">
+          <div id="deviceGuide"><span id="deviceGuideLabel"></span></div>
+        </div>
+      </div>
+      <!-- Faded project rows below -->
+      <div id="mockRowsBelow"></div>
+      <!-- Mock footer -->
+      <div id="mockFooterRow"><span>Studio Colby</span><span>Work</span><span>About</span><span>Archive</span></div>
+    </div>
+  </div>
+
+  <!-- Right: Properties -->
+  <div id="propertyPanel">
+    <div class="panel-title">Properties</div>
+    <div id="propFields"><div class="no-selection">Select an element</div></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Preview Overlay -->
+<div id="previewOverlay">
+  <div class="preview-device-bar">
+    <button class="pdev-btn active" data-pdev="1440">🖥 1440</button>
+    <button class="pdev-btn" data-pdev="1024">💻 1024</button>
+    <button class="pdev-btn" data-pdev="768">⬜ 768</button>
+    <button class="pdev-btn" data-pdev="375">📱 375</button>
+    <div style="width:1px;height:16px;background:#333;margin:0 4px;"></div>
+    <button id="previewClose">✕ Close</button>
+  </div>
+  <div id="previewContent"></div>
+</div>
+
+<!-- Project Modal -->
+<div id="projectModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 id="modalTitle">New Project</h3>
+    <div class="modal-field"><label>Title</label><input id="modalProjTitle" type="text"></div>
+    <div class="modal-field"><label>Year</label><input id="modalProjYear" type="number" min="2000" max="2100"></div>
+    <div class="modal-field"><label>Categories (comma separated)</label><input id="modalProjCats" type="text" placeholder="Object, Sound"></div>
+    <div class="modal-field"><label>Description</label><textarea id="modalProjDesc"></textarea></div>
+    <div class="modal-field"><label>Materials</label><textarea id="modalProjMats"></textarea></div>
+    <div class="modal-field"><label>Process</label><textarea id="modalProjProc"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" id="modalCancel">Cancel</button>
+      <button class="modal-btn-primary" id="modalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const state = {
+  projectId: null,
+  project: null,
+  canvasWidth: 1200,
+  pageHeight: null,
+  pages: [{ elements: [] }],
+  currentPage: 0,
+  get elements() { return this.pages[this.currentPage] ? this.pages[this.currentPage].elements : []; },
+  set elements(v) { if (this.pages[this.currentPage]) this.pages[this.currentPage].elements = v; },
+  selectedIds: new Set(),
+  // Backward compat: selectedId returns the single selected element (or null)
+  get selectedId() { return this.selectedIds.size === 1 ? [...this.selectedIds][0] : (this.selectedIds.size > 0 ? [...this.selectedIds][0] : null); },
+  set selectedId(v) { this.selectedIds.clear(); if (v) this.selectedIds.add(v); },
+  history: [],
+  historyIndex: -1,
+  gridSnap: false,
+  gridSize: 20,
+  dragging: null,
+  resizing: null,
+  cropMode: false,
+  previewDevice: 1440,
+};
+
+let ALL_PROJECTS = [];
+let ALL_LAYOUTS = {};
+let ABOUT_DATA = null;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(async function init() {
+  const [projData, layoutData, aboutData] = await Promise.all([
+    fetch('content/projects.json').then(r => r.json()),
+    fetch('content/layouts.json').then(r => r.json()).catch(() => ({})),
+    fetch('content/about.json').then(r => r.json()).catch(() => null)
+  ]);
+  ALL_PROJECTS = projData.projects || [];
+  ALL_LAYOUTS = layoutData || {};
+  ABOUT_DATA = aboutData;
+
+  const sel = document.getElementById('projectSelector');
+
+  // Special modes
+  const aboutOpt = document.createElement('option');
+  aboutOpt.value = '__about__';
+  aboutOpt.textContent = '— About Page —';
+  sel.appendChild(aboutOpt);
+
+  const archiveOpt = document.createElement('option');
+  archiveOpt.value = '__archive__';
+  archiveOpt.textContent = '— Archive —';
+  sel.appendChild(archiveOpt);
+
+  // Separator
+  const sepOpt = document.createElement('option');
+  sepOpt.disabled = true;
+  sepOpt.textContent = '────────────────';
+  sel.appendChild(sepOpt);
+
+  ALL_PROJECTS.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.title + ' (' + p.year + ')';
+    sel.appendChild(opt);
+  });
+
+  sel.addEventListener('change', () => {
+    const v = sel.value;
+    if (v === '__about__') { loadAboutEditor(); return; }
+    if (v === '__archive__') { loadArchiveEditor(); return; }
+    loadProject(v);
+  });
+})();
+
+// ─── LOAD PROJECT ─────────────────────────────────────────────────────────────
+function loadProject(id) {
+  if (!id) return;
+  const project = ALL_PROJECTS.find(p => p.id === id);
+  if (!project) return;
+
+  // Restore site context if coming from about/archive mode
+  restoreSiteContext();
+
+  state.projectId = id;
+  state.project = project;
+  state.selectedId = null;
+  state.history = [];
+  state.historyIndex = -1;
+
+  // Load existing layout or auto-populate
+  if (ALL_LAYOUTS[id]) {
+    const raw = ALL_LAYOUTS[id];
+    state.canvasWidth = raw.canvasWidth || 1200;
+    state.pageHeight = raw.pageHeight || null;
+    if (raw.pages) {
+      state.pages = JSON.parse(JSON.stringify(raw.pages));
+    } else if (raw.elements) {
+      state.pages = [{ elements: JSON.parse(JSON.stringify(raw.elements)) }];
+    } else {
+      state.pages = [{ elements: [] }];
+    }
+    state.currentPage = 0;
+  } else {
+    state.pageHeight = null;
+    autoPopulate(project);
+  }
+
+  populateImageLibrary(project);
+  updateSiteContext(project);
+  renderPageBar();
+  pushHistory();
+  render();
+
+  // Show edit/upload buttons
+  document.getElementById('btnEditProject').style.display = '';
+  document.getElementById('btnUploadImage').classList.add('visible');
+}
+
+// ─── SITE CONTEXT (WYSIWYG mock rows) ────────────────────────────────────────
+function updateSiteContext(project) {
+  // Update active row
+  document.getElementById('mockRowTitle').textContent = project.title;
+  document.getElementById('mockRowCat').textContent = (project.categories || []).slice(0, 2).join('  ');
+  document.getElementById('mockRowYear').textContent = project.year;
+
+  const rowHTML = p => {
+    const d = document.createElement('div');
+    d.className = 'smc-row';
+    d.innerHTML = `<span class="mrow-title">${p.title}</span><span class="mrow-cat">${(p.categories||[]).slice(0,2).join('  ')}</span><span class="mrow-year">${p.year}</span>`;
+    return d;
+  };
+
+  const idx = ALL_PROJECTS.findIndex(p => p.id === project.id);
+  const above = ALL_PROJECTS.slice(Math.max(0, idx - 3), idx).reverse();
+  const below = ALL_PROJECTS.slice(idx + 1, Math.min(ALL_PROJECTS.length, idx + 4));
+
+  const aboveEl = document.getElementById('mockRowsAbove');
+  const belowEl = document.getElementById('mockRowsBelow');
+  aboveEl.innerHTML = '';
+  belowEl.innerHTML = '';
+  above.forEach(p => aboveEl.appendChild(rowHTML(p)));
+  below.forEach(p => belowEl.appendChild(rowHTML(p)));
+
+  // Calculate exact ctx-pad to match live site's 17vw behavior
+  // Live site: padding = 17vw of viewport. In editor: ctx-pad = 17% of canvas wrapper width.
+  // We keep 17% as a close visual match.
+  document.getElementById('siteContext').style.setProperty('--ctx-pad', '17%');
+}
+
+// ─── PAGE BAR ────────────────────────────────────────────────────────────────
+function renderPageBar() {
+  const bar = document.getElementById('pageBar');
+  const tabs = document.getElementById('pageTabs');
+  const delBtn = document.getElementById('btnDelPage');
+
+  if (!state.projectId) { bar.classList.remove('visible'); return; }
+  bar.classList.add('visible');
+  tabs.innerHTML = '';
+
+  state.pages.forEach((page, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'page-tab' + (i === state.currentPage ? ' active' : '');
+    btn.textContent = 'Page ' + (i + 1);
+    btn.addEventListener('click', () => switchPage(i));
+    tabs.appendChild(btn);
+  });
+
+  delBtn.disabled = state.pages.length <= 1;
+
+  // Sync page height input
+  const phInput = document.getElementById('pageHeightInput');
+  phInput.value = state.pageHeight || '';
+}
+
+function switchPage(idx) {
+  if (idx === state.currentPage) return;
+  state.selectedId = null;
+  state.cropMode = false;
+  state.currentPage = idx;
+  renderPageBar();
+  render();
+}
+
+document.getElementById('btnAddPage').addEventListener('click', () => {
+  state.pages.push({ elements: [] });
+  state.currentPage = state.pages.length - 1;
+  state.selectedId = null;
+  renderPageBar();
+  pushHistory();
+  render();
+});
+
+document.getElementById('btnDelPage').addEventListener('click', () => {
+  if (state.pages.length <= 1) return;
+  state.pages.splice(state.currentPage, 1);
+  state.currentPage = Math.min(state.currentPage, state.pages.length - 1);
+  state.selectedId = null;
+  renderPageBar();
+  pushHistory();
+  render();
+});
+
+document.getElementById('pageHeightInput').addEventListener('change', (e) => {
+  const val = parseInt(e.target.value);
+  state.pageHeight = val && val >= 200 ? val : null;
+  if (!val) e.target.value = '';
+  render();
+  pushHistory();
+});
+
+// ─── AUTO POPULATE ────────────────────────────────────────────────────────────
+function autoPopulate(project) {
+  // Page 0: info (title, meta, description, materials, process)
+  const infoElements = [];
+  let y = 0;
+
+  infoElements.push({
+    type: 'text', id: uid(), field: 'title',
+    content: project.title,
+    x: 0, y: y, width: 60, height: 'auto', zIndex: 1,
+    style: { fontSize: 'clamp(24px, 3.5vw, 56px)', fontWeight: '700', color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: '1.1' }
+  });
+  y += 70;
+
+  infoElements.push({
+    type: 'text', id: uid(), field: 'meta',
+    content: project.year + '  /  ' + (project.categories || []).join(' / '),
+    x: 0, y: y, width: 60, height: 'auto', zIndex: 1,
+    style: { fontSize: 'clamp(10px, 1vw, 16px)', fontWeight: '400', color: 'var(--text-dim)' }
+  });
+  y += 50;
+
+  if (project.description) {
+    infoElements.push({
+      type: 'text', id: uid(), field: 'description',
+      content: project.description,
+      x: 0, y: y, width: 55, height: 'auto', zIndex: 1,
+      style: { fontSize: 'clamp(11px, 1.1vw, 18px)', fontWeight: '400', color: 'var(--text)', lineHeight: '1.7' }
+    });
+    y += 120;
+  }
+
+  if (project.materials) {
+    infoElements.push({
+      type: 'text', id: uid(), field: 'materials',
+      content: 'MATERIALS\n' + project.materials,
+      x: 0, y: y, width: 55, height: 'auto', zIndex: 1,
+      style: { fontSize: 'clamp(10px, 1vw, 16px)', fontWeight: '400', color: 'var(--text)', lineHeight: '1.5' }
+    });
+    y += 80;
+  }
+
+  if (project.process) {
+    infoElements.push({
+      type: 'text', id: uid(), field: 'process',
+      content: 'PROCESS\n' + project.process,
+      x: 0, y: y, width: 55, height: 'auto', zIndex: 1,
+      style: { fontSize: 'clamp(10px, 1vw, 16px)', fontWeight: '400', color: 'var(--text)', lineHeight: '1.5' }
+    });
+    y += 80;
+  }
+
+  const pages = [{ elements: infoElements }];
+
+  // Additional pages: one per image group
+  (project.images || []).forEach(group => {
+    const imgs = (Array.isArray(group) ? group : [group])
+      .filter(s => s && !s.toLowerCase().endsWith('.heic'));
+    if (!imgs.length) return;
+    const pageElements = [];
+    const colW = 48;
+    let imgY = 20;
+    let rowMaxH = 0;
+    imgs.forEach((src, i) => {
+      const col = i % 2;
+      if (col === 0 && i > 0) { imgY += rowMaxH + 16; rowMaxH = 0; }
+      const imgX = col === 0 ? 0 : 52;
+      const h = 350;
+      pageElements.push({
+        type: 'image', id: uid(), src,
+        x: imgX, y: imgY, width: colW, height: h, zIndex: 0,
+        objectFit: 'cover'
+      });
+      rowMaxH = Math.max(rowMaxH, h);
+    });
+    pages.push({ elements: pageElements });
+  });
+
+  state.pages = pages;
+  state.currentPage = 0;
+}
+
+function flattenImages(images) {
+  const out = [];
+  (images || []).forEach(group => {
+    (Array.isArray(group) ? group : [group]).forEach(src => {
+      if (src && !src.toLowerCase().endsWith('.heic')) out.push(src);
+    });
+  });
+  return out;
+}
+
+function uid() {
+  return 'el-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+}
+
+// Load an image and return its natural dimensions
+function getImageSize(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.naturalWidth;
+      let h = img.naturalHeight;
+      // SVGs may report 0 dimensions — try to read from viewBox via fetch
+      if ((!w || !h) && src.toLowerCase().endsWith('.svg')) {
+        fetch(src).then(r => r.text()).then(text => {
+          const match = text.match(/viewBox=["']([^"']+)["']/);
+          if (match) {
+            const parts = match[1].split(/[\s,]+/).map(Number);
+            if (parts.length === 4 && parts[2] && parts[3]) {
+              resolve({ w: parts[2], h: parts[3] });
+              return;
+            }
+          }
+          // Try width/height attributes
+          const wm = text.match(/width=["']([0-9.]+)/);
+          const hm = text.match(/height=["']([0-9.]+)/);
+          resolve({ w: parseFloat(wm?.[1]) || 400, h: parseFloat(hm?.[1]) || 300 });
+        }).catch(() => resolve({ w: 400, h: 300 }));
+      } else {
+        resolve({ w: w || 400, h: h || 300 });
+      }
+    };
+    img.onerror = () => resolve({ w: 400, h: 300 });
+    img.src = src;
+  });
+}
+
+// Add an image element with correct aspect ratio
+async function addImageElement(src, x, y, widthPct, opts) {
+  const canvas = document.getElementById('canvas');
+  const cvW = canvas.offsetWidth || 1200;
+  const size = await getImageSize(src);
+  const widthPx = (widthPct / 100) * cvW;
+  const height = Math.round(widthPx * (size.h / size.w));
+  const el = {
+    type: 'image', id: uid(), src,
+    x, y, width: widthPct, height, zIndex: 0,
+    objectFit: 'scale-down',
+    ...(opts || {})
+  };
+  state.elements.push(el);
+  state.selectedId = el.id;
+  pushHistory();
+  render();
+  return el;
+}
+
+function autoPopulateAbout() {
+  const data = ABOUT_DATA || { sections: [] };
+  const pages = [];
+
+  data.sections.forEach(section => {
+    const els = [];
+    let y = 0;
+
+    // Section title
+    els.push({
+      type: 'text', id: uid(), field: 'section-title',
+      content: section.title,
+      x: 0, y: y, width: 40, height: 'auto', zIndex: 1,
+      style: { fontSize: 'clamp(24px, 3vw, 48px)', fontWeight: '700', color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: '1.1' }
+    });
+    y += 70;
+
+    if (section.type === 'bio') {
+      (section.text || []).forEach(para => {
+        els.push({
+          type: 'text', id: uid(), field: 'bio-text',
+          content: para,
+          x: 0, y: y, width: 45, height: 'auto', zIndex: 1,
+          style: { fontSize: 'clamp(11px, 1.1vw, 18px)', fontWeight: '400', color: 'var(--text-mid)', lineHeight: '1.75' }
+        });
+        y += 140;
+      });
+      // Images (2x2 on right side)
+      const imgs = section.images || [];
+      let imgY = 70;
+      imgs.forEach((src, i) => {
+        if (!src) return;
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        els.push({
+          type: 'image', id: uid(), src,
+          x: 50 + col * 25, y: imgY + row * 220, width: 23, height: 200, zIndex: 0,
+          objectFit: 'cover'
+        });
+      });
+    } else if (section.type === 'contact') {
+      (section.lines || []).forEach(line => {
+        els.push({
+          type: 'text', id: uid(), field: 'contact-line',
+          content: line,
+          x: 0, y: y, width: 40, height: 'auto', zIndex: 1,
+          style: { fontSize: 'clamp(11px, 1.1vw, 18px)', fontWeight: '400', color: 'var(--text-mid)', lineHeight: '1.75' }
+        });
+        y += 40;
+      });
+    }
+
+    pages.push({ elements: els });
+  });
+
+  if (pages.length === 0) pages.push({ elements: [] });
+  state.pages = pages;
+  state.currentPage = 0;
+}
+
+// ─── IMAGE LIBRARY ────────────────────────────────────────────────────────────
+function populateImageLibrary(project) {
+  const list = document.getElementById('imageList');
+  const allImages = flattenImages(project.images);
+  if (allImages.length === 0) {
+    list.innerHTML = '<div class="no-images">No images available</div>';
+    return;
+  }
+  list.innerHTML = '';
+  allImages.forEach((src, idx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'img-wrap';
+    const img = document.createElement('img');
+    img.className = 'img-thumb';
+    img.src = src;
+    img.draggable = true;
+    img.dataset.src = src;
+    img.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', src);
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+    const label = document.createElement('div');
+    label.className = 'img-label';
+    label.textContent = src.split('/').pop();
+    const delBtn = document.createElement('button');
+    delBtn.className = 'img-delete';
+    delBtn.textContent = '\u2715';
+    delBtn.title = 'Remove from library';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!state.project || !state.project.images) return;
+      // Remove from project images (find and remove the src from nested arrays)
+      for (let g = 0; g < state.project.images.length; g++) {
+        const group = state.project.images[g];
+        if (Array.isArray(group)) {
+          const i = group.indexOf(src);
+          if (i >= 0) { group.splice(i, 1); if (group.length === 0) state.project.images.splice(g, 1); break; }
+        } else if (group === src) { state.project.images.splice(g, 1); break; }
+      }
+      populateImageLibrary(state.project);
+    });
+    wrap.appendChild(img);
+    wrap.appendChild(delBtn);
+    wrap.appendChild(label);
+    list.appendChild(wrap);
+  });
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const canvas = document.getElementById('canvas');
+  canvas.innerHTML = '';
+  // Width is responsive (100% of accordion panel), but capped at canvasWidth
+  canvas.style.maxWidth = state.canvasWidth + 'px';
+  canvas.style.width = '100%';
+
+  // Calculate min height
+  let maxBottom = 0;
+  state.elements.forEach(el => {
+    const h = el.height === 'auto' ? 100 : el.height;
+    const bottom = el.y + h;
+    if (bottom > maxBottom) maxBottom = bottom;
+  });
+  if (state.pageHeight) {
+    canvas.style.minHeight = state.pageHeight + 'px';
+    canvas.style.maxHeight = state.pageHeight + 'px';
+  } else {
+    canvas.style.minHeight = Math.max(400, maxBottom + 80) + 'px';
+    canvas.style.maxHeight = '';
+  }
+
+  state.elements.forEach(el => {
+    const div = document.createElement('div');
+    div.className = 'canvas-el' + (state.selectedIds.has(el.id) ? ' selected' : '');
+    div.dataset.id = el.id;
+
+    // Use % for left/width — matches live site renderFreeformLayout exactly
+    div.style.left = el.x + '%';
+    div.style.top = el.y + 'px';
+    div.style.width = el.width + '%';
+    if (el.height !== 'auto') div.style.height = el.height + 'px';
+
+    if (el.type === 'text') {
+      const span = document.createElement('div');
+      span.className = 'text-content';
+      span.style.whiteSpace = 'pre-wrap';
+      span.style.wordBreak = 'break-word';
+      span.textContent = el.content;
+      if (el.style) {
+        Object.keys(el.style).forEach(k => { span.style[k] = el.style[k]; });
+      }
+      div.appendChild(span);
+    } else if (el.type === 'image') {
+      const img = document.createElement('img');
+      img.src = el.src;
+      img.draggable = false;
+
+      // If image has been cropped (imgRegion), scale and position to show correct portion
+      if (el.imgRegion && (el.imgRegion.x || el.imgRegion.y || el.imgRegion.w < 100 || el.imgRegion.h < 100)) {
+        const r = el.imgRegion;
+        // Wrap in inner div with overflow:hidden so resize handles on outer div aren't clipped
+        const imgWrap = document.createElement('div');
+        imgWrap.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;';
+        img.style.objectFit = 'none';
+        img.style.width = (100 / r.w * 100) + '%';
+        img.style.height = (100 / r.h * 100) + '%';
+        img.style.objectPosition = (r.w > 0 ? (-r.x / r.w * 100) : 0) + '% ' + (r.h > 0 ? (-r.y / r.h * 100) : 0) + '%';
+        imgWrap.appendChild(img);
+        div.appendChild(imgWrap);
+      } else {
+        img.style.objectFit = el.objectFit || 'cover';
+        div.appendChild(img);
+      }
+
+      // Apply clip-path for live crop preview (but not while actively cropping this element)
+      const isCropping = state.cropMode && state.selectedIds.has(el.id);
+      if (el.crop && !isCropping) {
+        const c = el.crop;
+        if (c.top || c.right || c.bottom || c.left) {
+          div.style.clipPath = 'inset(' + c.top + '% ' + c.right + '% ' + c.bottom + '% ' + c.left + '%)';
+        }
+      }
+    }
+
+    // Crop mode: show crop handles + overlays instead of resize handles
+    const isCropActive = state.cropMode && state.selectedIds.has(el.id) && el.type === 'image';
+    if (isCropActive) {
+      div.classList.add('crop-active');
+      div.classList.remove('selected');
+      const crop = el.crop || { top: 0, right: 0, bottom: 0, left: 0 };
+
+      // Crop overlays (dimmed regions)
+      const oTop = document.createElement('div');
+      oTop.className = 'crop-overlay';
+      oTop.style.cssText = 'top:0;left:0;width:100%;height:' + crop.top + '%;';
+      div.appendChild(oTop);
+
+      const oBottom = document.createElement('div');
+      oBottom.className = 'crop-overlay';
+      oBottom.style.cssText = 'bottom:0;left:0;width:100%;height:' + crop.bottom + '%;';
+      div.appendChild(oBottom);
+
+      const oLeft = document.createElement('div');
+      oLeft.className = 'crop-overlay';
+      oLeft.style.cssText = 'top:' + crop.top + '%;left:0;width:' + crop.left + '%;height:' + (100 - crop.top - crop.bottom) + '%;';
+      div.appendChild(oLeft);
+
+      const oRight = document.createElement('div');
+      oRight.className = 'crop-overlay';
+      oRight.style.cssText = 'top:' + crop.top + '%;right:0;width:' + crop.right + '%;height:' + (100 - crop.top - crop.bottom) + '%;';
+      div.appendChild(oRight);
+
+      // Crop handles at boundary positions
+      ['top','right','bottom','left'].forEach(edge => {
+        const h = document.createElement('div');
+        h.className = 'crop-handle crop-' + edge;
+        h.dataset.edge = edge;
+        if (edge === 'top') h.style.top = crop.top + '%';
+        else if (edge === 'bottom') h.style.bottom = crop.bottom + '%';
+        else if (edge === 'left') h.style.left = crop.left + '%';
+        else if (edge === 'right') h.style.right = crop.right + '%';
+        div.appendChild(h);
+      });
+    } else if (state.selectedIds.has(el.id) && state.selectedIds.size === 1) {
+      // Normal resize handles for single selected element
+      ['nw','n','ne','w','e','sw','s','se'].forEach(dir => {
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle ' + dir;
+        handle.dataset.dir = dir;
+        div.appendChild(handle);
+      });
+    }
+
+    canvas.appendChild(div);
+  });
+
+  // Group bounding box for multi-select
+  if (state.selectedIds.size > 1) {
+    const selEls = state.elements.filter(e => state.selectedIds.has(e.id));
+    if (selEls.length > 1) {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      selEls.forEach(el => {
+        minX = Math.min(minX, el.x);
+        minY = Math.min(minY, el.y);
+        maxX = Math.max(maxX, el.x + el.width);
+        const h = el.height === 'auto' ? 60 : el.height;
+        maxY = Math.max(maxY, el.y + h);
+      });
+      const bbox = document.createElement('div');
+      bbox.className = 'group-bbox';
+      bbox.style.cssText = `left:${minX}%;top:${minY}px;width:${maxX - minX}%;height:${maxY - minY}px;`;
+      canvas.appendChild(bbox);
+    }
+  }
+
+  renderProperties();
+  updateCropButton();
+}
+
+// ─── PROPERTIES PANEL ─────────────────────────────────────────────────────────
+function renderProperties() {
+  const panel = document.getElementById('propFields');
+  if (state.selectedIds.size > 1) {
+    panel.innerHTML = '<div class="no-selection">' + state.selectedIds.size + ' elements selected</div>';
+    return;
+  }
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (!el) {
+    panel.innerHTML = '<div class="no-selection">Select an element</div>';
+    return;
+  }
+
+  let html = '';
+  html += '<div class="prop-group"><span class="prop-label">Type</span><div style="font-size:12px;color:var(--text-dim)">' + el.type + (el.field ? ' (' + el.field + ')' : '') + '</div></div>';
+
+  // Position
+  html += '<div class="prop-row">';
+  html += '<div class="prop-group"><span class="prop-label">X %</span><input class="prop-input" type="number" step="0.5" data-prop="x" value="' + el.x.toFixed(1) + '"></div>';
+  html += '<div class="prop-group"><span class="prop-label">Y px</span><input class="prop-input" type="number" step="1" data-prop="y" value="' + Math.round(el.y) + '"></div>';
+  html += '</div>';
+
+  // Size
+  html += '<div class="prop-row">';
+  html += '<div class="prop-group"><span class="prop-label">Width %</span><input class="prop-input" type="number" step="0.5" data-prop="width" value="' + el.width.toFixed(1) + '"></div>';
+  html += '<div class="prop-group"><span class="prop-label">Height px</span><input class="prop-input" type="text" data-prop="height" value="' + (el.height === 'auto' ? 'auto' : Math.round(el.height)) + '"></div>';
+  html += '</div>';
+
+  // Z-index
+  html += '<div class="prop-group"><span class="prop-label">Z-Index</span><input class="prop-input" type="number" step="1" data-prop="zIndex" value="' + (el.zIndex || 0) + '"></div>';
+
+  if (el.type === 'text') {
+    // Content
+    html += '<div class="prop-group"><span class="prop-label">Content</span><textarea class="prop-input" data-prop="content">' + escHtml(el.content) + '</textarea></div>';
+    // Font size
+    html += '<div class="prop-group"><span class="prop-label">Font Size</span><input class="prop-input" type="text" data-prop="style.fontSize" value="' + ((el.style && el.style.fontSize) || '') + '"></div>';
+    // Font weight dropdown
+    const curFW = (el.style && el.style.fontWeight) || '400';
+    html += '<div class="prop-group"><span class="prop-label">Font Weight</span><select class="prop-input" data-prop="style.fontWeight">';
+    [['100','Thin 100'],['200','ExtraLight 200'],['300','Light 300'],['400','Regular 400'],['500','Medium 500'],['600','SemiBold 600'],['700','Bold 700'],['800','ExtraBold 800'],['900','Black 900']].forEach(([v,l]) => {
+      html += '<option value="' + v + '"' + (curFW === v ? ' selected' : '') + '>' + l + '</option>';
+    });
+    html += '</select></div>';
+    // Color
+    html += '<div class="prop-group"><span class="prop-label">Color</span><input class="prop-input" type="text" data-prop="style.color" value="' + ((el.style && el.style.color) || 'var(--text)') + '"></div>';
+    // Line height
+    html += '<div class="prop-group"><span class="prop-label">Line Height</span><input class="prop-input" type="text" data-prop="style.lineHeight" value="' + ((el.style && el.style.lineHeight) || '') + '"></div>';
+    // Letter spacing
+    html += '<div class="prop-group"><span class="prop-label">Letter Spacing</span><input class="prop-input" type="text" data-prop="style.letterSpacing" value="' + ((el.style && el.style.letterSpacing) || '') + '"></div>';
+  }
+
+  if (el.type === 'image') {
+    // Source
+    html += '<div class="prop-group"><span class="prop-label">Source</span><input class="prop-input" type="text" data-prop="src" value="' + escHtml(el.src) + '" readonly></div>';
+    // Object fit
+    html += '<div class="prop-group"><span class="prop-label">Object Fit</span><select class="prop-input" data-prop="objectFit">';
+    ['cover','contain','fill','none','scale-down'].forEach(v => {
+      html += '<option value="' + v + '"' + (el.objectFit === v ? ' selected' : '') + '>' + v + '</option>';
+    });
+    html += '</select></div>';
+
+    // Crop
+    const crop = el.crop || { top: 0, right: 0, bottom: 0, left: 0 };
+    html += '<div class="prop-group"><span class="prop-label">Crop</span></div>';
+    html += '<div class="prop-row">';
+    html += '<div class="prop-group"><span class="prop-label">Top %</span><input class="prop-input" type="number" step="1" min="0" max="90" data-prop="crop.top" value="' + Math.round(crop.top) + '"></div>';
+    html += '<div class="prop-group"><span class="prop-label">Right %</span><input class="prop-input" type="number" step="1" min="0" max="90" data-prop="crop.right" value="' + Math.round(crop.right) + '"></div>';
+    html += '</div>';
+    html += '<div class="prop-row">';
+    html += '<div class="prop-group"><span class="prop-label">Bottom %</span><input class="prop-input" type="number" step="1" min="0" max="90" data-prop="crop.bottom" value="' + Math.round(crop.bottom) + '"></div>';
+    html += '<div class="prop-group"><span class="prop-label">Left %</span><input class="prop-input" type="number" step="1" min="0" max="90" data-prop="crop.left" value="' + Math.round(crop.left) + '"></div>';
+    html += '</div>';
+    html += '<div class="prop-group"><button class="prop-input" id="btnResetCrop" style="cursor:pointer;text-align:center">Reset Crop</button></div>';
+    html += '<div class="ctx-sep" style="height:1px;background:var(--panel-border);margin:6px 0;"></div>';
+    html += '<div class="prop-group"><button class="prop-input" id="btnAddTextOnImg" style="cursor:pointer;text-align:center;background:#1a2a1a;border-color:#2a4a2a;color:#6ee7b7;">＋ Add text on image</button></div>';
+    html += '<div class="prop-group" style="margin-top:6px"><label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="invertDarkToggle"' + (el.invertDark ? ' checked' : '') + '> Invert in dark mode</label></div>';
+  }
+
+  panel.innerHTML = html;
+
+  // Bind inputs
+  panel.querySelectorAll('.prop-input').forEach(input => {
+    const applyVal = (val) => {
+      const prop = input.dataset.prop;
+      if (prop === 'x' || prop === 'width') val = parseFloat(val) || 0;
+      else if (prop === 'y' || prop === 'zIndex') val = parseInt(val) || 0;
+      else if (prop === 'height') val = val === 'auto' ? 'auto' : (parseInt(val) || 0);
+
+      if (prop.startsWith('style.')) {
+        const styleProp = prop.split('.')[1];
+        if (!el.style) el.style = {};
+        el.style[styleProp] = val;
+      } else if (prop.startsWith('crop.')) {
+        const cropProp = prop.split('.')[1];
+        if (!el.crop) el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+        el.crop[cropProp] = clampCrop(parseFloat(val) || 0);
+        if (el.crop.top + el.crop.bottom > 95) el.crop[cropProp] = 95 - el.crop[cropProp === 'top' ? 'bottom' : 'top'];
+        if (el.crop.left + el.crop.right > 95) el.crop[cropProp] = 95 - el.crop[cropProp === 'left' ? 'right' : 'left'];
+      } else {
+        el[prop] = val;
+      }
+    };
+
+    if (input.tagName === 'TEXTAREA' && input.dataset.prop === 'content') {
+      // Live-update canvas text without rebuilding the properties panel
+      input.addEventListener('input', () => {
+        el.content = input.value;
+        // Update only the visible text-content span in canvas, not full render
+        const canvasEl = document.querySelector('.canvas-el[data-id="' + el.id + '"] .text-content');
+        if (canvasEl) canvasEl.textContent = el.content;
+      });
+      input.addEventListener('blur', () => {
+        el.content = input.value;
+        render();
+        pushHistory();
+      });
+    } else {
+      input.addEventListener('change', () => {
+        applyVal(input.value);
+        render();
+        pushHistory();
+      });
+    }
+  });
+
+  // Reset crop button
+  const resetBtn = panel.querySelector('#btnResetCrop');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+      render();
+      pushHistory();
+    });
+  }
+
+  // Add text on image button
+  const addTextOnImgBtn = panel.querySelector('#btnAddTextOnImg');
+  if (addTextOnImgBtn) {
+    addTextOnImgBtn.addEventListener('click', () => addTextOnImage(el));
+  }
+  // Invert in dark mode toggle
+  const invertToggle = panel.querySelector('#invertDarkToggle');
+  if (invertToggle) {
+    invertToggle.addEventListener('change', () => {
+      el.invertDark = invertToggle.checked;
+      render();
+      pushHistory();
+    });
+  }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── SELECTION & DRAG ─────────────────────────────────────────────────────────
+document.getElementById('canvas').addEventListener('pointerdown', (e) => {
+  // Skip canvas element interactions in archive mode
+  if (state.projectId === '__archive__') return;
+
+  // Check for crop handle
+  const cropHandle = e.target.closest('.crop-handle');
+  if (cropHandle) {
+    e.preventDefault();
+    startCropDrag(cropHandle.dataset.edge, e);
+    return;
+  }
+
+  // Check for resize handle
+  const handle = e.target.closest('.resize-handle');
+  if (handle) {
+    e.preventDefault();
+    startResize(handle.dataset.dir, e);
+    return;
+  }
+
+  // Check for element
+  const elDiv = e.target.closest('.canvas-el');
+  if (elDiv) {
+    e.preventDefault();
+    const id = elDiv.dataset.id;
+    // In crop mode, clicking element body exits crop mode (keeps mask)
+    if (state.cropMode) {
+      state.cropMode = false;
+      pushHistory();
+      render();
+      if (state.selectedIds.has(id)) return;
+    }
+
+    const multiKey = e.ctrlKey || e.metaKey;
+    if (multiKey) {
+      // Toggle element in/out of selection
+      if (state.selectedIds.has(id)) state.selectedIds.delete(id);
+      else state.selectedIds.add(id);
+      render();
+    } else if (!state.selectedIds.has(id)) {
+      // Single select — only re-render if selection changed (preserves DOM for dblclick)
+      state.selectedId = id;
+      render();
+    }
+    startDrag(id, e);
+    return;
+  }
+
+  // Click on empty canvas = deselect + exit crop
+  state.selectedIds.clear();
+  state.cropMode = false;
+  render();
+});
+
+// ─── DOUBLE-CLICK INLINE TEXT EDITING ─────────────────────────────────────────
+let inlineEditActive = false;
+
+document.getElementById('canvas').addEventListener('dblclick', (e) => {
+  if (state.projectId === '__archive__') return;
+  // Find the element — check both the event target and the current selection
+  let elDiv = e.target.closest('.canvas-el');
+  let id = elDiv ? elDiv.dataset.id : null;
+  // If DOM element was rebuilt by render(), fall back to selected element
+  if (!id && state.selectedIds.size === 1) {
+    id = [...state.selectedIds][0];
+    elDiv = document.querySelector('.canvas-el[data-id="' + id + '"]');
+  }
+  if (!id || !elDiv) return;
+  const el = state.elements.find(x => x.id === id);
+  if (!el) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (el.type === 'text') {
+    startInlineEdit(elDiv, el);
+  } else if (el.type === 'image') {
+    state.cropMode = true;
+    if (!el.crop) el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+    render();
+  }
+});
+
+function startInlineEdit(elDiv, el) {
+  if (inlineEditActive) return;
+  inlineEditActive = true;
+
+  const textSpan = elDiv.querySelector('.text-content');
+  if (!textSpan) { inlineEditActive = false; return; }
+
+  const cs = getComputedStyle(textSpan);
+  const editDiv = document.createElement('div');
+  editDiv.className = 'inline-edit-active';
+  editDiv.contentEditable = 'true';
+  editDiv.textContent = el.content;
+  editDiv.style.cssText = `
+    position: absolute;
+    left: ${el.x}%;
+    top: ${el.y}px;
+    width: ${el.width}%;
+    min-height: ${textSpan.offsetHeight}px;
+    font-family: ${cs.fontFamily};
+    font-size: ${cs.fontSize};
+    font-weight: ${cs.fontWeight};
+    color: ${cs.color};
+    line-height: ${cs.lineHeight};
+    letter-spacing: ${cs.letterSpacing};
+    background: rgba(59, 130, 246, 0.06);
+    border: 1px solid var(--accent);
+    outline: none;
+    padding: 2px;
+    margin: 0;
+    z-index: 1000;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
+    cursor: text;
+  `;
+
+  // Prevent canvas pointerdown from interfering
+  editDiv.addEventListener('pointerdown', (e) => e.stopPropagation());
+  editDiv.addEventListener('click', (e) => e.stopPropagation());
+  editDiv.addEventListener('dblclick', (e) => e.stopPropagation());
+
+  textSpan.style.visibility = 'hidden';
+  document.getElementById('canvas').appendChild(editDiv);
+  editDiv.focus();
+
+  // Place cursor at end (user can click anywhere to reposition)
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.selectNodeContents(editDiv);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  function commitEdit() {
+    if (!inlineEditActive) return;
+    inlineEditActive = false;
+    el.content = editDiv.textContent;
+    editDiv.remove();
+    textSpan.style.visibility = '';
+    render();
+    renderProperties();
+    pushHistory();
+  }
+
+  editDiv.addEventListener('blur', commitEdit);
+  editDiv.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') {
+      editDiv.textContent = el.content;
+      commitEdit();
+    }
+    // Allow Enter for newlines, don't commit
+  });
+}
+
+function startDrag(id, e) {
+  if (inlineEditActive) return;
+  const el = state.elements.find(e => e.id === id);
+  if (!el) return;
+
+  // Gather all dragged elements (multi-select or single)
+  const dragIds = state.selectedIds.has(id) && state.selectedIds.size > 1
+    ? [...state.selectedIds]
+    : [id];
+  const dragEls = dragIds.map(did => state.elements.find(x => x.id === did)).filter(Boolean);
+  const origPositions = dragEls.map(de => ({ id: de.id, x: de.x, y: de.y }));
+
+  const canvas = document.getElementById('canvas');
+  const canvasRect = canvas.getBoundingClientRect();
+  const cvW = canvasRect.width;
+  const startX = e.clientX;
+  const startY = e.clientY;
+
+  // Pre-compute snap targets from non-dragged elements + canvas edges/center
+  const snapThreshold = 5; // px
+  const otherEls = state.elements.filter(oe => !dragIds.includes(oe.id));
+  const snapXTargets = [0, 50, 100]; // canvas edges + center (%)
+  const snapYTargets = []; // absolute px — no universal canvas Y targets
+  otherEls.forEach(oe => {
+    const h = oe.height === 'auto' ? 60 : oe.height;
+    snapXTargets.push(oe.x, oe.x + oe.width / 2, oe.x + oe.width);
+    snapYTargets.push(oe.y, oe.y + h / 2, oe.y + h);
+  });
+
+  function clearGuides() {
+    canvas.querySelectorAll('.snap-guide').forEach(g => g.remove());
+  }
+
+  function showGuide(type, pos) {
+    const g = document.createElement('div');
+    g.className = 'snap-guide ' + type;
+    if (type === 'horizontal') g.style.top = pos + 'px';
+    else g.style.left = pos + '%';
+    canvas.appendChild(g);
+  }
+
+  let dragStarted = false;
+  const DRAG_THRESHOLD = 4;
+
+  function onMove(e) {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    // Don't start dragging until mouse moves past threshold (allows dblclick)
+    if (!dragStarted) {
+      if (Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+      dragStarted = true;
+    }
+
+    const dxPct = (dx / cvW) * 100;
+
+    clearGuides();
+
+    // Apply delta to all dragged elements
+    dragEls.forEach((de, i) => {
+      let newX = origPositions[i].x + dxPct;
+      let newY = origPositions[i].y + dy;
+      if (state.gridSnap) {
+        const pxX = (newX / 100) * cvW;
+        newX = (Math.round(pxX / state.gridSize) * state.gridSize / cvW) * 100;
+        newY = Math.round(newY / state.gridSize) * state.gridSize;
+      }
+      de.x = Math.max(0, Math.min(100 - de.width, newX));
+      de.y = Math.max(0, newY);
+    });
+
+    // Snap guides — use primary element for snap detection
+    if (!state.gridSnap) {
+      const pe = el;
+      const peH = pe.height === 'auto' ? 60 : pe.height;
+      const peEdgesX = [pe.x, pe.x + pe.width / 2, pe.x + pe.width];
+      const peEdgesY = [pe.y, pe.y + peH / 2, pe.y + peH];
+
+      let snapDx = 0, snapDy = 0;
+      // X snap
+      for (const ex of peEdgesX) {
+        const pxEx = (ex / 100) * cvW;
+        for (const tx of snapXTargets) {
+          const pxTx = (tx / 100) * cvW;
+          if (Math.abs(pxEx - pxTx) < snapThreshold) {
+            snapDx = tx - ex;
+            showGuide('vertical', tx);
+            break;
+          }
+        }
+        if (snapDx !== 0) break;
+      }
+      // Y snap
+      for (const ey of peEdgesY) {
+        for (const ty of snapYTargets) {
+          if (Math.abs(ey - ty) < snapThreshold) {
+            snapDy = ty - ey;
+            showGuide('horizontal', ty);
+            break;
+          }
+        }
+        if (snapDy !== 0) break;
+      }
+      // Apply snap offset to all dragged elements
+      if (snapDx !== 0 || snapDy !== 0) {
+        dragEls.forEach(de => {
+          de.x = Math.max(0, Math.min(100 - de.width, de.x + snapDx));
+          de.y = Math.max(0, de.y + snapDy);
+        });
+      }
+    }
+
+    render();
+  }
+
+  function onUp() {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    clearGuides();
+    pushHistory();
+  }
+
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+}
+
+// ─── RESIZE ───────────────────────────────────────────────────────────────────
+function startResize(dir, e) {
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (!el) return;
+
+  const canvas = document.getElementById('canvas');
+  const canvasRect = canvas.getBoundingClientRect();
+  const cvW = canvasRect.width; // actual rendered canvas width
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = el.x;
+  const origY = el.y;
+  const origW = el.width;
+  const origH = el.height === 'auto' ? 100 : el.height;
+  const isImage = el.type === 'image';
+  // Aspect ratio: origH (px) / origW (px) — convert origW from % to px
+  const origWpx = (origW / 100) * cvW;
+  const aspectRatio = isImage ? (origH / origWpx) : 0;
+
+  function onMove(e) {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const dxPct = (dx / cvW) * 100;
+
+    let newX = origX, newY = origY, newW = origW, newH = origH;
+
+    if (isImage) {
+      // Aspect-ratio-locked resize for images
+      const isCorner = dir.length === 2;
+      if (isCorner || dir === 'e' || dir === 'w') {
+        // Width-driven
+        if (dir.includes('e')) newW = Math.max(5, origW + dxPct);
+        if (dir.includes('w')) { newW = Math.max(5, origW - dxPct); newX = origX + (origW - newW); }
+        // Derive height from width
+        const newWpx = (newW / 100) * cvW;
+        newH = Math.max(20, newWpx * aspectRatio);
+        if (dir.includes('n')) newY = origY + (origH - newH);
+      } else {
+        // Height-driven (n or s only)
+        if (dir === 's') newH = Math.max(20, origH + dy);
+        if (dir === 'n') { newH = Math.max(20, origH - dy); newY = origY + dy; }
+        // Derive width from height
+        const newWpx = newH / aspectRatio;
+        newW = Math.max(5, (newWpx / cvW) * 100);
+      }
+    } else {
+      // Free resize for text elements
+      if (dir.includes('e')) newW = Math.max(5, origW + dxPct);
+      if (dir.includes('w')) { newW = Math.max(5, origW - dxPct); newX = origX + dxPct; }
+      if (dir.includes('s')) newH = Math.max(20, origH + dy);
+      if (dir.includes('n')) { newH = Math.max(20, origH - dy); newY = origY + dy; }
+    }
+
+    if (state.gridSnap) {
+      const pxW = (newW / 100) * cvW;
+      newW = (Math.round(pxW / state.gridSize) * state.gridSize / cvW) * 100;
+      newH = Math.round(newH / state.gridSize) * state.gridSize;
+    }
+
+    el.x = newX;
+    el.y = newY;
+    el.width = newW;
+    el.height = newH;
+    render();
+  }
+
+  function onUp() {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    pushHistory();
+  }
+
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+}
+
+// ─── CROP MODE ───────────────────────────────────────────────────────────────
+function updateCropButton() {
+  const btn = document.getElementById('btnCrop');
+  const applyBtn = document.getElementById('btnCropApply');
+  const maskBtn = document.getElementById('btnCropMask');
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (el && el.type === 'image') {
+    btn.style.display = '';
+    btn.classList.toggle('active', state.cropMode);
+    applyBtn.style.display = state.cropMode ? '' : 'none';
+    maskBtn.style.display = state.cropMode ? '' : 'none';
+  } else {
+    btn.style.display = 'none';
+    applyBtn.style.display = 'none';
+    maskBtn.style.display = 'none';
+    if (state.cropMode) state.cropMode = false;
+  }
+}
+
+document.getElementById('btnCrop').addEventListener('click', () => {
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (!el || el.type !== 'image') return;
+  state.cropMode = !state.cropMode;
+  if (state.cropMode && !el.crop) el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+  render();
+});
+
+// Apply — permanent crop (resizes element to cropped area)
+document.getElementById('btnCropApply').addEventListener('click', () => {
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (!el) return;
+  applyCropToElement(el);
+  state.cropMode = false;
+  render();
+});
+
+// Mask — non-destructive crop (clip-path, reversible)
+document.getElementById('btnCropMask').addEventListener('click', () => {
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (!el) return;
+  // Just exit crop mode — the crop values stay as clip-path
+  state.cropMode = false;
+  pushHistory();
+  render();
+});
+
+function applyCropToElement(el) {
+  if (!el.crop) return;
+  const c = el.crop;
+  if (!c.top && !c.right && !c.bottom && !c.left) return;
+
+  const canvas = document.getElementById('canvas');
+  const cvW = canvas.offsetWidth;
+  const elWpx = (el.width / 100) * cvW;
+  const elH = el.height === 'auto' ? 200 : el.height;
+
+  // New visible dimensions
+  const visW = (1 - c.left / 100 - c.right / 100);
+  const visH = (1 - c.top / 100 - c.bottom / 100);
+  const newWpx = elWpx * visW;
+  const newH = elH * visH;
+  const newX = el.x + (c.left / 100) * el.width;
+  const newY = el.y + (c.top / 100) * elH;
+  const newW = (newWpx / cvW) * 100;
+
+  // Track how much of the original image is visible
+  // imgRegion = the portion of the source image to show (0-100 range)
+  const prev = el.imgRegion || { x: 0, y: 0, w: 100, h: 100 };
+  el.imgRegion = {
+    x: prev.x + (c.left / 100) * prev.w,
+    y: prev.y + (c.top / 100) * prev.h,
+    w: prev.w * visW,
+    h: prev.h * visH
+  };
+
+  // Update element bounds to match cropped area
+  el.x = newX;
+  el.y = newY;
+  el.width = newW;
+  el.height = newH;
+  el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+
+  // Clean up old cropApplied if present
+  delete el.cropApplied;
+
+  pushHistory();
+}
+
+function startCropDrag(edge, e) {
+  const el = state.elements.find(e => e.id === state.selectedId);
+  if (!el) return;
+  if (!el.crop) el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+
+  const elDiv = document.querySelector('.canvas-el[data-id="' + el.id + '"]');
+  const rect = elDiv.getBoundingClientRect();
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origCrop = { top: el.crop.top, right: el.crop.right, bottom: el.crop.bottom, left: el.crop.left };
+
+  function onMove(ev) {
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+
+    if (edge === 'top') el.crop.top = clampCrop(origCrop.top + (dy / rect.height) * 100);
+    else if (edge === 'bottom') el.crop.bottom = clampCrop(origCrop.bottom - (dy / rect.height) * 100);
+    else if (edge === 'left') el.crop.left = clampCrop(origCrop.left + (dx / rect.width) * 100);
+    else if (edge === 'right') el.crop.right = clampCrop(origCrop.right - (dx / rect.width) * 100);
+
+    // Prevent opposite edges from overlapping
+    if (el.crop.top + el.crop.bottom > 95) {
+      if (edge === 'top') el.crop.top = 95 - el.crop.bottom;
+      else el.crop.bottom = 95 - el.crop.top;
+    }
+    if (el.crop.left + el.crop.right > 95) {
+      if (edge === 'left') el.crop.left = 95 - el.crop.right;
+      else el.crop.right = 95 - el.crop.left;
+    }
+
+    render();
+  }
+
+  function onUp() {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    pushHistory();
+  }
+
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+}
+
+function clampCrop(val) {
+  return Math.max(0, Math.min(90, Math.round(val * 10) / 10));
+}
+
+// ─── DROP IMAGE FROM LIBRARY ──────────────────────────────────────────────────
+document.getElementById('canvas').addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+});
+
+document.getElementById('canvas').addEventListener('drop', (e) => {
+  e.preventDefault();
+  const src = e.dataTransfer.getData('text/plain');
+  if (!src) return;
+
+  const canvas = document.getElementById('canvas');
+  const rect = canvas.getBoundingClientRect();
+  const dropX = ((e.clientX - rect.left) / rect.width) * 100;
+  const dropY = e.clientY - rect.top + document.getElementById('canvasWrapper').scrollTop;
+
+  addImageElement(src, Math.max(0, dropX - 20), Math.max(0, dropY - 150), 40);
+});
+
+// ─── TOOLBAR ACTIONS ──────────────────────────────────────────────────────────
+document.getElementById('btnAddText').addEventListener('click', () => {
+  if (!state.projectId) return;
+  state.elements.push({
+    type: 'text', id: uid(),
+    content: 'New text block',
+    x: 10, y: 100, width: 40, height: 'auto', zIndex: 1,
+    style: { fontSize: 'clamp(11px, 1.1vw, 18px)', fontWeight: '400', color: 'var(--text)', lineHeight: '1.5' }
+  });
+  state.selectedId = state.elements[state.elements.length - 1].id;
+  pushHistory();
+  render();
+});
+
+document.getElementById('btnAddImage').addEventListener('click', () => {
+  if (!state.projectId) return;
+  // In about mode, trigger file upload instead of picking from project images
+  if (state.projectId === '__about__') {
+    document.getElementById('imageFileInput').click();
+    return;
+  }
+  if (!state.project) return;
+  const allImages = flattenImages(state.project.images);
+  if (allImages.length === 0) { toast('No images available for this project', 'error'); return; }
+  addImageElement(allImages[0], 10, 100, 40);
+});
+
+document.getElementById('btnDelete').addEventListener('click', deleteSelected);
+
+function deleteSelected() {
+  if (state.selectedIds.size === 0) return;
+  state.elements = state.elements.filter(e => !state.selectedIds.has(e.id));
+  state.selectedIds.clear();
+  pushHistory();
+  render();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.key === 'Escape' && state.cropMode) {
+    state.cropMode = false; pushHistory(); render(); e.preventDefault(); return;
+  }
+  if (e.key === 'c' && !e.ctrlKey && !e.metaKey && state.selectedId) {
+    const sel = state.elements.find(el => el.id === state.selectedId);
+    if (sel && sel.type === 'image') {
+      state.cropMode = !state.cropMode;
+      if (state.cropMode && !sel.crop) sel.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+      render(); e.preventDefault(); return;
+    }
+  }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && state.selectedIds.size > 0) { deleteSelected(); e.preventDefault(); }
+  if (e.ctrlKey && e.key === 'z' && !e.shiftKey) { undo(); e.preventDefault(); }
+  if (e.ctrlKey && e.key === 'z' && e.shiftKey) { redo(); e.preventDefault(); }
+  if (e.ctrlKey && e.key === 'y') { redo(); e.preventDefault(); }
+  if (e.ctrlKey && e.key === 's') { saveLayout(); e.preventDefault(); }
+});
+
+// ─── GRID SNAP ────────────────────────────────────────────────────────────────
+document.getElementById('gridToggle').addEventListener('change', (e) => {
+  state.gridSnap = e.target.checked;
+});
+
+// ─── UNDO / REDO ──────────────────────────────────────────────────────────────
+function pushHistory() {
+  const snapshot = { pages: JSON.parse(JSON.stringify(state.pages)), currentPage: state.currentPage };
+  state.history = state.history.slice(0, state.historyIndex + 1);
+  state.history.push(snapshot);
+  if (state.history.length > 50) state.history.shift();
+  state.historyIndex = state.history.length - 1;
+}
+
+function undo() {
+  if (state.historyIndex <= 0) return;
+  state.historyIndex--;
+  const snap = JSON.parse(JSON.stringify(state.history[state.historyIndex]));
+  state.pages = snap.pages;
+  state.currentPage = Math.min(snap.currentPage, state.pages.length - 1);
+  state.selectedId = null;
+  renderPageBar();
+  render();
+}
+
+function redo() {
+  if (state.historyIndex >= state.history.length - 1) return;
+  state.historyIndex++;
+  const snap = JSON.parse(JSON.stringify(state.history[state.historyIndex]));
+  state.pages = snap.pages;
+  state.currentPage = Math.min(snap.currentPage, state.pages.length - 1);
+  state.selectedId = null;
+  renderPageBar();
+  render();
+}
+
+document.getElementById('btnUndo').addEventListener('click', undo);
+document.getElementById('btnRedo').addEventListener('click', redo);
+
+// ─── ALIGNMENT ────────────────────────────────────────────────────────────────
+function updateAlignVisibility() {
+  document.getElementById('alignGroup').style.display = state.selectedIds.size > 0 ? '' : 'none';
+}
+
+document.querySelectorAll('.align-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ids = [...state.selectedIds];
+    const els = ids.map(id => state.elements.find(e => e.id === id)).filter(Boolean);
+    if (els.length === 0) return;
+
+    const action = btn.dataset.align;
+    const canvas = document.getElementById('canvas');
+    const cvW = canvas ? canvas.offsetWidth : state.canvasWidth;
+
+    function getH(el) { return el.height === 'auto' ? 60 : el.height; }
+
+    if (els.length === 1) {
+      // Align relative to canvas
+      const el = els[0];
+      if (action === 'left') el.x = 0;
+      else if (action === 'centerH') el.x = (100 - el.width) / 2;
+      else if (action === 'right') el.x = 100 - el.width;
+      else if (action === 'top') el.y = 0;
+      else if (action === 'centerV') { /* needs canvas height — skip for single */ }
+      else if (action === 'bottom') { /* skip */ }
+    } else {
+      // Align relative to group bounds
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      els.forEach(el => {
+        minX = Math.min(minX, el.x);
+        maxX = Math.max(maxX, el.x + el.width);
+        minY = Math.min(minY, el.y);
+        maxY = Math.max(maxY, el.y + getH(el));
+      });
+
+      if (action === 'left') els.forEach(el => { el.x = minX; });
+      else if (action === 'centerH') {
+        const cx = (minX + maxX) / 2;
+        els.forEach(el => { el.x = cx - el.width / 2; });
+      }
+      else if (action === 'right') els.forEach(el => { el.x = maxX - el.width; });
+      else if (action === 'top') els.forEach(el => { el.y = minY; });
+      else if (action === 'centerV') {
+        const cy = (minY + maxY) / 2;
+        els.forEach(el => { el.y = cy - getH(el) / 2; });
+      }
+      else if (action === 'bottom') els.forEach(el => { el.y = maxY - getH(el); });
+      else if (action === 'distH') {
+        if (els.length < 3) return;
+        const sorted = [...els].sort((a, b) => a.x - b.x);
+        const totalWidth = sorted.reduce((s, el) => s + el.width, 0);
+        const gap = (maxX - minX - totalWidth) / (sorted.length - 1);
+        let cx = minX;
+        sorted.forEach(el => { el.x = cx; cx += el.width + gap; });
+      }
+      else if (action === 'distV') {
+        if (els.length < 3) return;
+        const sorted = [...els].sort((a, b) => a.y - b.y);
+        const totalH = sorted.reduce((s, el) => s + getH(el), 0);
+        const gap = (maxY - minY - totalH) / (sorted.length - 1);
+        let cy = minY;
+        sorted.forEach(el => { el.y = cy; cy += getH(el) + gap; });
+      }
+    }
+
+    pushHistory();
+    render();
+  });
+});
+
+// Hook align visibility into render
+const _origRender = render;
+// We call updateAlignVisibility after each render via a MutationObserver-free approach:
+// Patch renderProperties to also update alignment visibility.
+const _origRenderProps = renderProperties;
+renderProperties = function() {
+  _origRenderProps();
+  updateAlignVisibility();
+};
+
+// ─── SAVE ─────────────────────────────────────────────────────────────────────
+document.getElementById('btnSave').addEventListener('click', saveLayout);
+
+async function saveLayout() {
+  if (!state.projectId) { toast('No project selected', 'error'); return; }
+
+  // About mode — save layout + about data
+  if (state.projectId === '__about__') {
+    try {
+      const layout = { canvasWidth: state.canvasWidth, pageHeight: state.pageHeight, pages: state.pages };
+      const res = await fetch('/api/layouts', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: '__about__', layout })
+      });
+      if (!res.ok) { toast('Save failed: HTTP ' + res.status, 'error'); return; }
+      const data = await res.json();
+      if (data.ok) {
+        ALL_LAYOUTS['__about__'] = layout;
+        // Also save ABOUT_DATA text content
+        await fetch('/api/about', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ABOUT_DATA || { sections: [] })
+        });
+        toast('About layout saved', 'success');
+      } else {
+        toast('Save failed: ' + (data.error || 'unknown'), 'error');
+      }
+    } catch (e) { toast('Save failed: ' + e.message, 'error'); }
+    return;
+  }
+
+  // Archive mode — save archive data
+  if (state.projectId === '__archive__') {
+    try {
+      const res = await fetch('/api/archive', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ARCHIVE_DATA || { images: [] })
+      });
+      const data = await res.json();
+      if (data.ok) { toast('Archive saved', 'success'); }
+      else { toast('Save failed: ' + (data.error || 'unknown'), 'error'); }
+    } catch (e) { toast('Save failed: ' + e.message, 'error'); }
+    return;
+  }
+
+  const layout = {
+    canvasWidth: state.canvasWidth,
+    pageHeight: state.pageHeight,
+    pages: state.pages
+  };
+  try {
+    const res = await fetch('/api/layouts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId: state.projectId, layout })
+    });
+    if (!res.ok) {
+      toast('Save failed: HTTP ' + res.status + (res.status === 405 ? ' — run "node serve.mjs" on port 3000' : ''), 'error');
+      return;
+    }
+    const data = await res.json();
+    if (data.ok) {
+      ALL_LAYOUTS[state.projectId] = layout;
+      // Also save project metadata to projects.json
+      if (state.project) {
+        try {
+          await fetch('/api/projects/' + encodeURIComponent(state.projectId), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: state.project.title,
+              year: state.project.year,
+              categories: state.project.categories,
+              description: state.project.description,
+              materials: state.project.materials,
+              process: state.project.process
+            })
+          });
+        } catch (e) { /* metadata save is secondary */ }
+      }
+      toast('Layout saved', 'success');
+    } else {
+      toast('Save failed: ' + (data.error || 'unknown'), 'error');
+    }
+  } catch (e) {
+    toast('Save failed: ' + e.message, 'error');
+  }
+}
+
+// ─── ABOUT EDITOR ─────────────────────────────────────────────────────────────
+function loadAboutEditor() {
+  state.projectId = '__about__';
+  state.project = null;
+  state.selectedId = null;
+  state.history = [];
+  state.historyIndex = -1;
+
+  // Show site context adapted for about page
+  document.getElementById('mockNav').style.display = '';
+  document.getElementById('mockRowsAbove').style.display = 'none';
+  document.getElementById('mockActiveRow').style.display = 'none';
+  document.getElementById('mockRowsBelow').style.display = 'none';
+  document.getElementById('mockFooterRow').style.display = '';
+  document.getElementById('accordionPanel').style.padding = '';
+  document.getElementById('siteContext').style.setProperty('--ctx-pad', '17%');
+
+  // Load existing about layout or auto-populate from ABOUT_DATA
+  if (ALL_LAYOUTS['__about__']) {
+    const raw = ALL_LAYOUTS['__about__'];
+    state.canvasWidth = raw.canvasWidth || 1200;
+    state.pageHeight = raw.pageHeight || null;
+    if (raw.pages) {
+      state.pages = JSON.parse(JSON.stringify(raw.pages));
+    } else {
+      state.pages = [{ elements: [] }];
+    }
+  } else {
+    state.canvasWidth = 1200;
+    state.pageHeight = null;
+    autoPopulateAbout();
+  }
+  state.currentPage = 0;
+
+  // Show editor UI
+  document.getElementById('btnEditProject').style.display = 'none';
+  document.getElementById('btnUploadImage').classList.add('visible');
+  document.getElementById('pageBar').classList.add('visible');
+  document.getElementById('imageList').innerHTML = '<div class="no-images">About page</div>';
+
+  renderPageBar();
+  pushHistory();
+  render();
+}
+
+function renderAboutWYSIWYG(container) {
+  container.innerHTML = '';
+  const data = ABOUT_DATA || { sections: [] };
+
+  data.sections.forEach((section, si) => {
+    const item = document.createElement('div');
+    item.className = 'aw-item';
+    item.dataset.si = si;
+
+    // Row — matching live site .about-row styling
+    const row = document.createElement('div');
+    row.className = 'aw-row';
+
+    const title = document.createElement('span');
+    title.className = 'aw-title';
+    title.textContent = section.title;
+    row.appendChild(title);
+
+    // Double-click title to edit inline
+    title.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'aw-title-input';
+      input.value = section.title;
+      title.replaceWith(input);
+      input.focus();
+      input.select();
+      function commit() {
+        section.title = input.value;
+        renderAboutWYSIWYG(container);
+      }
+      input.addEventListener('blur', commit);
+      input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') input.blur(); });
+    });
+
+    // Toggle open/close on row click
+    row.addEventListener('click', () => {
+      const isOpen = item.classList.contains('aw-open');
+      // Close all others
+      container.querySelectorAll('.aw-item.aw-open').forEach(other => {
+        if (other !== item) other.classList.remove('aw-open');
+      });
+      item.classList.toggle('aw-open', !isOpen);
+    });
+
+    item.appendChild(row);
+
+    // Content area (matches project accordion open style)
+    const content = document.createElement('div');
+    content.className = 'aw-content';
+
+    if (section.type === 'bio') {
+      renderBioWYSIWYG(content, section, si, container);
+    } else {
+      renderContactWYSIWYG(content, section, si, container);
+    }
+
+    item.appendChild(content);
+
+    // Start first section open by default
+    if (si === 0) item.classList.add('aw-open');
+
+    container.appendChild(item);
+  });
+
+  // Add section button
+  const addBtn = document.createElement('button');
+  addBtn.className = 'aw-add-btn';
+  addBtn.textContent = '+ Add Section';
+  addBtn.addEventListener('click', () => {
+    if (!ABOUT_DATA) ABOUT_DATA = { sections: [] };
+    ABOUT_DATA.sections.push({ id: 'section-' + Date.now(), title: 'New Section', type: 'contact', lines: [''] });
+    renderAboutWYSIWYG(container);
+  });
+  container.appendChild(addBtn);
+}
+
+function renderBioWYSIWYG(content, section, si, root) {
+  const inner = document.createElement('div');
+  inner.className = 'aw-bio-inner';
+
+  // Text column
+  const textCol = document.createElement('div');
+  textCol.className = 'aw-bio-text';
+
+  (section.text || []).forEach((para, pi) => {
+    const row = document.createElement('div');
+    row.className = 'aw-para-row';
+    const p = document.createElement('div');
+    p.className = 'aw-para';
+    p.contentEditable = 'true';
+    p.textContent = para;
+    p.dataset.si = si;
+    p.dataset.pi = pi;
+    p.addEventListener('input', () => {
+      ABOUT_DATA.sections[si].text[pi] = p.textContent;
+    });
+    p.addEventListener('blur', () => {
+      ABOUT_DATA.sections[si].text[pi] = p.textContent;
+    });
+    p.addEventListener('click', (e) => e.stopPropagation());
+    row.appendChild(p);
+    // Delete paragraph button
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'aw-remove-para';
+    rmBtn.textContent = '\u2715';
+    rmBtn.title = 'Remove paragraph';
+    rmBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      ABOUT_DATA.sections[si].text.splice(pi, 1);
+      renderAboutWYSIWYG(root);
+    });
+    row.appendChild(rmBtn);
+    textCol.appendChild(row);
+  });
+
+  // Add paragraph button
+  const addPara = document.createElement('button');
+  addPara.className = 'aw-inline-btn';
+  addPara.textContent = '+ Add Paragraph';
+  addPara.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!ABOUT_DATA.sections[si].text) ABOUT_DATA.sections[si].text = [];
+    ABOUT_DATA.sections[si].text.push('');
+    renderAboutWYSIWYG(root);
+  });
+  textCol.appendChild(addPara);
+
+  inner.appendChild(textCol);
+
+  // Images column (2x2 grid)
+  const imgCol = document.createElement('div');
+  imgCol.className = 'aw-bio-images';
+
+  const images = section.images || [null, null, null, null];
+  for (let i = 0; i < 4; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'about-img-slot';
+    slot.dataset.si = si;
+    slot.dataset.ii = i;
+
+    if (images[i]) {
+      const img = document.createElement('img');
+      img.src = images[i];
+      slot.appendChild(img);
+      const rmBtn = document.createElement('button');
+      rmBtn.className = 'remove-img';
+      rmBtn.textContent = '\u2715';
+      rmBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        ABOUT_DATA.sections[si].images[i] = null;
+        renderAboutWYSIWYG(root);
+      });
+      slot.appendChild(rmBtn);
+    } else {
+      slot.innerHTML = '<span class="slot-label">Click to add</span>';
+    }
+
+    slot.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-img')) return;
+      e.stopPropagation();
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*,.svg,.svgz';
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        const b64 = await new Promise(resolve => {
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.readAsDataURL(file);
+        });
+        try {
+          const res = await fetch('/api/about/upload', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: file.name, data: b64 })
+          });
+          const result = await res.json();
+          if (result.ok) {
+            if (!ABOUT_DATA.sections[si].images) ABOUT_DATA.sections[si].images = [null, null, null, null];
+            ABOUT_DATA.sections[si].images[i] = result.path;
+            renderAboutWYSIWYG(root);
+            toast('Image uploaded', 'success');
+          }
+        } catch (err) {
+          toast('Upload failed: ' + err.message, 'error');
+        }
+      });
+      fileInput.click();
+    });
+
+    imgCol.appendChild(slot);
+  }
+
+  inner.appendChild(imgCol);
+  content.appendChild(inner);
+}
+
+function renderContactWYSIWYG(content, section, si, root) {
+  const inner = document.createElement('div');
+  inner.className = 'aw-contact-inner';
+
+  (section.lines || []).forEach((line, li) => {
+    const row = document.createElement('div');
+    row.className = 'aw-contact-line';
+
+    const p = document.createElement('div');
+    p.className = 'aw-para';
+    p.contentEditable = 'true';
+    p.textContent = line;
+    p.addEventListener('input', () => {
+      ABOUT_DATA.sections[si].lines[li] = p.textContent;
+    });
+    p.addEventListener('blur', () => {
+      ABOUT_DATA.sections[si].lines[li] = p.textContent;
+    });
+    p.addEventListener('click', (e) => e.stopPropagation());
+    row.appendChild(p);
+
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'aw-remove-line';
+    rmBtn.textContent = '\u2715';
+    rmBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      ABOUT_DATA.sections[si].lines.splice(li, 1);
+      renderAboutWYSIWYG(root);
+    });
+    row.appendChild(rmBtn);
+
+    inner.appendChild(row);
+  });
+
+  // Add line button
+  const addLine = document.createElement('button');
+  addLine.className = 'aw-inline-btn';
+  addLine.textContent = '+ Add Line';
+  addLine.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!ABOUT_DATA.sections[si].lines) ABOUT_DATA.sections[si].lines = [];
+    ABOUT_DATA.sections[si].lines.push('');
+    renderAboutWYSIWYG(root);
+  });
+  inner.appendChild(addLine);
+
+  content.appendChild(inner);
+}
+
+function addContactLine(si) {
+  if (!ABOUT_DATA || !ABOUT_DATA.sections[si]) return;
+  ABOUT_DATA.sections[si].lines.push('');
+  loadAboutEditor();
+}
+
+function addBioParagraph(si) {
+  if (!ABOUT_DATA || !ABOUT_DATA.sections[si]) return;
+  if (!ABOUT_DATA.sections[si].text) ABOUT_DATA.sections[si].text = [];
+  ABOUT_DATA.sections[si].text.push('');
+  loadAboutEditor();
+}
+
+function restoreSiteContext() {
+  document.getElementById('mockNav').style.display = '';
+  document.getElementById('mockRowsAbove').style.display = '';
+  document.getElementById('mockActiveRow').style.display = '';
+  document.getElementById('mockRowsBelow').style.display = '';
+  document.getElementById('mockFooterRow').style.display = '';
+  document.getElementById('accordionPanel').style.padding = '';
+}
+
+// ─── ARCHIVE EDITOR (stub) ───────────────────────────────────────────────────
+function loadArchiveEditor() {
+  state.projectId = '__archive__';
+  state.project = null;
+  state.selectedId = null;
+  state.pages = [{ elements: [] }];
+  state.currentPage = 0;
+
+  document.getElementById('btnEditProject').style.display = 'none';
+  document.getElementById('btnUploadImage').classList.remove('visible');
+  document.getElementById('pageBar').classList.remove('visible');
+
+  document.getElementById('mockNav').style.display = 'none';
+  document.getElementById('mockRowsAbove').style.display = 'none';
+  document.getElementById('mockActiveRow').style.display = 'none';
+  document.getElementById('mockRowsBelow').style.display = 'none';
+  document.getElementById('mockFooterRow').style.display = 'none';
+  document.getElementById('accordionPanel').style.padding = '0';
+
+  const canvas = document.getElementById('canvas');
+  canvas.innerHTML = '';
+  canvas.style.maxWidth = '100%';
+  canvas.style.minHeight = '600px';
+
+  const editor = document.createElement('div');
+  editor.className = 'about-editor';
+  editor.innerHTML = '<h2>Archive Manager</h2>';
+
+  // Show all archive images in a grid
+  const allImages = [];
+  ALL_PROJECTS.forEach(p => {
+    (p.images || []).forEach(group => {
+      (Array.isArray(group) ? group : [group]).forEach(src => {
+        if (src && !src.toLowerCase().endsWith('.heic')) allImages.push({ src, project: p.title });
+      });
+    });
+  });
+
+  // Add standalone archive images
+  if (ARCHIVE_DATA && ARCHIVE_DATA.images) {
+    ARCHIVE_DATA.images.forEach(item => {
+      allImages.push({ src: item.src, project: 'Archive' });
+    });
+  }
+
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:16px;';
+
+  // Upload button for archive
+  const uploadSlot = document.createElement('div');
+  uploadSlot.className = 'about-img-slot';
+  uploadSlot.style.aspectRatio = '1';
+  uploadSlot.innerHTML = '<span class="slot-label">+ Upload</span>';
+  uploadSlot.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,.svg,.svgz';
+    input.multiple = true;
+    input.addEventListener('change', async () => {
+      for (const file of input.files) {
+        const reader = new FileReader();
+        const b64 = await new Promise(resolve => {
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.readAsDataURL(file);
+        });
+        try {
+          const res = await fetch('/api/archive/upload', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: file.name, data: b64 })
+          });
+          const result = await res.json();
+          if (result.ok) toast('Uploaded: ' + file.name, 'success');
+        } catch (err) {
+          toast('Upload failed: ' + err.message, 'error');
+        }
+      }
+      // Reload archive data
+      ARCHIVE_DATA = await fetch('content/archive.json').then(r => r.json()).catch(() => ({ images: [] }));
+      loadArchiveEditor();
+    });
+    input.click();
+  });
+  grid.appendChild(uploadSlot);
+
+  allImages.slice(0, 100).forEach(item => {
+    const cell = document.createElement('div');
+    cell.style.cssText = 'position:relative;aspect-ratio:1;overflow:hidden;border-radius:4px;background:#1a1a1a;';
+    const img = document.createElement('img');
+    img.src = item.src;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;opacity:0.8;';
+    cell.appendChild(img);
+    const label = document.createElement('div');
+    label.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:rgba(0,0,0,0.7);font-size:8px;color:#888;';
+    label.textContent = item.project;
+    cell.appendChild(label);
+    grid.appendChild(cell);
+  });
+
+  if (allImages.length > 100) {
+    const more = document.createElement('div');
+    more.style.cssText = 'padding:12px;font-size:11px;color:var(--text-dim);';
+    more.textContent = '+ ' + (allImages.length - 100) + ' more images...';
+    editor.appendChild(more);
+  }
+
+  editor.appendChild(grid);
+  canvas.appendChild(editor);
+
+  document.getElementById('imageList').innerHTML = '<div class="no-images">Archive manager</div>';
+  document.getElementById('propFields').innerHTML = '<div class="no-selection">Archive mode</div>';
+}
+
+let ARCHIVE_DATA = null;
+// Load archive data on init
+fetch('content/archive.json').then(r => r.json()).catch(() => ({ images: [] })).then(d => { ARCHIVE_DATA = d; });
+
+// (Preview wired below, after buildPreviewContent is defined)
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = type + ' show';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.classList.remove('show'); }, 2500);
+}
+
+// ─── DEVICE PREVIEW BUTTONS (resize site context to simulate viewport) ─────────
+document.querySelectorAll('.device-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.previewDevice = parseInt(btn.dataset.device);
+    applyDeviceSimulation(state.previewDevice);
+  });
+});
+
+function applyDeviceSimulation(device) {
+  const guide = document.getElementById('deviceGuide');
+  guide.style.display = 'none'; // guide not needed with responsive canvas
+  const ctx = document.getElementById('siteContext');
+  if (device < 1440) {
+    ctx.style.maxWidth = device + 'px';
+    ctx.style.margin = '32px auto';
+    ctx.style.boxShadow = '0 0 0 1px rgba(59,130,246,0.2), 0 0 40px rgba(0,0,0,0.6)';
+  } else {
+    ctx.style.maxWidth = '';
+    ctx.style.margin = '';
+    ctx.style.boxShadow = '';
+  }
+}
+
+// Keep this stub so existing calls don't break
+function updateDeviceGuide() { applyDeviceSimulation(state.previewDevice); }
+
+// ─── THEME TOGGLE ─────────────────────────────────────────────────────────────
+document.getElementById('btnThemeToggle').addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const isLight = document.documentElement.classList.contains('light-mode');
+  document.getElementById('btnThemeToggle').textContent = isLight ? '☾' : '☀';
+  // Also update the site context preview background
+  const ctx = document.getElementById('siteContext');
+  if (ctx) ctx.style.background = isLight ? '#F1ECE5' : '';
+});
+
+// ─── CONTEXT MENU ─────────────────────────────────────────────────────────────
+const ctxMenu = document.getElementById('ctxMenu');
+let ctxTargetId = null;
+
+document.getElementById('canvas').addEventListener('contextmenu', (e) => {
+  if (state.projectId === '__archive__') return;
+  e.preventDefault();
+  const elDiv = e.target.closest('.canvas-el');
+  ctxTargetId = elDiv ? elDiv.dataset.id : null;
+
+  // Show/hide items based on element type
+  const el = ctxTargetId ? state.elements.find(x => x.id === ctxTargetId) : null;
+  document.getElementById('ctxAddText').style.display = (el && el.type === 'image') ? '' : 'none';
+  document.getElementById('ctxCrop').style.display = (el && el.type === 'image') ? '' : 'none';
+
+  if (ctxTargetId) {
+    state.selectedId = ctxTargetId;
+    render();
+  }
+
+  ctxMenu.style.left = Math.min(e.clientX, window.innerWidth - 180) + 'px';
+  ctxMenu.style.top = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+  ctxMenu.classList.add('active');
+});
+
+document.addEventListener('pointerdown', (e) => {
+  if (!e.target.closest('#ctxMenu')) ctxMenu.classList.remove('active');
+});
+
+document.getElementById('ctxAddText').addEventListener('click', () => {
+  ctxMenu.classList.remove('active');
+  const el = state.elements.find(x => x.id === ctxTargetId);
+  if (el) addTextOnImage(el);
+});
+
+document.getElementById('ctxCrop').addEventListener('click', () => {
+  ctxMenu.classList.remove('active');
+  const el = state.elements.find(x => x.id === ctxTargetId);
+  if (el && el.type === 'image') {
+    state.selectedId = el.id;
+    state.cropMode = true;
+    if (!el.crop) el.crop = { top: 0, right: 0, bottom: 0, left: 0 };
+    render();
+  }
+});
+
+document.getElementById('ctxBringFwd').addEventListener('click', () => {
+  ctxMenu.classList.remove('active');
+  const el = state.elements.find(x => x.id === ctxTargetId);
+  if (el) { el.zIndex = (el.zIndex || 0) + 1; render(); pushHistory(); }
+});
+
+document.getElementById('ctxSendBck').addEventListener('click', () => {
+  ctxMenu.classList.remove('active');
+  const el = state.elements.find(x => x.id === ctxTargetId);
+  if (el) { el.zIndex = Math.max(0, (el.zIndex || 0) - 1); render(); pushHistory(); }
+});
+
+document.getElementById('ctxDelete').addEventListener('click', () => {
+  ctxMenu.classList.remove('active');
+  if (ctxTargetId) {
+    // Also remove any anchored text children
+    state.elements = state.elements.filter(x => x.id !== ctxTargetId && x.parentImageId !== ctxTargetId);
+    state.selectedId = null;
+    pushHistory();
+    render();
+  }
+});
+
+// ─── ADD TEXT ON IMAGE ────────────────────────────────────────────────────────
+function addTextOnImage(imgEl) {
+  const newText = {
+    type: 'text', id: uid(),
+    content: 'Caption text',
+    parentImageId: imgEl.id,
+    x: imgEl.x,
+    y: imgEl.y + (imgEl.height === 'auto' ? 60 : imgEl.height * 0.7),
+    width: imgEl.width,
+    height: 'auto',
+    zIndex: (imgEl.zIndex || 0) + 1,
+    style: {
+      fontSize: 'clamp(10px, 1vw, 16px)',
+      fontWeight: '600',
+      color: '#ffffff',
+      lineHeight: '1.3',
+      letterSpacing: '0.02em',
+      textAlign: 'center',
+      padding: '8px 12px',
+      background: 'rgba(0,0,0,0.45)',
+    }
+  };
+  state.elements.push(newText);
+  state.selectedId = newText.id;
+  pushHistory();
+  render();
+  toast('Text overlay added — click to edit in Properties', 'success');
+}
+
+// ─── DRAG: move anchored text with parent image ───────────────────────────────
+// Override startDrag to also move anchored children
+const _origStartDrag = startDrag;
+function startDrag(id, e) {
+  const el = state.elements.find(x => x.id === id);
+  if (!el) return;
+
+  const canvas = document.getElementById('canvas');
+  const canvasRect = canvas.getBoundingClientRect();
+  const cvW = canvasRect.width;
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const origX = el.x;
+  const origY = el.y;
+
+  // Snapshot anchored children positions
+  const children = state.elements.filter(x => x.parentImageId === id);
+  const childOrigins = children.map(c => ({ id: c.id, x: c.x, y: c.y }));
+
+  function onMove(ev) {
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+    let newX = origX + (dx / cvW) * 100;
+    let newY = origY + dy;
+    if (state.gridSnap) {
+      const pxX = (newX / 100) * cvW;
+      newX = (Math.round(pxX / state.gridSize) * state.gridSize / cvW) * 100;
+      newY = Math.round(newY / state.gridSize) * state.gridSize;
+    }
+    const clampedX = Math.max(0, Math.min(100 - el.width, newX));
+    const clampedY = Math.max(0, newY);
+    const deltaX = clampedX - origX;
+    const deltaY = clampedY - origY;
+    el.x = clampedX;
+    el.y = clampedY;
+    // Move anchored children together
+    childOrigins.forEach(co => {
+      const child = state.elements.find(x => x.id === co.id);
+      if (child) { child.x = co.x + deltaX; child.y = co.y + deltaY; }
+    });
+    render();
+  }
+
+  function onUp() {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    pushHistory();
+  }
+
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
+}
+
+// ─── PREVIEW: device scaling + inline context ──────────────────────────────────
+function buildPreviewContent(deviceWidth) {
+  const overlay = document.getElementById('previewOverlay');
+  const content = document.getElementById('previewContent');
+  content.innerHTML = '';
+  overlay.style.padding = '70px 0 40px';
+
+  if (!state.projectId || !state.project) return;
+
+  const SITE_PAD = '17vw';
+
+  // Mock project rows above (3 faded rows)
+  const mockTitles = ['Untitled Project', 'Material Study', 'Spatial Object', 'Form Exploration'];
+  [0, 1, 2].forEach(i => {
+    const row = document.createElement('div');
+    row.className = 'mock-row';
+    row.innerHTML = `<span class="mock-row-title">${mockTitles[i]}</span>
+      <span class="mock-row-cat">Object</span>
+      <span class="mock-row-year">202${4 - i}</span>`;
+    content.appendChild(row);
+  });
+
+  // Active / open project row
+  const activeRow = document.createElement('div');
+  activeRow.className = 'mock-row open-indicator';
+  activeRow.innerHTML = `<span class="mock-row-title">${state.project.title}</span>
+    <span class="mock-row-cat">${(state.project.categories || []).join(', ')}</span>
+    <span class="mock-row-year">${state.project.year}</span>`;
+  content.appendChild(activeRow);
+
+  // Layout content — scaled to device width
+  const frame = document.createElement('div');
+  frame.id = 'previewDeviceFrame';
+
+  const scale = deviceWidth < 1440 ? Math.min(1, (window.innerWidth * 0.85) / deviceWidth) : 1;
+  frame.style.cssText = `
+    width: ${deviceWidth}px;
+    transform: scale(${scale});
+    transform-origin: top center;
+    margin: 0 auto;
+    position: relative;
+    background: var(--bg);
+    padding: 32px ${SITE_PAD};
+    box-sizing: border-box;
+    border-left: 1px solid #1f1f1f;
+    border-right: 1px solid #1f1f1f;
+  `;
+
+  // Freeform content wrapper
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'relative';
+  wrapper.style.width = '100%';
+
+  let maxBottom = 0;
+  state.elements.forEach(elData => {
+    const el = document.createElement('div');
+    el.style.position = 'absolute';
+    el.style.left = elData.x + '%';
+    el.style.top = elData.y + 'px';
+    el.style.width = elData.width + '%';
+    if (elData.height !== 'auto') el.style.height = elData.height + 'px';
+    el.style.zIndex = elData.zIndex || 0;
+
+    if (elData.type === 'text') {
+      el.style.whiteSpace = 'pre-wrap';
+      el.style.wordBreak = 'break-word';
+      el.textContent = elData.content;
+      if (elData.style) Object.keys(elData.style).forEach(k => { el.style[k] = elData.style[k]; });
+    } else if (elData.type === 'image') {
+      const img = document.createElement('img');
+      img.src = elData.src;
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = elData.objectFit || 'cover';
+      img.style.display = 'block';
+      el.appendChild(img);
+      if (elData.crop) {
+        const c = elData.crop;
+        if (c.top || c.right || c.bottom || c.left) {
+          el.style.clipPath = `inset(${c.top}% ${c.right}% ${c.bottom}% ${c.left}%)`;
+        }
+      }
+    }
+
+    const bottom = elData.y + (elData.height === 'auto' ? 200 : elData.height);
+    if (bottom > maxBottom) maxBottom = bottom;
+    wrapper.appendChild(el);
+  });
+
+  wrapper.style.minHeight = maxBottom + 60 + 'px';
+  frame.appendChild(wrapper);
+  content.appendChild(frame);
+
+  // Spacer so scaled frame doesn't overlap rows below
+  const spacer = document.createElement('div');
+  spacer.style.height = (maxBottom + 100) * scale + 'px';
+  content.appendChild(spacer);
+
+  // Mock rows below (2 faded rows)
+  [3, 4].forEach(i => {
+    const row = document.createElement('div');
+    row.className = 'mock-row';
+    row.innerHTML = `<span class="mock-row-title">${mockTitles[i % mockTitles.length]}</span>
+      <span class="mock-row-cat">Design</span>
+      <span class="mock-row-year">202${3 - i % 3}</span>`;
+    content.appendChild(row);
+  });
+}
+
+// ─── PREVIEW BUTTON ───────────────────────────────────────────────────────────
+document.getElementById('btnPreview').addEventListener('click', () => {
+  if (!state.projectId) return;
+  const overlay = document.getElementById('previewOverlay');
+  buildPreviewContent(state.previewDevice);
+  overlay.classList.add('active');
+});
+
+document.getElementById('previewClose').addEventListener('click', () => {
+  document.getElementById('previewOverlay').classList.remove('active');
+});
+
+// Preview device switcher
+document.querySelectorAll('.pdev-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pdev-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.previewDevice = parseInt(btn.dataset.pdev);
+    buildPreviewContent(state.previewDevice);
+  });
+});
+
+// ─── PROJECT MODAL (New / Edit) ───────────────────────────────────────────────
+function showProjectModal(project) {
+  const isEdit = !!project;
+  const modal = document.getElementById('projectModal');
+  const title = document.getElementById('modalTitle');
+  title.textContent = isEdit ? 'Edit Project Info' : 'New Project';
+
+  document.getElementById('modalProjTitle').value = isEdit ? project.title : '';
+  document.getElementById('modalProjYear').value = isEdit ? project.year : new Date().getFullYear();
+  document.getElementById('modalProjCats').value = isEdit ? (project.categories || []).join(', ') : '';
+  document.getElementById('modalProjDesc').value = isEdit ? project.description : '';
+  document.getElementById('modalProjMats').value = isEdit ? project.materials : '';
+  document.getElementById('modalProjProc').value = isEdit ? project.process : '';
+
+  modal.classList.remove('hidden');
+  modal.dataset.mode = isEdit ? 'edit' : 'new';
+}
+
+document.getElementById('btnNewProject').addEventListener('click', () => showProjectModal(null));
+document.getElementById('btnEditProject').addEventListener('click', () => {
+  if (state.project) showProjectModal(state.project);
+});
+document.getElementById('modalCancel').addEventListener('click', () => {
+  document.getElementById('projectModal').classList.add('hidden');
+});
+
+document.getElementById('modalSave').addEventListener('click', async () => {
+  const modal = document.getElementById('projectModal');
+  const isEdit = modal.dataset.mode === 'edit';
+  const data = {
+    title: document.getElementById('modalProjTitle').value.trim(),
+    year: parseInt(document.getElementById('modalProjYear').value) || new Date().getFullYear(),
+    categories: document.getElementById('modalProjCats').value.split(',').map(s => s.trim()).filter(Boolean),
+    description: document.getElementById('modalProjDesc').value.trim(),
+    materials: document.getElementById('modalProjMats').value.trim(),
+    process: document.getElementById('modalProjProc').value.trim()
+  };
+
+  if (!data.title) { toast('Title is required', 'error'); return; }
+
+  try {
+    if (isEdit) {
+      const res = await fetch('/api/projects/' + encodeURIComponent(state.projectId), {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (!result.ok) throw new Error(result.error);
+      // Update local data
+      Object.assign(state.project, data);
+      const idx = ALL_PROJECTS.findIndex(p => p.id === state.projectId);
+      if (idx >= 0) Object.assign(ALL_PROJECTS[idx], data);
+      // Update selector text
+      const opt = document.querySelector('#projectSelector option[value="' + state.projectId + '"]');
+      if (opt) opt.textContent = data.title + ' (' + data.year + ')';
+      updateSiteContext(state.project);
+      toast('Project updated', 'success');
+    } else {
+      const res = await fetch('/api/projects', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (!result.ok) throw new Error(result.error);
+      // Add to local data
+      ALL_PROJECTS.push(result.project);
+      const sel = document.getElementById('projectSelector');
+      const opt = document.createElement('option');
+      opt.value = result.project.id;
+      opt.textContent = result.project.title + ' (' + result.project.year + ')';
+      sel.appendChild(opt);
+      sel.value = result.project.id;
+      loadProject(result.project.id);
+      toast('Project created', 'success');
+    }
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+  }
+
+  modal.classList.add('hidden');
+});
+
+// ─── IMAGE UPLOAD ─────────────────────────────────────────────────────────────
+document.getElementById('btnUploadImage').addEventListener('click', () => {
+  document.getElementById('imageFileInput').click();
+});
+
+document.getElementById('imageFileInput').addEventListener('change', async (e) => {
+  if (!state.projectId) return;
+  const files = e.target.files;
+  if (!files.length) return;
+
+  for (const file of files) {
+    const reader = new FileReader();
+    const b64 = await new Promise(resolve => {
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+
+    try {
+      // Use different upload endpoint for about mode
+      const isAbout = state.projectId === '__about__';
+      const url = isAbout
+        ? '/api/about/upload'
+        : '/api/projects/' + encodeURIComponent(state.projectId) + '/images';
+      const res = await fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: file.name, data: b64 })
+      });
+      const result = await res.json();
+      if (!result.ok) throw new Error(result.error);
+
+      if (isAbout) {
+        await addImageElement(result.path, 10, 50, 30);
+      } else {
+        if (!state.project.images) state.project.images = [];
+        state.project.images.push([result.path]);
+      }
+      toast('Uploaded: ' + file.name, 'success');
+    } catch (err) {
+      toast('Upload failed: ' + err.message, 'error');
+    }
+  }
+
+  // Refresh image library for project mode
+  if (state.project) populateImageLibrary(state.project);
+  e.target.value = '';
+});
+
+// Show/hide edit button and upload button when project changes
+const origLoadProject = loadProject;
+// (handled inline — btnEditProject visibility set in loadProject wrapper below)
+</script>
+</body>
+</html>

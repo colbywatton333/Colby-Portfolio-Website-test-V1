@@ -1,0 +1,30 @@
+{
+  "sections": [
+    {
+      "id": "biography",
+      "title": "Biography",
+      "type": "bio",
+      "text": [
+        "My name is Colby I am a Vancouver-based industrial designer with a multidisciplinary background in art, fabrication, and prototyping. I graduated from Emily Carr University in 2024 with a Bachelor of Fine Arts, and since then I have worked with private clients while continuing to develop independent projects and entrepreneurial ventures.",
+        "My practice is centered on the design and development of functional objects, with a particular interest in material processes, mechanical systems, and iterative prototyping. I approach design as both a creative and technical discipline, combining conceptual thinking with a strong understanding of how products are manufactured, tested, and refined. My interests evolved from artistic exploration in painting and sculpture toward designing functional objects. Through experimentation with materials, prototyping, and hands-on making, I developed a strong interest in industrial design and the process of bringing ideas into physical form.",
+        "Over years of hands-on project development, I have built experience across a range of fabrication methods, including CNC machining, 3D printing, woodworking, and welding. This broad technical foundation allows me to move fluidly between idea generation, prototyping, and production-minded problem solving. My work is driven by a commitment to creating objects that are clear in purpose, refined in form, and grounded in functionality.",
+        "An independent design practice working across product, furniture, and spatial objects. Studio Colby Design operates at the boundary between craft and manufacturing — building things that are made well, last long, and carry a clear point of view."
+      ],
+      "images": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "type": "contact",
+      "lines": [
+        "colby@studiocolby.com",
+        "@studiocolby"
+      ]
+    }
+  ]
+}

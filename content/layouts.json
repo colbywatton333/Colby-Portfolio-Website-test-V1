@@ -1,0 +1,872 @@
+{
+  "kanami-sound-boy": {
+    "canvasWidth": 1200,
+    "elements": [
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-s7490",
+        "src": "IMAGES/KANAMI -SOUND-BOY/IMG_1377.jpeg",
+        "x": 0,
+        "y": 64,
+        "width": 20.27777099609375,
+        "height": 240.66668701171875,
+        "zIndex": 0,
+        "objectFit": "scale-down"
+      },
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-ncci8",
+        "src": "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 220927.png",
+        "x": 32.44444783528646,
+        "y": 58.66656494140625,
+        "width": 35.888885498046875,
+        "height": 252,
+        "zIndex": 0,
+        "objectFit": "cover"
+      },
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-l2to4",
+        "src": "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 235824.png",
+        "x": 52,
+        "y": 506,
+        "width": 48,
+        "height": 350,
+        "zIndex": 0,
+        "objectFit": "cover"
+      },
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-0hrnl",
+        "src": "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 001027.png",
+        "x": 0,
+        "y": 872,
+        "width": 48,
+        "height": 350,
+        "zIndex": 0,
+        "objectFit": "cover"
+      },
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-5ffpb",
+        "src": "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 120230.png",
+        "x": 52,
+        "y": 872,
+        "width": 48,
+        "height": 350,
+        "zIndex": 0,
+        "objectFit": "cover"
+      },
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-wdfn7",
+        "src": "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png",
+        "x": 0,
+        "y": 1238,
+        "width": 48,
+        "height": 350,
+        "zIndex": 0,
+        "objectFit": "cover"
+      },
+      {
+        "type": "image",
+        "id": "el-mncdfd7m-89j80",
+        "src": "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121249.png",
+        "x": 52,
+        "y": 1238,
+        "width": 48,
+        "height": 350,
+        "zIndex": 0,
+        "objectFit": "cover"
+      },
+      {
+        "type": "text",
+        "id": "el-mncdiowj-uwe1p",
+        "content": "3D printed first",
+        "x": 0.05555216471354152,
+        "y": 312.00006103515625,
+        "width": 40,
+        "height": "auto",
+        "zIndex": 1,
+        "style": {
+          "fontSize": "clamp(11px, 1.1vw, 18px)",
+          "fontWeight": "400",
+          "color": "var(--text)",
+          "lineHeight": "1.5"
+        }
+      }
+    ]
+  },
+  "water-misting-system": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnchvimu-8tlbh",
+            "src": "IMAGES/WATER-MISTING-SYSTEM/water-26.jpg",
+            "x": 0,
+            "y": 0,
+            "width": 50.72222900390625,
+            "height": 319.16550433634615,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mndz43jo-goa61",
+            "src": "IMAGES/WATER-MISTING-SYSTEM/EXPOLDED_PAVILION_VIEW_copy_2.svg",
+            "x": 56.666666666666664,
+            "y": 0,
+            "width": 43.333333333333336,
+            "height": 320,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndz8k8u-p4vzs",
+            "src": "IMAGES/WATER-MISTING-SYSTEM/water-42.jpg",
+            "x": 0,
+            "y": 0,
+            "width": 40,
+            "height": 300,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      }
+    ]
+  },
+  "bass-speaker": {
+    "canvasWidth": 1200,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "text",
+            "id": "el-mndppknu-xwmbm",
+            "field": "description",
+            "content": "I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.",
+            "x": 0,
+            "y": 0,
+            "width": 33.499994913736984,
+            "height": 133.33328247070312,
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(11px, 1.1vw, 16px)",
+              "fontWeight": "400",
+              "color": "var(--text)",
+              "lineHeight": "1.7"
+            }
+          },
+          {
+            "type": "text",
+            "id": "el-mndppknu-kw3yf",
+            "field": "materials",
+            "content": "MATERIALS\nCNC cut Baltic Birch plywood, epoxy, rubber feet, 3D prints, paint, 18\" subwoofer components, lifting hardware",
+            "x": 0.05555725097656249,
+            "y": 144.00003051757812,
+            "width": 33.55555725097656,
+            "height": 112.66665649414062,
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(10px, 1vw, 16px)",
+              "fontWeight": "400",
+              "color": "var(--text)",
+              "lineHeight": "1.5"
+            }
+          },
+          {
+            "type": "text",
+            "id": "el-mndppknu-0jxgu",
+            "field": "process",
+            "content": "PROCESS\nCAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.",
+            "x": 0,
+            "y": 288.66668701171875,
+            "width": 33.83333333333333,
+            "height": 206,
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(10px, 1vw, 16px)",
+              "fontWeight": "400",
+              "color": "var(--text)",
+              "lineHeight": "1.5"
+            }
+          },
+          {
+            "type": "image",
+            "id": "el-mndr4w95-7a15f",
+            "src": "IMAGES/BASS-SPEAKER/IMG_0249.jpg",
+            "x": 28.666666666666664,
+            "y": 0,
+            "width": 37.666666666666664,
+            "height": 362.6666259765625,
+            "zIndex": 0,
+            "objectFit": "cover",
+            "crop": {
+              "top": 0,
+              "right": 16.7,
+              "bottom": 0,
+              "left": 17
+            }
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndppknu-xa2ti",
+            "src": "IMAGES/BASS-SPEAKER/IMG_0850.jpg",
+            "x": 0,
+            "y": 0,
+            "width": 26.888885498046875,
+            "height": 380.6666259765625,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndppknu-ta407",
+            "src": "IMAGES/BASS-SPEAKER/IMG_6658.jpeg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mndppknu-c53ml",
+            "src": "IMAGES/BASS-SPEAKER/IMG_6661.png",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndppknu-fog0j",
+            "src": "IMAGES/BASS-SPEAKER/IMG_6662.jpeg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndppknu-gukpk",
+            "src": "IMAGES/BASS-SPEAKER/IMG_6841.png",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mndppknu-zb4t8",
+            "src": "IMAGES/BASS-SPEAKER/IMG_7226.png",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndppknu-ej45a",
+            "src": "IMAGES/BASS-SPEAKER/water-053.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      }
+    ]
+  },
+  "__about__": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "text",
+            "id": "el-mndzpc8y-c64h8",
+            "field": "section-title",
+            "content": "Biography",
+            "x": 0,
+            "y": 0,
+            "width": 40,
+            "height": "auto",
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(24px, 3vw, 48px)",
+              "fontWeight": "700",
+              "color": "var(--text)",
+              "letterSpacing": "-0.02em",
+              "lineHeight": "1.1"
+            }
+          },
+          {
+            "type": "text",
+            "id": "el-mndzpc8y-210cy",
+            "field": "bio-text",
+            "content": "My name is Colby I am a Vancouver-based industrial designer with a multidisciplinary background in art, fabrication, and prototyping. I graduated from Emily Carr University in 2024 with a Bachelor of Fine Arts, and since then I have worked with private clients while continuing to develop independent projects and entrepreneurial ventures.",
+            "x": 0,
+            "y": 80,
+            "width": 45,
+            "height": "auto",
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(11px, 1.1vw, 18px)",
+              "fontWeight": "400",
+              "color": "var(--text-mid)",
+              "lineHeight": "1.75"
+            }
+          },
+          {
+            "type": "text",
+            "id": "el-mndzpc8y-5txym",
+            "field": "bio-text",
+            "content": "My practice is centered on the design and development of functional objects, with a particular interest in material processes, mechanical systems, and iterative prototyping. I approach design as both a creative and technical discipline, combining conceptual thinking with a strong understanding of how products are manufactured, tested, and refined. My interests evolved from artistic exploration in painting and sculpture toward designing functional objects. Through experimentation with materials, prototyping, and hands-on making, I developed a strong interest in industrial design and the process of bringing ideas into physical form.",
+            "x": 0,
+            "y": 300,
+            "width": 45,
+            "height": "auto",
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(11px, 1.1vw, 18px)",
+              "fontWeight": "400",
+              "color": "var(--text-mid)",
+              "lineHeight": "1.75"
+            }
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "text",
+            "id": "el-mndzpc8y-9a0jh",
+            "field": "section-title",
+            "content": "Contact",
+            "x": 0,
+            "y": 0,
+            "width": 40,
+            "height": "auto",
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(24px, 3vw, 48px)",
+              "fontWeight": "700",
+              "color": "var(--text)",
+              "letterSpacing": "-0.02em",
+              "lineHeight": "1.1"
+            }
+          },
+          {
+            "type": "text",
+            "id": "el-mndzpc8y-hmph1",
+            "field": "contact-line",
+            "content": "colby@studiocolby.com",
+            "x": 0,
+            "y": 70,
+            "width": 40,
+            "height": "auto",
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(11px, 1.1vw, 18px)",
+              "fontWeight": "400",
+              "color": "var(--text-mid)",
+              "lineHeight": "1.75"
+            }
+          },
+          {
+            "type": "text",
+            "id": "el-mndzpc8y-g117m",
+            "field": "contact-line",
+            "content": "@studiocolby",
+            "x": 0,
+            "y": 110,
+            "width": 40,
+            "height": "auto",
+            "zIndex": 1,
+            "style": {
+              "fontSize": "clamp(11px, 1.1vw, 18px)",
+              "fontWeight": "400",
+              "color": "var(--text-mid)",
+              "lineHeight": "1.75"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "mdf-press": {
+    "canvasWidth": 1200,
+    "pageHeight": 600,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mndzy6tz-n9efb",
+            "src": "IMAGES/MDF-PRESS/MDF_PRESS.svg",
+            "x": 0,
+            "y": 0,
+            "width": 68.33333333333333,
+            "height": 520,
+            "zIndex": 0,
+            "objectFit": "contain",
+            "crop": {
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "modular-aluminum-assembly-system": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne14n3q-ha1ug",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/Artboard_9.svg",
+            "x": 0,
+            "y": 0,
+            "width": 77.3888905843099,
+            "height": 580.4166793823243,
+            "zIndex": 0,
+            "objectFit": "fill",
+            "crop": {
+              "top": 13.8,
+              "right": 0,
+              "bottom": 14,
+              "left": 0
+            }
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-4daqh",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/5PC RENDER.51.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mne13sqy-p6djm",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/4PC RENDER.49.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-uwreb",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MODULAR SYSTEM EXPLODED RENDER.48.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mne13sqy-zixye",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MODULAR SYSTEM EXPLODED RENDER.52.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-4t8af",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MODULAR SYSTEM EXPLODED RENDER.64.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-3l44j",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06535-22.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mne13sqy-4bixk",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06547-26.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-etefr",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06629.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mne13sqy-otrbi",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06630.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-8tke0",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/IMG_3828.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mne13sqy-ab866",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/IMG_6900.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-s4s35",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MASS PAGE 1@300x-100.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mne13sqy-mp9g8",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MASS PAGE 1_1@300x-100.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mne13sqy-q3bzx",
+            "src": "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/untitled.28.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      }
+    ]
+  },
+  "pathway-to-heaven": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesumbc-bvst3",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/PATHWAY_TO_HEAVEN_TEST.svg",
+            "x": 0,
+            "y": 0,
+            "width": 134.38887532552081,
+            "height": 897.0457427978515,
+            "zIndex": 0,
+            "objectFit": "scale-down",
+            "invertDark": true
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-mpiuj",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06078.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mnesuczb-lpbdt",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06119.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-6thzs",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06154.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mnesuczb-9xr1d",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06165.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-163e2",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06169.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mnesuczb-yba9s",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06170.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-r7t5m",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06173.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mnesuczb-48ok5",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06174.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-gcne9",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06181.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mnesuczb-r214u",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06184.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-tuuo1",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/IMG_3868.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          },
+          {
+            "type": "image",
+            "id": "el-mnesuczb-fakxv",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/IMG_3873.jpg",
+            "x": 52,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnesuczb-n3ylu",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/IMG_3884.jpg",
+            "x": 0,
+            "y": 20,
+            "width": 48,
+            "height": 350,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      }
+    ]
+  }
+}
