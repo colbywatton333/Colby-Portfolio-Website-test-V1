@@ -868,5 +868,26 @@
         ]
       }
     ]
+  },
+  "carbon-chair-one": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnunxjf5-eteyg",
+            "src": "IMAGES/CARBON-CHAIR-ONE/CARBON_CHAIR_ONE.svg",
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 718.3041893005371,
+            "zIndex": 0,
+            "objectFit": "scale-down"
+          }
+        ]
+      }
+    ]
   }
 }

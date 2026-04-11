@@ -39,8 +39,8 @@
   #topBar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 10px;
+    padding: 10px 16px;
     background: var(--panel);
     border-bottom: 1px solid var(--panel-border);
     flex-shrink: 0;
@@ -49,12 +49,12 @@
   }
   #topBar select, #topBar button, #topBar label {
     font-family: var(--font);
-    font-size: 12px;
+    font-size: 18px;
     color: var(--text);
     background: #222;
     border: 1px solid var(--panel-border);
     border-radius: 4px;
-    padding: 5px 10px;
+    padding: 9px 16px;
     cursor: pointer;
     transition: background 0.15s;
   }
@@ -77,7 +77,7 @@
 
   /* ── Left Panel: Image Library ── */
   #imageLibrary {
-    width: 200px;
+    width: 280px;
     flex-shrink: 0;
     background: var(--panel);
     border-right: 1px solid var(--panel-border);
@@ -86,8 +86,8 @@
     overflow: hidden;
   }
   #imageLibrary .panel-title {
-    padding: 10px 12px;
-    font-size: 11px;
+    padding: 14px 16px;
+    font-size: 17px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-dim);
@@ -122,9 +122,9 @@
     color: #fff;
     border: none;
     border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 10px;
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
     cursor: pointer;
     display: none;
     align-items: center;
@@ -134,14 +134,14 @@
   }
   #imageList .img-wrap:hover .img-delete { display: flex; }
   #imageList .img-label {
-    font-size: 9px;
+    font-size: 15px;
     color: var(--text-dim);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-top: 2px;
   }
-  .no-images { padding: 12px; font-size: 11px; color: var(--text-dim); text-align: center; }
+  .no-images { padding: 16px; font-size: 17px; color: var(--text-dim); text-align: center; }
 
   /* ── Canvas Area ── */
   #canvasWrapper {
@@ -158,7 +158,7 @@
     font-family: Arial, sans-serif;
     font-weight: 500;
     color: #E4E4E4;
-    font-size: 12px;
+    font-size: 17px;
   }
   #mockNav {
     display: flex;
@@ -166,7 +166,7 @@
     justify-content: space-between;
     padding: 30px var(--ctx-pad, 17%);
     border-bottom: 1px solid #1f1f1f;
-    font-size: 11px;
+    font-size: 16px;
     letter-spacing: 0.04em;
   }
   #mockNavLinks { display: flex; gap: 40px; color: #555; }
@@ -194,7 +194,7 @@
   #mockFooterRow {
     padding: 48px var(--ctx-pad, 17%);
     border-top: 1px solid #1f1f1f;
-    font-size: 11px;
+    font-size: 16px;
     color: #333;
     display: flex;
     gap: 40px;
@@ -287,7 +287,7 @@
   .btn-crop { transition: background 0.15s, color 0.15s; }
   .btn-crop.active { background: #f59e0b !important; color: #000 !important; border-color: #d97706 !important; }
   .btn-crop-action {
-    font-size: 11px !important;
+    font-size: 16px !important;
     padding: 3px 8px !important;
     background: #1a2a1a !important;
     border-color: #2a4a2a !important;
@@ -296,8 +296,8 @@
   }
   .btn-crop-action:hover { background: #2a4a2a !important; }
   .align-btn {
-    padding: 3px 5px;
-    font-size: 13px;
+    padding: 7px 10px;
+    font-size: 20px;
     background: var(--panel);
     border: 1px solid var(--panel-border);
     color: var(--text-dim);
@@ -310,7 +310,7 @@
 
   /* ── Right Panel: Properties ── */
   #propertyPanel {
-    width: 240px;
+    width: 320px;
     flex-shrink: 0;
     background: var(--panel);
     border-left: 1px solid var(--panel-border);
@@ -319,38 +319,38 @@
     flex-direction: column;
   }
   #propertyPanel .panel-title {
-    padding: 10px 12px;
-    font-size: 11px;
+    padding: 14px 16px;
+    font-size: 17px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-dim);
     border-bottom: 1px solid var(--panel-border);
   }
   #propFields {
-    padding: 10px 12px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
-  .prop-group { display: flex; flex-direction: column; gap: 3px; }
-  .prop-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .prop-group { display: flex; flex-direction: column; gap: 4px; }
+  .prop-label { font-size: 16px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
   .prop-row { display: flex; gap: 6px; }
   .prop-row .prop-group { flex: 1; }
   .prop-input {
     font-family: var(--font);
-    font-size: 12px;
+    font-size: 18px;
     color: var(--text);
     background: #222;
     border: 1px solid var(--panel-border);
-    border-radius: 3px;
-    padding: 4px 6px;
+    border-radius: 4px;
+    padding: 8px 10px;
     width: 100%;
     outline: none;
   }
   .prop-input:focus { border-color: var(--accent); }
   textarea.prop-input { resize: vertical; min-height: 60px; }
   select.prop-input { cursor: pointer; }
-  .no-selection { padding: 20px 12px; font-size: 11px; color: var(--text-dim); text-align: center; }
+  .no-selection { padding: 24px 16px; font-size: 17px; color: var(--text-dim); text-align: center; }
 
   /* ── Toast ── */
   #toast {
@@ -360,7 +360,7 @@
     transform: translateX(-50%) translateY(80px);
     padding: 10px 24px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 18px;
     z-index: 999;
     transition: transform 0.3s ease, opacity 0.3s ease;
     opacity: 0;
@@ -380,14 +380,14 @@
     border-bottom: 1px solid var(--panel-border);
     flex-shrink: 0;
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 16px;
     color: var(--text-dim);
     overflow-x: auto;
   }
   #pageBar.visible { display: flex; }
   .page-tab {
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 16px;
     color: var(--text-dim);
     background: none;
     border: 1px solid transparent;
@@ -405,7 +405,7 @@
   }
   .page-tab-add, .page-tab-del {
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 16px;
     color: var(--text-dim);
     background: none;
     border: 1px solid transparent;
@@ -503,7 +503,7 @@
     border: none;
     color: var(--danger);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 17px;
     padding: 2px 6px;
     opacity: 0;
     transition: opacity 0.15s;
@@ -523,7 +523,7 @@
     border: none;
     color: var(--danger);
     cursor: pointer;
-    font-size: 11px;
+    font-size: 16px;
     padding: 4px 6px;
     opacity: 0;
     transition: opacity 0.15s;
@@ -564,7 +564,7 @@
     border-radius: 4px;
     color: #555;
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 16px;
     padding: 6px 12px;
     cursor: pointer;
     margin-top: 8px;
@@ -584,7 +584,7 @@
     border-radius: 6px;
     color: #555;
     font-family: var(--font);
-    font-size: 12px;
+    font-size: 17px;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
   }
@@ -615,7 +615,7 @@
     object-fit: cover;
   }
   .about-img-slot .slot-label {
-    font-size: 9px;
+    font-size: 14px;
     color: var(--text-dim);
     text-transform: uppercase;
   }
@@ -629,7 +629,7 @@
     border-radius: 50%;
     width: 18px;
     height: 18px;
-    font-size: 10px;
+    font-size: 15px;
     cursor: pointer;
     display: none;
     align-items: center;
@@ -644,7 +644,7 @@
     border-radius: 6px;
     color: var(--text-dim);
     font-family: var(--font);
-    font-size: 12px;
+    font-size: 17px;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
   }
@@ -683,7 +683,7 @@
     overflow-y: auto;
   }
   .modal-box h3 {
-    font-size: 14px;
+    font-size: 22px;
     margin-bottom: 16px;
     color: var(--text);
     font-weight: 600;
@@ -691,7 +691,7 @@
   .modal-field { margin-bottom: 12px; }
   .modal-field label {
     display: block;
-    font-size: 10px;
+    font-size: 16px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-dim);
@@ -700,12 +700,12 @@
   .modal-field input, .modal-field textarea {
     width: 100%;
     font-family: var(--font);
-    font-size: 12px;
+    font-size: 18px;
     color: var(--text);
     background: #222;
     border: 1px solid var(--panel-border);
-    border-radius: 3px;
-    padding: 6px 8px;
+    border-radius: 4px;
+    padding: 10px 12px;
     outline: none;
   }
   .modal-field input:focus, .modal-field textarea:focus { border-color: var(--accent); }
@@ -718,8 +718,8 @@
   }
   .modal-actions button {
     font-family: var(--font);
-    font-size: 12px;
-    padding: 6px 16px;
+    font-size: 18px;
+    padding: 10px 24px;
     border-radius: 4px;
     border: 1px solid var(--panel-border);
     cursor: pointer;
@@ -734,9 +734,9 @@
   .upload-btn {
     display: none;
     width: 100%;
-    padding: 8px;
+    padding: 12px 16px;
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 17px;
     color: var(--text-dim);
     background: none;
     border: 1px dashed var(--panel-border);
@@ -767,7 +767,7 @@
 
   /* ── Device Preview Buttons ── */
   .device-btn {
-    font-size: 11px !important;
+    font-size: 16px !important;
     padding: 4px 8px !important;
     color: var(--text-dim) !important;
     background: #222 !important;
@@ -792,7 +792,7 @@
   #deviceGuideLabel {
     position: absolute;
     top: 8px; right: 4px;
-    font-size: 9px;
+    font-size: 14px;
     color: rgba(59,130,246,0.6);
     letter-spacing: 0.04em;
     white-space: nowrap;
@@ -813,7 +813,7 @@
   #ctxMenu.active { display: block; }
   .ctx-item {
     padding: 8px 14px;
-    font-size: 12px;
+    font-size: 17px;
     cursor: pointer;
     color: var(--text);
     display: flex;
@@ -847,7 +847,7 @@
   }
   .preview-device-bar button {
     font-family: var(--font);
-    font-size: 11px;
+    font-size: 16px;
     color: var(--text-dim);
     background: none;
     border: 1px solid transparent;
@@ -871,9 +871,9 @@
     gap: 40px;
     align-items: center;
   }
-  .mock-row-title { flex: 1; font-size: 13px; color: var(--text); }
-  .mock-row-cat { font-size: 11px; color: var(--text-dim); }
-  .mock-row-year { font-size: 11px; color: var(--text-dim); margin-left: auto; }
+  .mock-row-title { flex: 1; font-size: 17px; color: var(--text); }
+  .mock-row-cat { font-size: 15px; color: var(--text-dim); }
+  .mock-row-year { font-size: 15px; color: var(--text-dim); margin-left: auto; }
   .mock-row.open-indicator {
     opacity: 1;
     background: #1a1a1a;
@@ -946,9 +946,9 @@
   <button class="page-tab-add" id="btnAddPage">+ Page</button>
   <button class="page-tab-del" id="btnDelPage" disabled>− Page</button>
   <div class="page-bar-sep"></div>
-  <label style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:4px;">
+  <label style="font-size:16px;color:var(--text-dim);display:flex;align-items:center;gap:4px;">
     Page Height
-    <input type="number" id="pageHeightInput" style="width:60px;font-size:11px;background:#222;border:1px solid var(--panel-border);color:var(--text);padding:2px 4px;border-radius:3px;" placeholder="auto" min="200" step="10">
+    <input type="number" id="pageHeightInput" style="width:60px;font-size:16px;background:#222;border:1px solid var(--panel-border);color:var(--text);padding:2px 4px;border-radius:3px;" placeholder="auto" min="200" step="10">
     <span style="font-size:10px;color:var(--text-dim)">px</span>
   </label>
 </div>
@@ -1674,7 +1674,7 @@ function renderProperties() {
   }
 
   let html = '';
-  html += '<div class="prop-group"><span class="prop-label">Type</span><div style="font-size:12px;color:var(--text-dim)">' + el.type + (el.field ? ' (' + el.field + ')' : '') + '</div></div>';
+  html += '<div class="prop-group"><span class="prop-label">Type</span><div style="font-size:17px;color:var(--text-dim)">' + el.type + (el.field ? ' (' + el.field + ')' : '') + '</div></div>';
 
   // Position
   html += '<div class="prop-row">';
@@ -1735,7 +1735,7 @@ function renderProperties() {
     html += '<div class="prop-group"><button class="prop-input" id="btnResetCrop" style="cursor:pointer;text-align:center">Reset Crop</button></div>';
     html += '<div class="ctx-sep" style="height:1px;background:var(--panel-border);margin:6px 0;"></div>';
     html += '<div class="prop-group"><button class="prop-input" id="btnAddTextOnImg" style="cursor:pointer;text-align:center;background:#1a2a1a;border-color:#2a4a2a;color:#6ee7b7;">＋ Add text on image</button></div>';
-    html += '<div class="prop-group" style="margin-top:6px"><label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="invertDarkToggle"' + (el.invertDark ? ' checked' : '') + '> Invert in dark mode</label></div>';
+    html += '<div class="prop-group" style="margin-top:6px"><label style="display:flex;align-items:center;gap:6px;font-size:16px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="invertDarkToggle"' + (el.invertDark ? ' checked' : '') + '> Invert in dark mode</label></div>';
   }
 
   panel.innerHTML = html;
@@ -3000,7 +3000,7 @@ function loadArchiveEditor() {
     img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;opacity:0.8;';
     cell.appendChild(img);
     const label = document.createElement('div');
-    label.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:rgba(0,0,0,0.7);font-size:8px;color:#888;';
+    label.style.cssText = 'position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:rgba(0,0,0,0.7);font-size:14px;color:#888;';
     label.textContent = item.project;
     cell.appendChild(label);
     grid.appendChild(cell);
@@ -3008,7 +3008,7 @@ function loadArchiveEditor() {
 
   if (allImages.length > 100) {
     const more = document.createElement('div');
-    more.style.cssText = 'padding:12px;font-size:11px;color:var(--text-dim);';
+    more.style.cssText = 'padding:12px;font-size:16px;color:var(--text-dim);';
     more.textContent = '+ ' + (allImages.length - 100) + ' more images...';
     editor.appendChild(more);
   }
@@ -3417,8 +3417,10 @@ document.getElementById('modalSave').addEventListener('click', async () => {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      const result = await res.json();
-      if (!result.ok) throw new Error(result.error);
+      const text = await res.text();
+      let result;
+      try { result = JSON.parse(text); } catch { throw new Error('Server returned invalid response: ' + text.slice(0, 100)); }
+      if (!res.ok || !result.ok) throw new Error(result.error || 'Unknown error (status ' + res.status + ')');
       // Add to local data
       ALL_PROJECTS.push(result.project);
       const sel = document.getElementById('projectSelector');
@@ -3431,7 +3433,7 @@ document.getElementById('modalSave').addEventListener('click', async () => {
       toast('Project created', 'success');
     }
   } catch (e) {
-    toast('Error: ' + e.message, 'error');
+    toast('Error: ' + (e.message || e), 'error');
   }
 
   modal.classList.add('hidden');

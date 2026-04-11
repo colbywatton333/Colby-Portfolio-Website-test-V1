@@ -21,8 +21,9 @@
     }
   </style>
   <script>
-    // Apply saved theme before paint to avoid flash
-    if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('light-mode');
+    // Always start in dark mode
+    document.documentElement.classList.remove('light-mode');
+    localStorage.removeItem('theme');
   </script>
   <style>
     *, *::before, *::after {
@@ -61,6 +62,23 @@
     .svg-invertable { filter: invert(1); }
     html.light-mode .svg-invertable { filter: none; }
 
+    /* Inlined SVGs — auto-recolor graphics on theme switch, leave embedded images alone */
+    .svg-inlined {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+    .svg-inlined text,
+    .svg-inlined path,
+    .svg-inlined rect,
+    .svg-inlined circle,
+    .svg-inlined ellipse,
+    .svg-inlined line,
+    .svg-inlined polyline,
+    .svg-inlined polygon {
+      transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
+    }
+
     html {
       font-size: 12px;
       -webkit-font-smoothing: antialiased;
@@ -73,14 +91,18 @@
       font-family: var(--font);
       font-weight: 500;
       min-height: 100vh;
-      cursor: none;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
     }
 
-    /* Hide native cursor everywhere */
-    * { cursor: none !important; }
-    .float-card, .nav-float-card, .gallery-view { cursor: none !important; user-select: none; -webkit-user-select: none; }
-    .float-card img, .nav-float-card img { -webkit-user-drag: none; }
-    #entryScreen, #entryScreen * { cursor: none !important; }
+    /* Hide native cursor everywhere (desktop only — overridden by touch media query) */
+    @media (hover: hover) and (pointer: fine) {
+      * { cursor: none !important; }
+      .float-card, .nav-float-card, .gallery-view { cursor: none !important; user-select: none; -webkit-user-select: none; }
+      .float-card img, .nav-float-card img { -webkit-user-drag: none; }
+      #entryScreen, #entryScreen * { cursor: none !important; }
+    }
 
     /* ─── ENTRY SCREEN ───────────────────────────────── */
     #entryScreen {
@@ -109,7 +131,7 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      animation: entryFadeIn 1.2s ease 0.3s forwards;
+      animation: entryFadeIn 2s ease 0.3s forwards;
     }
     #dotOverlay {
       position: absolute;
@@ -129,7 +151,7 @@
       border: none;
       color: #fff;
       font-family: inherit;
-      font-size: 10px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -425,7 +447,7 @@
 
     #openAllBtn {
       position: fixed;
-      left: calc(var(--site-pad) + 7vw);
+      left: calc(var(--site-pad) + 5vw);
       top: 0;
       font-family: var(--font);
       font-size: clamp(6px, 1.02vw, 21px);
@@ -478,8 +500,9 @@
       transition: opacity 0.3s ease;
       border-top: 1px solid var(--border);
       background: var(--bg);
-      z-index: 100;
+      z-index: 230;
     }
+    #bottomBar .bar-spacer { flex: 1; }
 
     #bottomBar button {
       background: none;
@@ -550,51 +573,58 @@
       opacity: 1;
     }
 
-    /* Animated music bars */
+    /* Animated music bars — centered waveform */
     .music-btn {
-      flex: 1;
-      width: 100%;
+      flex-shrink: 0;
       display: flex;
       justify-content: center;
     }
     #oscCanvas {
       display: block;
-      width: 25%;
+      width: clamp(200px, 30vw, 500px);
       height: 80px;
     }
     .now-playing {
       overflow: hidden;
       white-space: nowrap;
-      max-width: 450px;
-      margin-left: calc(-16vw - 50px);
+      width: clamp(200px, 28vw, 500px);
       flex-shrink: 0;
-      -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-      mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+      padding-right: 12px;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
+      mask-image: linear-gradient(to right, transparent 0%, black 30%);
     }
     .now-playing-inner {
       display: inline-block;
-      font-family: 'Schroffer Mono', 'Courier New', monospace;
-      font-size: clamp(12px, 1.05vw, 18px);
-      letter-spacing: 0.12em;
-      color: #fff;
-      animation: scrollText 20s linear infinite;
-      padding-right: 80px;
+      font-family: var(--font);
+      font-size: clamp(8px, 0.98vw, 18px);
+      font-weight: 500;
+      letter-spacing: 0;
+      color: var(--text);
+      transition: transform 0.3s ease;
     }
-    @keyframes scrollText {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
+    .now-playing-inner .np-prompt { color: var(--text); }
+    .now-playing-inner .np-track { color: var(--text); }
+    .now-playing-inner .np-meta { color: var(--text); }
+    .now-playing-inner .np-cursor {
+      display: inline-block;
+      width: 6px;
+      height: 1.1em;
+      background: var(--text);
+      animation: cursorBlink 0.65s step-end infinite;
+      vertical-align: text-bottom;
+      margin-left: 2px;
     }
 
     /* ─── FOOTER ─────────────────────────────────────── */
     #siteFooter {
-      background: #0d0c0b;
+      background: var(--bg);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 48px var(--site-pad);
     }
     html.light-mode #siteFooter {
-      background: #E5E0D8;
+      background: var(--bg);
     }
     .footer-logo {
       height: 40px;
@@ -604,7 +634,7 @@
       filter: invert(1);
     }
     .footer-link {
-      color: var(--text-dim);
+      color: var(--text);
       font-size: clamp(10px, 0.9vw, 15px);
       letter-spacing: 0.08em;
       text-decoration: none;
@@ -756,6 +786,7 @@
 
     /* ─── ACCORDION PAGINATION NAV ──────────────────── */
     .accordion-edge-btn {
+      display: none;
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -792,7 +823,8 @@
       50% { opacity: 1; }
     }
     .accordion-content {
-      transition: opacity 0.3s ease;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+      overflow: hidden;
     }
 
     /* ─── PROJECT DETAIL PAGE ──────────────────────── */
@@ -899,13 +931,13 @@
     }
 
     .about-item {
-      margin-bottom: 0;
+      margin-bottom: 20px;
     }
 
     .about-row {
       display: flex;
       align-items: center;
-      padding: 18px var(--site-pad);
+      padding: 24px var(--site-pad);
       cursor: pointer;
       user-select: none;
       gap: 0;
@@ -990,11 +1022,12 @@
     }
 
     .about-section p {
-      font-size: 15px;
+      font-size: clamp(15px, 1.2vw, 20px);
       line-height: 1.75;
-      color: var(--text-mid);
-      font-weight: 400;
+      color: var(--text);
+      font-weight: 500;
     }
+
 
     /* ─── GALLERY VIEW ──────────────────────────────── */
     .gallery-view {
@@ -1087,6 +1120,41 @@
       background-repeat: no-repeat;
     }
 
+    /* Cursor arrow states for project page navigation */
+    #galleryCursor.cursor-arrow-left {
+      width: 48px;
+      height: 48px;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='282 163 174 278' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' d='M425.55,438.65c7.25,0,14.5-2.77,20.03-8.3,11.06-11.06,11.06-29,0-40.06l-93.29-93.29,93.29-93.29c11.06-11.06,11.06-29,0-40.06-11.06-11.07-29-11.07-40.07,0l-113.32,113.32c-11.06,11.06-11.06,29,0,40.06l113.32,113.32c5.53,5.54,12.78,8.3,20.03,8.3Z'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    #galleryCursor.cursor-arrow-right {
+      width: 48px;
+      height: 48px;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='292 163 174 278' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' d='M322.94,438.65c-7.25,0-14.5-2.77-20.03-8.3-11.06-11.06-11.06-29,0-40.06l93.29-93.29-93.29-93.29c-11.06-11.06-11.06-29,0-40.06,11.06-11.07,29-11.07,40.07,0l113.32,113.32c11.06,11.06,11.06,29,0,40.06l-113.32,113.32c-5.53,5.54-12.78,8.3-20.03,8.3Z'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    html.light-mode #galleryCursor.cursor-arrow-left {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='282 163 174 278' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%231A1A1A' d='M425.55,438.65c7.25,0,14.5-2.77,20.03-8.3,11.06-11.06,11.06-29,0-40.06l-93.29-93.29,93.29-93.29c11.06-11.06,11.06-29,0-40.06-11.06-11.07-29-11.07-40.07,0l-113.32,113.32c-11.06,11.06-11.06,29,0,40.06l113.32,113.32c5.53,5.54,12.78,8.3,20.03,8.3Z'/%3E%3C/svg%3E");
+    }
+    html.light-mode #galleryCursor.cursor-arrow-right {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='292 163 174 278' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%231A1A1A' d='M322.94,438.65c-7.25,0-14.5-2.77-20.03-8.3-11.06-11.06-11.06-29,0-40.06l93.29-93.29-93.29-93.29c-11.06-11.06-11.06-29,0-40.06,11.06-11.07,29-11.07,40.07,0l113.32,113.32c11.06,11.06,11.06,29,0,40.06l-113.32,113.32c-5.53,5.54-12.78,8.3-20.03,8.3Z'/%3E%3C/svg%3E");
+    }
+
+    /* Hover zones for project page navigation */
+    .accordion-hover-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 20%;
+      z-index: 80;
+    }
+    .accordion-hover-zone.zone-left { left: 0; }
+    .accordion-hover-zone.zone-right { right: 0; }
+
     .gallery-view.active {
       display: block;
     }
@@ -1103,7 +1171,7 @@
       font-size: clamp(7px, 0.95vw, 18px);
       font-weight: 400;
       line-height: 1.5;
-      color: var(--text-dim);
+      color: var(--text);
       letter-spacing: 0.02em;
       pointer-events: none;
       opacity: 0;
@@ -1122,7 +1190,7 @@
       display: inline-block;
       width: 0.5em;
       height: 1.05em;
-      background: var(--text-dim);
+      background: var(--text);
       vertical-align: text-bottom;
       margin-left: 2px;
       animation: descCursorBlink 0.65s step-end infinite;
@@ -1172,6 +1240,8 @@
       padding: 100px 30px 160px clamp(100px, 12vw, 200px);
       margin-left: 33.33%;
       align-items: start;
+      position: relative;
+      z-index: 220;
     }
     .archive-cell {
       max-width: 100px;
@@ -1190,7 +1260,7 @@
       width: 100%;
       height: auto;
       display: block;
-      opacity: 0.75;
+      opacity: 1;
       transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       transform-origin: center center;
     }
@@ -1221,6 +1291,19 @@
       overflow-y: auto;
     }
     #archiveDetail.active { display: flex; }
+    .archive-intro-text {
+      font-family: var(--font);
+      font-size: clamp(16px, 1.2vw, 22px);
+      line-height: 1.8;
+      color: #fff;
+      letter-spacing: 0.04em;
+      padding-top: 20px;
+      opacity: 0;
+      transition: opacity 4s ease;
+    }
+    .archive-intro-text.visible {
+      opacity: 1;
+    }
     .archive-detail-inner {
       display: flex;
       flex-direction: column;
@@ -1238,57 +1321,22 @@
       object-fit: contain;
       display: block;
       opacity: 0;
-      filter: blur(8px) brightness(1.6);
-      transform: scale(1.03);
-      transition: opacity 2s ease,
-                  filter 2.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
-                  transform 2.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 4.5s ease;
     }
     #archiveDetail.active .archive-detail-img img {
       opacity: 1;
-      filter: blur(0) brightness(1);
-      transform: scale(1);
-      animation: particleReveal 2.8s ease forwards;
-    }
-    @keyframes particleReveal {
-      0% {
-        -webkit-mask-image: radial-gradient(circle at 30% 40%, black 0%, transparent 0%);
-        mask-image: radial-gradient(circle at 30% 40%, black 0%, transparent 0%);
-      }
-      15% {
-        -webkit-mask-image: radial-gradient(circle at 30% 40%, black 20%, transparent 40%);
-        mask-image: radial-gradient(circle at 30% 40%, black 20%, transparent 40%);
-      }
-      35% {
-        -webkit-mask-image: radial-gradient(ellipse at 35% 45%, black 40%, transparent 65%);
-        mask-image: radial-gradient(ellipse at 35% 45%, black 40%, transparent 65%);
-      }
-      55% {
-        -webkit-mask-image: radial-gradient(ellipse at 40% 50%, black 60%, transparent 80%);
-        mask-image: radial-gradient(ellipse at 40% 50%, black 60%, transparent 80%);
-      }
-      80% {
-        -webkit-mask-image: radial-gradient(ellipse at 45% 50%, black 85%, transparent 95%);
-        mask-image: radial-gradient(ellipse at 45% 50%, black 85%, transparent 95%);
-      }
-      100% {
-        -webkit-mask-image: none;
-        mask-image: none;
-      }
     }
     /* Info below image */
     .archive-detail-info {
       opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.4s ease 0.25s, transform 0.4s ease 0.25s;
+      transition: opacity 4.5s ease;
     }
     #archiveDetail.active .archive-detail-info {
       opacity: 1;
-      transform: translateY(0);
     }
     .archive-detail-title {
       font-family: var(--font);
-      font-size: clamp(22px, 2.5vw, 44px);
+      font-size: clamp(16px, 1.6vw, 30px);
       font-weight: 700;
       color: #E4E4E4;
       letter-spacing: -0.02em;
@@ -1299,6 +1347,11 @@
       height: 2px;
       background: #E4E4E4;
       margin: 10px 0;
+      opacity: 0;
+      transition: opacity 4.5s ease;
+    }
+    #archiveDetail.active .archive-detail-divider {
+      opacity: 1;
     }
     .archive-detail-fields {
       margin-bottom: 24px;
@@ -1325,6 +1378,8 @@
       background: #000;
       z-index: 250;
       cursor: none;
+      perspective: 1200px;
+      overflow: hidden;
     }
     #archiveLoader.active {
       display: block;
@@ -1334,25 +1389,12 @@
       width: 100vw;
       height: 100vh;
       background: #000;
+      transform-style: preserve-3d;
+      animation: archiveCanvasRotate 7s linear forwards;
     }
-    .archive-loader-text {
-      position: absolute;
-      bottom: 10vh;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: var(--font);
-      font-size: clamp(10px, 0.95vw, 16px);
-      letter-spacing: 0.14em;
-      color: #fff;
-      text-transform: uppercase;
-      font-weight: 400;
-      pointer-events: none;
-    }
-    .archive-loader-cursor {
-      display: inline-block;
-      margin-left: 4px;
-      color: #fff;
-      animation: cursorBlink 0.65s step-end infinite;
+    @keyframes archiveCanvasRotate {
+      0%   { transform: scale(1.4) rotateY(0deg); }
+      100% { transform: scale(1.4) rotateY(360deg); }
     }
 
     /* ─── ABOUT DOT OVERLAY ────────────────────────── */
@@ -1713,20 +1755,233 @@
     /* fadeInUp handled entirely by JS — see staggerFadeIn() */
 
     /* ─── RESPONSIVE ─────────────────────────────────── */
-    @media (max-width: 768px) {
-      nav {
-        padding: 18px 20px;
+
+    /* Touch devices — restore native cursor */
+    @media (hover: none) and (pointer: coarse) {
+      * { cursor: auto !important; }
+      body { cursor: auto; }
+      #galleryCursor { display: none !important; }
+      #entryScreen, #entryScreen * { cursor: auto !important; }
+      .gallery-view, .float-card, .nav-float-card { cursor: auto !important; }
+    }
+
+    /* Tablet and below */
+    @media (max-width: 1024px) {
+      :root { --site-pad: 8vw; }
+      html.light-mode { --site-pad: 8vw; }
+
+      .nav-left { gap: 20px; }
+      .nav-right { gap: 16px; }
+
+      #archiveGrid {
+        grid-template-columns: repeat(3, 1fr);
+        margin-left: 0;
+        padding: 80px 20px 120px;
       }
+      #archiveDetail {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 40px 20px 30px;
+      }
+
+      #bottomBar {
+        padding: 16px var(--site-pad) 30px;
+      }
+      #oscCanvas {
+        width: clamp(100px, 20vw, 250px) !important;
+        height: 60px;
+      }
+      .now-playing {
+        width: clamp(120px, 20vw, 300px);
+      }
+
+      .about-bio-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+
+    /* Phone */
+    @media (max-width: 768px) {
+      :root { --site-pad: 5vw; }
+      html.light-mode { --site-pad: 5vw; }
+
+      /* Nav — move ARCHIVE next to ABOUT on left, search becomes icon */
+      nav {
+        padding: 28px var(--site-pad);
+      }
+      nav::after {
+        left: var(--site-pad);
+        right: var(--site-pad);
+      }
+      .nav-left { gap: 14px; }
+      .nav-right { gap: 12px; }
+      .nav-link, .nav-btn {
+        font-size: clamp(11px, 3.2vw, 15px) !important;
+      }
+      /* Search icon — match eyeball icon height */
+      .search-icon-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .search-icon-btn svg {
+        height: 26px;
+        width: auto;
+      }
+      /* Hide text SEARCH on mobile */
+      #searchToggle { display: none; }
 
       .project-row {
-        padding: 16px 20px;
+        padding: 14px var(--site-pad);
+      }
+      .project-title {
+        font-size: clamp(11px, 3.5vw, 16px);
+      }
+      .project-year {
+        font-size: clamp(11px, 3.5vw, 16px);
       }
 
-      /* (project-content-inner removed) */
-
+      .accordion-content {
+        min-height: 300px;
+      }
       .img-slide-wrap {
         height: 25vh;
       }
+
+      /* Category bar — wrap to fit */
+      #categoryBar {
+        justify-content: flex-start;
+        padding: 14px var(--site-pad) 16px;
+      }
+      #categoryFilters {
+        gap: 6px 10px;
+        flex-wrap: nowrap;
+        min-width: 0;
+        overflow-x: auto;
+      }
+      .cat-filter {
+        font-size: clamp(7px, 1.8vw, 10px) !important;
+        flex-shrink: 0;
+      }
+
+      /* Hide Open button on mobile */
+      #openAllBtn {
+        display: none !important;
+      }
+      /* Organize button — below categories */
+      #organizeBtn {
+        font-size: clamp(10px, 3vw, 14px);
+        position: fixed;
+        left: var(--site-pad);
+        top: 145px !important;
+      }
+
+      /* Archive */
+      #archiveGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 70px 16px 100px;
+      }
+      .archive-cell { max-width: none; }
+      #archiveDetail {
+        width: 100%;
+        padding: 30px 16px 20px;
+      }
+      .archive-detail-title {
+        font-size: clamp(14px, 5vw, 24px);
+      }
+
+      /* About */
+      .about-row {
+        padding: 20px var(--site-pad);
+      }
+      .about-title {
+        font-size: clamp(11px, 3.5vw, 16px);
+      }
+      .about-bio-inner {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .about-section p {
+        font-size: clamp(13px, 3.5vw, 18px);
+      }
+
+      /* Bottom bar — wave full width */
+      #bottomBar {
+        padding: 12px var(--site-pad) 24px;
+        flex-direction: column;
+        gap: 8px;
+      }
+      #bottomBar .bar-spacer { display: none; }
+      .music-btn {
+        width: 100%;
+      }
+      #oscCanvas {
+        width: 100% !important;
+        height: 50px;
+      }
+      .now-playing {
+        width: 100%;
+        font-size: clamp(9px, 2.8vw, 13px);
+        text-align: center;
+      }
+
+      /* Footer — hide redundant links on mobile */
+      #siteFooter {
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 30px var(--site-pad);
+      }
+      #siteFooter .footer-link[data-view="rectgrid"],
+      #siteFooter .footer-link[data-view="projects"] {
+        display: none;
+      }
+
+      /* Entry screen */
+      #enterBtn {
+        font-size: 14px;
+        bottom: 32px;
+      }
+
+      /* Search */
+      .search-overlay input {
+        width: 90vw;
+        font-size: 18px;
+      }
+      .search-results {
+        width: 90vw;
+      }
+
+      /* Archive intro text */
+      .archive-intro-text {
+        font-size: clamp(13px, 3.5vw, 20px);
+        padding: 20px 16px;
+      }
+    }
+
+    /* Small phone */
+    @media (max-width: 480px) {
+      :root { --site-pad: 4vw; }
+      html.light-mode { --site-pad: 4vw; }
+
+      #archiveGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 60px 12px 80px;
+      }
+
+      .nav-link {
+        font-size: clamp(9px, 2.8vw, 12px);
+        letter-spacing: 0.02em;
+      }
+      .nav-left { gap: 10px; }
+      .nav-right { gap: 8px; }
     }
   </style>
 </head>
@@ -1739,7 +1994,7 @@
       <source src="ENTRY-VIDEO/ENTRY-VIDEO.mov" type="video/mp4">
     </video>
     <canvas id="dotOverlay"></canvas>
-    <button id="enterBtn">Click to Enter<span class="entry-cursor"></span></button>
+    <button id="enterBtn">Start<span class="entry-cursor"></span></button>
   </div>
 
   <!-- Accordion arrows are now created dynamically inside each accordion panel -->
@@ -1772,6 +2027,12 @@
         </button>
         <button class="nav-btn" id="rectGridBtn">ARCHIVE</button>
         <button class="nav-btn" id="searchToggle">SEARCH</button>
+        <button class="search-icon-btn" id="searchToggleMobile" aria-label="Search" style="display:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 748.49 603.2">
+            <circle style="fill:none;stroke:var(--text);stroke-miterlimit:10;stroke-width:54.7px" cx="359.59" cy="281.94" r="101.92"/>
+            <line style="fill:none;stroke:var(--text);stroke-linecap:round;stroke-miterlimit:10;stroke-width:72.93px" x1="444.98" y1="367.33" x2="490.82" y2="413.17"/>
+          </svg>
+        </button>
       </div>
     </nav>
     <div id="categoryBar">
@@ -1794,12 +2055,13 @@
 
     <div id="galleryView" class="gallery-view"></div>
     <div id="navigationView" class="gallery-view nav-sphere-view"></div>
-    <div id="archiveLoader"><canvas id="archiveLoaderCanvas"></canvas><div class="archive-loader-text"><span id="archiveLoaderTyped"></span><span class="archive-loader-cursor">&#9612;</span></div></div>
+    <div id="archiveLoader"><canvas id="archiveLoaderCanvas"></canvas></div>
     <div id="aboutDotOverlay"><canvas id="aboutDotCanvas"></canvas></div>
     <div id="rectGridView">
       <button class="archive-back" id="archiveBack">&#8592; BACK</button>
       <div id="archiveGrid"></div>
       <div id="archiveDetail">
+        <div id="archiveIntroText" class="archive-intro-text"></div>
         <div class="archive-detail-inner">
           <div class="archive-detail-img"><img id="detailImg" /></div>
           <div class="archive-detail-info">
@@ -1895,10 +2157,18 @@
 
   <!-- BOTTOM BAR -->
   <div id="bottomBar">
+    <div class="bar-spacer"></div>
     <button id="muteToggle" class="music-btn" aria-label="Toggle music">
       <canvas id="oscCanvas" width="2000" height="80"></canvas>
     </button>
-    <div class="now-playing"><span class="now-playing-inner" id="nowPlayingText"></span></div>
+    <div class="bar-spacer" style="display:flex;justify-content:flex-end;">
+      <div class="now-playing"><span class="now-playing-inner" id="nowPlayingText">
+        <span class="np-prompt"></span>
+        <span class="np-track" id="npTrackName"></span>
+        <span class="np-meta" id="npMeta"></span>
+        <span class="np-cursor"></span>
+      </span></div>
+    </div>
   </div>
 
   <script>
@@ -1946,7 +2216,7 @@
       descTooltipTimeout = setTimeout(() => {
         descTooltipTimeout = null;
         descTooltipShow(row, description);
-      }, 1500);
+      }, 750);
     }
 
     function descTooltipShow(titleEl, description) {
@@ -1961,23 +2231,28 @@
         });
       });
 
-      // Typewriter effect
+      // Smooth reveal — rAF-based, steady flow
       const text = description || '';
-      let charIndex = 0;
-      descTypewriterInterval = setInterval(() => {
-        if (charIndex < text.length) {
-          tip.textContent = text.slice(0, ++charIndex);
+      let startTime = null;
+      const charsPerSec = 40;
+      function descTick(now) {
+        if (!startTime) startTime = now;
+        const elapsed = (now - startTime) * 0.001;
+        const target = Math.min(Math.floor(elapsed * charsPerSec), text.length);
+        tip.textContent = text.slice(0, target);
+        if (target < text.length) {
+          descTypewriterInterval = requestAnimationFrame(descTick);
         } else {
-          clearInterval(descTypewriterInterval);
           descTypewriterInterval = null;
           tip.classList.add('done');
         }
-      }, 36);
+      }
+      descTypewriterInterval = requestAnimationFrame(descTick);
     }
 
     function descTooltipHide() {
       if (descTooltipTimeout) { clearTimeout(descTooltipTimeout); descTooltipTimeout = null; }
-      if (descTypewriterInterval) { clearInterval(descTypewriterInterval); descTypewriterInterval = null; }
+      if (descTypewriterInterval) { cancelAnimationFrame(descTypewriterInterval); descTypewriterInterval = null; }
       if (!descTooltipEl) return;
       const tip = descTooltipEl;
       tip.classList.remove('visible');
@@ -2046,6 +2321,8 @@
 
     function hideAccordionEdgeNav() {
       document.querySelectorAll('.accordion-edge-btn').forEach(b => b.classList.remove('visible', 'pulse'));
+      const gc = document.getElementById('galleryCursor');
+      if (gc) { gc.classList.remove('cursor-arrow-left', 'cursor-arrow-right'); }
     }
 
     const ARROW_SVG_PREV = '<svg viewBox="282 163 174 278" xmlns="http://www.w3.org/2000/svg"><path class="arrow-fill" d="M425.55,438.65c7.25,0,14.5-2.77,20.03-8.3,11.06-11.06,11.06-29,0-40.06l-93.29-93.29,93.29-93.29c11.06-11.06,11.06-29,0-40.06-11.06-11.07-29-11.07-40.07,0l-113.32,113.32c-11.06,11.06-11.06,29,0,40.06l113.32,113.32c5.53,5.54,12.78,8.3,20.03,8.3Z"/></svg>';
@@ -2065,6 +2342,53 @@
       return { prev, next };
     }
 
+    function createAccordionHoverZones(container, getState, goToFn) {
+      const gc = document.getElementById('galleryCursor');
+      const leftZone = document.createElement('div');
+      leftZone.className = 'accordion-hover-zone zone-left';
+      const rightZone = document.createElement('div');
+      rightZone.className = 'accordion-hover-zone zone-right';
+
+      function updateCursor() {
+        const { current, total } = getState();
+        // Called after navigation to update cursor if still hovering
+        if (gc.classList.contains('cursor-arrow-left') && current <= 0) gc.classList.remove('cursor-arrow-left');
+        if (gc.classList.contains('cursor-arrow-right') && current >= total - 1) gc.classList.remove('cursor-arrow-right');
+      }
+
+      leftZone.addEventListener('mouseenter', () => {
+        const { current } = getState();
+        if (current > 0) gc.classList.add('cursor-arrow-left');
+      });
+      leftZone.addEventListener('mouseleave', () => {
+        gc.classList.remove('cursor-arrow-left');
+      });
+      leftZone.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const { current } = getState();
+        if (current > 0) { goToFn(current - 1, true); updateCursor(); }
+      });
+
+      rightZone.addEventListener('mouseenter', () => {
+        const { current, total } = getState();
+        if (current < total - 1) gc.classList.add('cursor-arrow-right');
+      });
+      rightZone.addEventListener('mouseleave', () => {
+        gc.classList.remove('cursor-arrow-right');
+      });
+      rightZone.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const { current, total } = getState();
+        if (current < total - 1) { goToFn(current + 1, true); updateCursor(); }
+      });
+
+      container.appendChild(leftZone);
+      container.appendChild(rightZone);
+      return { updateCursor };
+    }
+
+    let openAllMode = false;
+
     function toggleProjectAccordion(project, row, item) {
       const existing = item.querySelector('.project-accordion');
 
@@ -2077,8 +2401,8 @@
         return;
       }
 
-      // Close any currently open accordion first
-      if (activeAccordionItem && activeAccordionItem !== item) {
+      // Close any currently open accordion first (unless opening all)
+      if (!openAllMode && activeAccordionItem && activeAccordionItem !== item) {
         const prev = activeAccordionItem.querySelector('.project-accordion');
         if (prev) { prev.classList.remove('open'); setTimeout(() => prev.remove(), 2300); }
         hideAccordionEdgeNav();
@@ -2191,20 +2515,46 @@
         arrowN.classList.toggle('pulse', current < pages.length - 1);
       }
 
-      function goTo(idx, fade) {
+      function goTo(idx, animate) {
+        const direction = idx > current ? 1 : -1; // 1 = forward (slide left), -1 = back (slide right)
         current = Math.max(0, Math.min(pages.length - 1, idx));
         updateEdgeNav();
-        if (fade) {
+        if (animate) {
+          // Slide current content out
+          content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
+          content.style.transform = 'translateX(' + (-direction * 100) + '%)';
           content.style.opacity = '0';
-          setTimeout(() => { fillContent(pages[current]); content.style.opacity = '1'; }, 300);
+          setTimeout(() => {
+            // Swap content while off-screen
+            fillContent(pages[current]);
+            // Position new content on opposite side
+            content.style.transition = 'none';
+            content.style.transform = 'translateX(' + (direction * 100) + '%)';
+            content.style.opacity = '0';
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                // Slide new content in
+                content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
+                content.style.transform = 'translateX(0)';
+                content.style.opacity = '1';
+              });
+            });
+          }, 1800);
         } else {
           fillContent(pages[current]);
+          content.style.transform = 'translateX(0)';
           content.style.opacity = '1';
         }
       }
 
       arrowP.addEventListener('click', e => { e.stopPropagation(); goTo(current - 1, true); });
       arrowN.addEventListener('click', e => { e.stopPropagation(); goTo(current + 1, true); });
+
+      // Hover zones for cursor-based navigation
+      createAccordionHoverZones(container,
+        () => ({ current, total: pages.length }),
+        (idx, anim) => goTo(idx, anim)
+      );
 
       goTo(0, false);
     }
@@ -2347,20 +2697,42 @@
         arrowN.classList.toggle('pulse', current < pages.length - 1);
       }
 
-      function goTo(idx, fade) {
+      function goTo(idx, animate) {
+        const direction = idx > current ? 1 : -1;
         current = Math.max(0, Math.min(pages.length - 1, idx));
         updateNav();
-        if (fade) {
+        if (animate) {
+          content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
+          content.style.transform = 'translateX(' + (-direction * 100) + '%)';
           content.style.opacity = '0';
-          setTimeout(() => { showPage(current); content.style.opacity = '1'; }, 300);
+          setTimeout(() => {
+            showPage(current);
+            content.style.transition = 'none';
+            content.style.transform = 'translateX(' + (direction * 100) + '%)';
+            content.style.opacity = '0';
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
+                content.style.transform = 'translateX(0)';
+                content.style.opacity = '1';
+              });
+            });
+          }, 1800);
         } else {
           showPage(current);
+          content.style.transform = 'translateX(0)';
           content.style.opacity = '1';
         }
       }
 
       arrowP.addEventListener('click', e => { e.stopPropagation(); goTo(current - 1, true); });
       arrowN.addEventListener('click', e => { e.stopPropagation(); goTo(current + 1, true); });
+
+      // Hover zones for cursor-based navigation
+      createAccordionHoverZones(container,
+        () => ({ current, total: pages.length }),
+        (idx, anim) => goTo(idx, anim)
+      );
 
       goTo(0, false);
     }
@@ -2414,6 +2786,111 @@
       });
       container.appendChild(gallery);
     }
+
+    // ─── AUTO-INLINE SVGs ──────────────────────────────────────────────────
+    // Replaces <img src="*.svg"> with inline <svg> so CSS can target
+    // text/graphics for theme inversion while leaving embedded images alone
+    function inlineSVGs(root) {
+      const imgs = (root || document).querySelectorAll('img[src$=".svg"], img[src$=".SVG"]');
+      const isBlackish = (c) => !c || c === 'none' || /^(#000000|#000|#231f20|#1a1a1a|black|rgb\(0,\s*0,\s*0\)|currentColor)$/i.test(c.trim());
+
+      imgs.forEach(img => {
+        if (img.dataset.svgInlined) return;
+        img.dataset.svgInlined = '1';
+        const src = img.src;
+        fetch(src).then(r => r.text()).then(svgText => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(svgText, 'image/svg+xml');
+          const svg = doc.querySelector('svg');
+          if (!svg) return;
+
+          svg.classList.add('svg-inlined');
+          if (img.width) svg.setAttribute('width', img.width);
+          if (img.height) svg.setAttribute('height', img.height);
+          if (img.className) svg.classList.add(...img.className.split(/\s+/).filter(Boolean));
+          if (img.style.cssText) svg.style.cssText += img.style.cssText;
+          svg.dataset.originalSrc = src;
+
+          // Rewrite embedded <style> blocks — swap black colors to var(--text)
+          svg.querySelectorAll('style').forEach(styleEl => {
+            let css = styleEl.textContent;
+            // Replace black colors
+            css = css.replace(/#000000/gi, 'var(--text)');
+            css = css.replace(/#000(?![0-9a-fA-F])/g, 'var(--text)');
+            css = css.replace(/#231f20/gi, 'var(--text)');
+            css = css.replace(/#1a1a1a/gi, 'var(--text)');
+            css = css.replace(/\bblack\b/g, 'var(--text)');
+            styleEl.textContent = css;
+          });
+
+          // Boost all stroke-widths by 0.5px in dark mode
+          // Read computed stroke-widths after insertion and apply via inline style
+          const boostStrokes = () => {
+            if (document.documentElement.classList.contains('light-mode')) {
+              svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
+                if (el.dataset.origSw) el.style.strokeWidth = '';
+              });
+            } else {
+              svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
+                const cs = getComputedStyle(el);
+                const sw = parseFloat(cs.strokeWidth) || 0;
+                if (sw > 0) {
+                  if (!el.dataset.origSw) el.dataset.origSw = sw;
+                  el.style.strokeWidth = (parseFloat(el.dataset.origSw) + 0.5) + 'px';
+                }
+              });
+            }
+          };
+          // Run after DOM insertion
+          requestAnimationFrame(boostStrokes);
+          // Re-run on theme change
+          const strokeObs = new MutationObserver(boostStrokes);
+          strokeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+          // Text elements default to black fill (inherited) — set explicitly
+          svg.querySelectorAll('text, tspan').forEach(el => {
+            const fill = el.getAttribute('fill');
+            if (!fill) el.setAttribute('fill', 'var(--text)');
+          });
+
+          // Lines with stroke but no explicit fill:none — force fill:none
+          svg.querySelectorAll('line').forEach(el => {
+            if (!el.getAttribute('fill')) el.setAttribute('fill', 'none');
+          });
+
+          // Handle attribute-based colors on shapes
+          svg.querySelectorAll('path, rect, circle, ellipse, polyline, polygon').forEach(el => {
+            const fill = el.getAttribute('fill');
+            const stroke = el.getAttribute('stroke');
+            if (fill && isBlackish(fill) && fill !== 'none') el.setAttribute('fill', 'var(--text)');
+            if (stroke && isBlackish(stroke) && stroke !== 'none') el.setAttribute('stroke', 'var(--text)');
+            // Elements with no fill attribute default to black — set to var(--text)
+            if (!fill && !el.getAttribute('class')) el.setAttribute('fill', 'var(--text)');
+          });
+
+          img.replaceWith(svg);
+        }).catch(() => {});
+      });
+    }
+
+    // Auto-inline SVGs whenever new images are added to the DOM
+    const svgObserver = new MutationObserver((mutations) => {
+      let found = false;
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType === 1) {
+            if ((node.tagName === 'IMG' && /\.svg$/i.test(node.src)) ||
+                node.querySelector && node.querySelector('img[src$=".svg"], img[src$=".SVG"]')) {
+              found = true;
+              break;
+            }
+          }
+        }
+        if (found) break;
+      }
+      if (found) setTimeout(() => inlineSVGs(), 100);
+    });
+    svgObserver.observe(document.body, { childList: true, subtree: true });
 
     function staggerFadeIn(container, selector) {
       const sel = selector || '.project-item, .category-divider';
@@ -2567,20 +3044,48 @@
 
     const organizeBtn = document.getElementById('organizeBtn');
 
-    document.getElementById('searchToggle').addEventListener('click', () => {
+    function openSearch() {
       searchOverlay.classList.add('active');
       searchInput.value = '';
       searchResults.innerHTML = '';
       searchInput.focus();
       startVerse();
       organizeBtn.style.visibility = 'hidden';
-    });
+      document.getElementById('bottomBar').style.display = 'none';
+    }
+    document.getElementById('searchToggle').addEventListener('click', openSearch);
+
+    // Mobile layout: move ARCHIVE to nav-left, show search icon
+    (function setupMobileNav() {
+      const mq = window.matchMedia('(max-width: 768px)');
+      const archiveBtn = document.getElementById('rectGridBtn');
+      const navLeft = document.querySelector('.nav-left');
+      const navRight = document.querySelector('.nav-right');
+      const searchIconBtn = document.getElementById('searchToggleMobile');
+
+      searchIconBtn.addEventListener('click', openSearch);
+
+      function applyMobile(matches) {
+        if (matches) {
+          // Move ARCHIVE to nav-left after ABOUT
+          navLeft.appendChild(archiveBtn);
+          searchIconBtn.style.display = 'flex';
+        } else {
+          // Move ARCHIVE back to nav-right
+          navRight.insertBefore(archiveBtn, document.getElementById('searchToggle'));
+          searchIconBtn.style.display = 'none';
+        }
+      }
+      applyMobile(mq.matches);
+      mq.addEventListener('change', (e) => applyMobile(e.matches));
+    })();
 
     searchOverlay.addEventListener('click', (e) => {
       if (e.target === searchOverlay) {
         searchOverlay.classList.remove('active');
         stopVerse();
         organizeBtn.style.visibility = '';
+        document.getElementById('bottomBar').style.display = '';
       }
     });
 
@@ -2655,7 +3160,7 @@
         if (e.key === 'ArrowRight') navigateLightbox(1);
         return;
       }
-      if (e.key === 'Escape') { searchOverlay.classList.remove('active'); stopVerse(); organizeBtn.style.visibility = ''; }
+      if (e.key === 'Escape') { searchOverlay.classList.remove('active'); stopVerse(); organizeBtn.style.visibility = ''; document.getElementById('bottomBar').style.display = ''; }
     });
 
     searchInput.addEventListener('input', () => {
@@ -3386,6 +3891,140 @@
     }
 
 
+    // World map removed — start dead code
+    if (false) {
+      const MAP_W = 140, MAP_H = 70;
+
+      // Simplified continent polygons as [lon, lat] arrays
+      const LANDS = [
+        // North America
+        [[-140,72],[-168,67],[-162,60],[-148,60],[-138,57],[-130,54],[-125,50],[-124,46],[-120,38],[-117,33],[-110,32],[-105,30],[-100,28],[-97,26],[-96,28],[-94,18],[-88,16],[-84,10],[-80,8],[-77,8],[-82,24],[-81,31],[-76,35],[-74,40],[-70,42],[-67,44],[-65,46],[-60,47],[-56,48],[-52,48],[-55,52],[-58,54],[-65,58],[-70,60],[-75,62],[-80,64],[-85,66],[-90,68],[-95,70],[-105,72],[-115,73],[-125,72],[-140,72]],
+        // Greenland
+        [[-55,60],[-52,62],[-45,60],[-42,62],[-30,68],[-22,72],[-18,76],[-20,80],[-28,82],[-40,83],[-50,82],[-55,78],[-58,75],[-55,70],[-55,60]],
+        // South America
+        [[-80,10],[-77,8],[-72,11],[-68,6],[-60,5],[-52,2],[-50,0],[-48,-2],[-42,-3],[-38,-5],[-35,-8],[-35,-16],[-38,-18],[-40,-22],[-43,-23],[-48,-28],[-50,-32],[-52,-33],[-53,-34],[-68,-47],[-72,-50],[-74,-52],[-68,-55],[-66,-55],[-66,-48],[-63,-42],[-58,-38],[-56,-34],[-53,-24],[-48,-16],[-47,-8],[-50,0],[-52,2],[-55,4],[-58,6],[-62,10],[-66,11],[-70,12],[-75,11],[-78,10],[-80,10]],
+        // Europe
+        [[-10,36],[0,36],[3,38],[3,43],[0,44],[-2,47],[-8,44],[-10,44],[-10,36]],
+        // Iberian
+        [[-10,36],[-10,44],[3,43],[3,38],[0,36],[-10,36]],
+        // France-Germany-Poland
+        [[-5,44],[-4,48],[2,51],[5,49],[8,54],[14,54],[18,54],[24,54],[24,48],[22,44],[16,42],[13,44],[10,44],[7,44],[3,43],[0,44],[-2,47],[-5,48],[-5,44]],
+        // Scandinavia
+        [[5,58],[8,58],[12,56],[12,59],[18,63],[20,65],[18,68],[15,70],[22,71],[28,71],[30,70],[30,65],[25,60],[25,57],[20,56],[14,56],[10,57],[5,58]],
+        // British Isles
+        [[-7,50],[-5,50],[-3,51],[0,51],[2,53],[0,56],[-2,57],[-5,58],[-6,56],[-5,55],[-3,54],[-5,52],[-7,50]],
+        // Italy
+        [[7,44],[10,44],[13,44],[15,41],[16,39],[15,37],[13,38],[11,41],[9,42],[7,44]],
+        // Eastern Europe/Russia
+        [[24,54],[28,56],[30,60],[32,62],[36,64],[40,66],[42,68],[50,68],[60,68],[70,70],[80,72],[90,72],[100,70],[110,68],[115,65],[120,62],[130,58],[140,54],[150,52],[155,56],[160,60],[168,64],[170,62],[175,62],[178,66],[180,68],[180,42],[170,45],[165,50],[155,50],[148,48],[140,50],[135,54],[128,55],[120,54],[110,55],[100,55],[90,52],[80,50],[70,48],[65,46],[60,48],[55,50],[50,52],[45,50],[40,48],[35,48],[30,46],[28,44],[24,48],[24,54]],
+        // Africa
+        [[-17,15],[-16,12],[-15,11],[-8,5],[5,5],[8,4],[10,4],[10,2],[9,0],[9,-3],[12,-5],[15,-5],[20,-8],[25,-10],[30,-12],[32,-16],[35,-20],[35,-25],[32,-28],[30,-30],[28,-32],[26,-34],[22,-34],[18,-33],[17,-30],[17,-28],[15,-25],[12,-18],[12,-14],[10,-10],[8,-4],[5,0],[3,5],[0,5],[-5,5],[-8,5],[-10,6],[-15,11],[-16,12],[-17,15]],
+        // North Africa
+        [[-17,15],[-17,20],[-13,22],[-12,24],[-15,28],[-5,36],[0,36],[10,37],[12,33],[15,32],[20,32],[22,32],[25,30],[30,30],[32,31],[35,32],[38,30],[38,22],[35,18],[32,12],[30,10],[25,8],[20,8],[15,10],[10,10],[10,4],[8,4],[5,5],[0,5],[-5,5],[-8,5],[-15,11],[-17,15]],
+        // Middle East
+        [[35,32],[38,30],[40,28],[42,25],[44,22],[46,18],[48,16],[48,14],[50,14],[55,17],[56,22],[56,25],[52,25],[50,26],[48,28],[44,32],[42,36],[38,37],[35,36],[35,32]],
+        // Arabian Peninsula
+        [[35,18],[38,22],[38,30],[40,28],[42,25],[45,20],[48,18],[50,16],[52,16],[55,17],[56,22],[58,22],[60,22],[56,18],[52,14],[48,12],[44,12],[42,14],[40,16],[38,17],[35,18]],
+        // India
+        [[68,8],[68,24],[70,26],[72,28],[74,30],[76,34],[78,35],[80,34],[82,28],[84,27],[88,22],[90,22],[92,24],[92,18],[88,14],[86,12],[84,10],[82,8],[80,8],[78,10],[76,10],[74,8],[72,8],[68,8]],
+        // China/Mongolia/East Asia
+        [[80,50],[82,48],[85,45],[88,42],[92,42],[96,40],[100,38],[105,36],[108,34],[110,30],[112,26],[112,22],[108,18],[106,16],[103,15],[100,16],[100,20],[98,22],[96,22],[92,24],[90,22],[88,22],[84,27],[80,34],[76,34],[74,30],[72,28],[70,26],[68,24],[68,30],[70,35],[73,38],[75,40],[78,42],[80,44],[80,50]],
+        // Japan
+        [[130,31],[131,33],[132,34],[133,36],[136,38],[140,40],[141,42],[142,44],[145,44],[144,42],[140,36],[138,34],[136,33],[134,32],[130,31]],
+        // Southeast Asia peninsula
+        [[98,22],[100,20],[100,16],[103,15],[104,12],[104,8],[102,2],[104,1],[100,1],[98,4],[98,8],[96,10],[96,14],[98,18],[98,22]],
+        // Indonesia (Sumatra/Java/Borneo)
+        [[95,6],[98,4],[102,2],[104,1],[106,-2],[108,-6],[112,-8],[116,-8],[120,-8],[124,-6],[128,-4],[130,-2],[128,-6],[124,-8],[120,-10],[115,-9],[110,-8],[106,-7],[103,-4],[100,0],[96,2],[95,6]],
+        // Australia
+        [[114,-12],[120,-14],[125,-14],[130,-12],[132,-12],[136,-14],[137,-18],[138,-22],[140,-25],[142,-28],[144,-32],[148,-34],[150,-36],[152,-38],[150,-38],[148,-36],[144,-35],[140,-36],[138,-36],[136,-35],[132,-34],[130,-32],[128,-30],[124,-28],[120,-28],[117,-30],[115,-32],[114,-33],[114,-28],[112,-22],[114,-20],[118,-20],[120,-18],[118,-16],[116,-14],[114,-12]],
+        // New Zealand
+        [[166,-34],[168,-36],[172,-38],[174,-42],[172,-44],[170,-46],[168,-46],[167,-44],[168,-40],[166,-38],[166,-34]],
+      ];
+
+      // Point-in-polygon test (ray casting)
+      function pip(x, y, poly) {
+        let inside = false;
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          const xi = poly[i][0], yi = poly[i][1];
+          const xj = poly[j][0], yj = poly[j][1];
+          if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+            inside = !inside;
+          }
+        }
+        return inside;
+      }
+
+      // Pre-compute the grid once
+      let grid = null;
+      function computeGrid() {
+        grid = new Uint8Array(MAP_W * MAP_H);
+        for (let r = 0; r < MAP_H; r++) {
+          const lat = 85 - r * (170 / MAP_H);
+          for (let c = 0; c < MAP_W; c++) {
+            const lon = -180 + c * (360 / MAP_W);
+            for (const poly of LANDS) {
+              if (pip(lon, lat, poly)) {
+                grid[r * MAP_W + c] = 1;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      function drawMap() {
+        const canvas = document.getElementById('worldMapCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const rect = canvas.getBoundingClientRect();
+        const W = rect.width;
+        const H = rect.height;
+        if (W === 0 || H === 0) return;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+
+        if (!grid) computeGrid();
+
+        const dotSpacing = W / MAP_W;
+        const mapH = MAP_H * dotSpacing;
+        const offsetY = (H - mapH) * 0.5;
+
+        const color = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+        const fontSize = dotSpacing * 0.85;
+        ctx.font = '500 ' + fontSize + 'px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Parse color to rgba for variable opacity
+        const tempEl = document.createElement('div');
+        tempEl.style.color = color;
+        document.body.appendChild(tempEl);
+        const rgb = getComputedStyle(tempEl).color;
+        document.body.removeChild(tempEl);
+        const rgbMatch = rgb.match(/(\d+)/g);
+        const r0 = rgbMatch[0], g0 = rgbMatch[1], b0 = rgbMatch[2];
+
+        for (let r = 0; r < MAP_H; r++) {
+          for (let c = 0; c < MAP_W; c++) {
+            const isLand = grid[r * MAP_W + c];
+            const x = (c + 0.5) * dotSpacing;
+            const y = offsetY + (r + 0.5) * dotSpacing;
+            ctx.fillStyle = 'rgba(' + r0 + ',' + g0 + ',' + b0 + ',' + (isLand ? '0.9' : '0.1') + ')';
+            ctx.fillText(isLand ? '1' : '0', x, y);
+          }
+        }
+      }
+
+      window.addEventListener('resize', drawMap);
+      const themeObs = new MutationObserver(drawMap);
+      themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      window._drawWorldMap = drawMap;
+    }
+    // End dead code
+
     // ─── ARCHIVE LOADER DOT ANIMATION ─────────────────────────────────────────
     let archiveLoaderRaf = null;
     let archiveLoaderCleanup = null;
@@ -3492,9 +4131,17 @@
             // Solid white — no mouse proximity or shimmer
             const alpha = clamp(a * 1.2, 0, 1);
 
+            // 3D sphere ��� strong specular highlight with dark rim
+            const hlX = x - dotR * 0.4, hlY = y - dotR * 0.4;
+            const grad = ctx.createRadialGradient(hlX, hlY, 0, x, y, dotR);
+            grad.addColorStop(0, 'rgba(255,255,255,' + Math.min(alpha * 2.5, 1).toFixed(3) + ')');
+            grad.addColorStop(0.25, 'rgba(220,230,240,' + Math.min(alpha * 1.6, 1).toFixed(3) + ')');
+            grad.addColorStop(0.6, 'rgba(100,120,140,' + (alpha * 0.7).toFixed(3) + ')');
+            grad.addColorStop(0.85, 'rgba(30,40,50,' + (alpha * 0.4).toFixed(3) + ')');
+            grad.addColorStop(1, 'rgba(0,0,0,' + (alpha * 0.15).toFixed(3) + ')');
             ctx.beginPath();
             ctx.arc(x, y, dotR, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+            ctx.fillStyle = grad;
             ctx.fill();
           }
         }
@@ -3579,10 +4226,14 @@
         grid.appendChild(cell);
       });
 
-      // Event delegation — click opens detail panel
+      // Event delegation — click opens detail panel (only after intro finishes)
       grid.addEventListener('click', (e) => {
+        if (!archiveIntroReady) return;
         const cell = e.target.closest('.archive-cell');
-        if (cell) archiveShowDetail(parseInt(cell.dataset.idx));
+        if (cell) {
+          if (archiveIntroShown) hideArchiveIntro();
+          archiveShowDetail(parseInt(cell.dataset.idx));
+        }
       });
 
       // Gravitational pull — images continuously drift toward cursor when mouse is still
@@ -3621,16 +4272,68 @@
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist > 1) {
-            // Drift toward cursor: ~0.8px per frame = ~48px/sec
+            // Spiral toward cursor: drift + rotation
             const speed = 0.8;
-            off.x += (dx / dist) * speed;
-            off.y += (dy / dist) * speed;
+            const angle = Math.atan2(dy, dx);
+            const spiralAngle = angle + Math.PI * 0.4; // ~72° tangential offset
+            off.x += Math.cos(spiralAngle) * speed;
+            off.y += Math.sin(spiralAngle) * speed;
             cell.style.transform = 'translate(' + off.x.toFixed(1) + 'px,' + off.y.toFixed(1) + 'px)';
           }
         });
 
         archiveGravRaf = requestAnimationFrame(gravityTick);
       }
+
+      // ── Smooth momentum scrolling ──
+      const scrollContainer = document.getElementById('rectGridView');
+      let scrollVelocity = 0;
+      let scrollMomentumRaf = null;
+      function scrollMomentumTick() {
+        if (Math.abs(scrollVelocity) < 0.1) { scrollVelocity = 0; scrollMomentumRaf = null; return; }
+        scrollContainer.scrollTop += scrollVelocity;
+        scrollVelocity *= 0.96; // friction — decays smoothly
+        scrollMomentumRaf = requestAnimationFrame(scrollMomentumTick);
+      }
+      scrollContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        scrollVelocity += e.deltaY * 0.03;
+        if (!scrollMomentumRaf) scrollMomentumRaf = requestAnimationFrame(scrollMomentumTick);
+      }, { passive: false });
+
+      // ── Slow constant vertical auto-drift via scrollTop ──
+      let archiveAutoDriftRaf = null;
+      let archiveAutoDriftActive = false;
+      let archiveDriftAccum = 0;
+      function autoDriftTick() {
+        if (!archiveAutoDriftActive) return;
+        archiveDriftAccum += 0.4;
+        if (archiveDriftAccum >= 1) {
+          const px = Math.floor(archiveDriftAccum);
+          archiveDriftAccum -= px;
+          scrollContainer.scrollTop += px;
+        }
+        // Infinite scroll — when near bottom, duplicate content
+        if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 400) {
+          const origCells = grid.querySelectorAll('.archive-cell');
+          const count = Math.min(origCells.length, archiveAllItems.length);
+          for (let i = 0; i < count; i++) {
+            const clone = origCells[i].cloneNode(true);
+            clone.dataset.idx = origCells[i].dataset.idx;
+            grid.appendChild(clone);
+          }
+        }
+        archiveAutoDriftRaf = requestAnimationFrame(autoDriftTick);
+      }
+      window._archiveStartDrift = function() {
+        archiveAutoDriftActive = true;
+        archiveDriftAccum = 0;
+        if (!archiveAutoDriftRaf) archiveAutoDriftRaf = requestAnimationFrame(autoDriftTick);
+      };
+      window._archiveStopDrift = function() {
+        archiveAutoDriftActive = false;
+        if (archiveAutoDriftRaf) { cancelAnimationFrame(archiveAutoDriftRaf); archiveAutoDriftRaf = null; }
+      };
 
       grid.addEventListener('mousemove', (e) => {
         archiveLastMX = e.clientX;
@@ -3681,18 +4384,40 @@
       function typewriterFill(el, text, delay) {
         el.textContent = '';
         let i = 0;
-        setTimeout(function tick() {
-          if (i < text.length) {
-            el.textContent += text[i];
-            i++;
-            setTimeout(tick, 30 + Math.random() * 25);
-          }
+        let startTime = null;
+        const charsPerSec = 28;
+        setTimeout(() => {
+          startTime = performance.now();
+          requestAnimationFrame(function tick(now) {
+            const elapsed = (now - startTime) * 0.001;
+            const target = Math.min(Math.floor(elapsed * charsPerSec), text.length);
+            if (target > i) {
+              el.textContent = text.slice(0, target);
+              i = target;
+            }
+            if (i < text.length) requestAnimationFrame(tick);
+          });
         }, delay);
       }
 
       const titleEl = document.getElementById('detailTitle');
-      titleEl.textContent = '';
-      if (item.project) typewriterFill(titleEl, item.project.title || '', 600);
+      titleEl.innerHTML = '';
+      if (item.project) {
+        const titleText = item.project.title || '';
+        // Invisible placeholder to reserve height
+        const titlePlaceholder = document.createElement('span');
+        titlePlaceholder.style.visibility = 'hidden';
+        titlePlaceholder.textContent = titleText;
+        titleEl.appendChild(titlePlaceholder);
+        // Visible typewriter span on top
+        const titleVisible = document.createElement('span');
+        titleVisible.style.position = 'absolute';
+        titleVisible.style.top = '0';
+        titleVisible.style.left = '0';
+        titleEl.style.position = 'relative';
+        titleEl.appendChild(titleVisible);
+        typewriterFill(titleVisible, titleText, 600);
+      }
 
       // Populate structured fields
       const fields = document.getElementById('detailFields');
@@ -3708,8 +4433,19 @@
         const addValue = (text) => {
           const row = document.createElement('div');
           row.className = 'archive-detail-field';
+          row.style.position = 'relative';
+          // Invisible placeholder to reserve height
+          const placeholder = document.createElement('span');
+          placeholder.className = 'archive-field-value';
+          placeholder.style.visibility = 'hidden';
+          placeholder.textContent = text;
+          row.appendChild(placeholder);
+          // Visible typewriter span on top
           const span = document.createElement('span');
           span.className = 'archive-field-value';
+          span.style.position = 'absolute';
+          span.style.top = '6px';
+          span.style.left = '0';
           row.appendChild(span);
           fields.appendChild(row);
           typewriterFill(span, text, fieldDelay);
@@ -3728,6 +4464,13 @@
       // Ghost the clicked cell
       document.querySelectorAll('.archive-cell.ghost').forEach(c => c.classList.remove('ghost'));
       if (cell) cell.classList.add('ghost');
+
+      // Reset fade for info section so it re-triggers each time
+      const infoEl = detail.querySelector('.archive-detail-info');
+      if (infoEl) {
+        infoEl.style.transition = 'none';
+        infoEl.style.opacity = '0';
+      }
 
       // Reset dissolve animation for each new image
       const detailImgEl = document.getElementById('detailImg');
@@ -3748,6 +4491,10 @@
       detailImgEl.style.transform = '';
       detailImgEl.style.maskImage = '';
       detailImgEl.style.webkitMaskImage = '';
+      if (infoEl) {
+        infoEl.style.transition = '';
+        infoEl.style.opacity = '';
+      }
       void detailImgEl.offsetHeight;
       detail.classList.add('active');
     }
@@ -3765,6 +4512,57 @@
     function archiveReset() {
       archiveCloseDetail();
       document.getElementById('rectGridView').scrollTop = 0;
+      // Reset intro state
+      archiveIntroShown = false;
+      archiveIntroReady = false;
+      if (archiveIntroRaf) { cancelAnimationFrame(archiveIntroRaf); archiveIntroRaf = null; }
+      const intro = document.getElementById('archiveIntroText');
+      if (intro) {
+        intro.style.display = '';
+        intro.style.opacity = '';
+        intro.innerHTML = '';
+        intro.classList.remove('done');
+        intro.classList.remove('visible');
+      }
+    }
+
+    let archiveIntroShown = false;
+    let archiveIntroReady = false;
+    let archiveIntroRaf = null;
+    function showArchiveIntro() {
+      const detail = document.getElementById('archiveDetail');
+      const intro = document.getElementById('archiveIntroText');
+      const inner = detail.querySelector('.archive-detail-inner');
+      if (!intro) return;
+
+      // Hide the image/info panel, show intro with full text
+      inner.style.display = 'none';
+      intro.textContent = 'The archive is a collection of images that embody my practice in a non linear fashion, unlike a traditional portfolio. This archive has drawings in progress and finished works. The work spans installation, sculpture, drawings, mechanical testing, studies, analysis, and smaller scope projects that do not have a dedicated section in the portfolio. Each image represents a point of view I have taken. The projects and ideas never stop. Neither does the archive.';
+      detail.classList.add('active');
+      detail.style.display = 'flex';
+
+      // Fade in, then enable clicks after fade completes
+      archiveIntroReady = false;
+      requestAnimationFrame(() => intro.classList.add('visible'));
+      setTimeout(() => { archiveIntroReady = true; }, 4500);
+      archiveIntroShown = true;
+    }
+
+    function hideArchiveIntro() {
+      const intro = document.getElementById('archiveIntroText');
+      const detail = document.getElementById('archiveDetail');
+      const inner = detail.querySelector('.archive-detail-inner');
+      if (archiveIntroRaf) { cancelAnimationFrame(archiveIntroRaf); archiveIntroRaf = null; }
+      if (intro) {
+        intro.style.transition = 'opacity 0.6s ease';
+        intro.style.opacity = '0';
+        setTimeout(() => {
+          intro.style.display = 'none';
+          intro.style.transition = '';
+          intro.style.opacity = '';
+          inner.style.display = '';
+        }, 600);
+      }
     }
 
     // ─── VIEW SWITCHING ────────────────────────────────────────────────────────
@@ -3782,6 +4580,7 @@
       galleryView.classList.remove('active');
       navigationView.classList.remove('active');
       rectGridView.classList.remove('active');
+      if (window._archiveStopDrift) window._archiveStopDrift();
       stopArchiveLoop();
       stopNavLogTypewriter();
       hideNavDetail();
@@ -3881,7 +4680,7 @@
         organizeBtn.style.display = 'none';
         openAllBtn.style.display = 'none';
         backBtn.style.display = 'none';
-        bottomBar.style.display = 'none';
+        bottomBar.style.display = '';
         currentView = 'rectgrid';
         if (!archiveBuilt) buildArchive();
         archiveReset();
@@ -3889,21 +4688,6 @@
         // Show loader with dot animation first
         const archiveLoaderEl = document.getElementById('archiveLoader');
         archiveLoaderEl.classList.add('active');
-        // Typewriter animation for "Loading the Archive"
-        const typedEl = document.getElementById('archiveLoaderTyped');
-        if (typedEl) {
-          typedEl.textContent = '';
-          const fullText = 'Loading the Archive';
-          let ti = 0;
-          function typeNext() {
-            if (ti < fullText.length) {
-              typedEl.textContent += fullText[ti];
-              ti++;
-              setTimeout(typeNext, 80 + Math.random() * 60);
-            }
-          }
-          setTimeout(typeNext, 100);
-        }
         archiveLoaderCleanup = startArchiveDotAnimation(
           document.getElementById('archiveLoaderCanvas'),
           {
@@ -3912,17 +4696,26 @@
             onComplete: () => {
               archiveLoaderEl.style.transition = 'opacity 0.6s ease';
               archiveLoaderEl.style.opacity = '0';
+              // Fade in the archive grid
+              rectGridView.style.transition = 'opacity 3s ease';
+              rectGridView.style.opacity = '1';
+              // Show intro text
+              showArchiveIntro();
               setTimeout(() => {
                 archiveLoaderEl.classList.remove('active');
                 archiveLoaderEl.style.opacity = '';
                 archiveLoaderEl.style.transition = '';
+                rectGridView.style.transition = '';
                 if (archiveLoaderCleanup) { archiveLoaderCleanup(); archiveLoaderCleanup = null; }
-              }, 600);
+              }, 3000);
             }
           }
         );
 
+        rectGridView.style.opacity = '0';
         rectGridView.classList.add('active');
+        // Start auto-drift after grid is visible
+        if (window._archiveStartDrift) window._archiveStartDrift();
       }
     }
 
@@ -4068,146 +4861,100 @@
     let dotAnimId = null;
     let dotMouseX = window.innerWidth / 2, dotMouseY = window.innerHeight / 2;
 
-    (function initDotOverlay() {
+    (function initRippleOverlay() {
       const cvs = document.getElementById('dotOverlay');
       if (!cvs) return;
-      const dctx = cvs.getContext('2d');
-      let dw = 0, dh = 0;
-      let ddpr = Math.min(window.devicePixelRatio || 1, 2);
-      const dotSmoothed = new Float32Array(DOT_FRAME_SIZE);
-      let dotSmoothedInit = false;
-      let dotStart = null;
+      const ctx = cvs.getContext('2d');
+      let w = 0, h = 0;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-      function dotResize() {
-        dw = Math.floor(window.innerWidth);
-        dh = Math.floor(window.innerHeight);
-        cvs.width = Math.floor(dw * ddpr);
-        cvs.height = Math.floor(dh * ddpr);
-        cvs.style.width = dw + 'px';
-        cvs.style.height = dh + 'px';
-        dctx.setTransform(ddpr, 0, 0, ddpr, 0, 0);
+      function resize() {
+        w = Math.floor(window.innerWidth);
+        h = Math.floor(window.innerHeight);
+        cvs.width = Math.floor(w * dpr);
+        cvs.height = Math.floor(h * dpr);
+        cvs.style.width = w + 'px';
+        cvs.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
-      window.addEventListener('resize', dotResize);
-      dotResize();
-
-      // Decode base64
-      function decB64(b64) {
-        const bin = atob(b64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return bytes;
-      }
-      const dotBytes = decB64(DOT_DATA_B64);
-
-      function dotGetFrame(fi) {
-        const s = fi * DOT_FRAME_SIZE;
-        return dotBytes.subarray(s, s + DOT_FRAME_SIZE);
-      }
-      function dotClamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-      function dotForwardPos(sec) { return Math.min(sec * DOT_FPS, DOT_FRAME_COUNT - 1.001); }
-      function dotInterpFrames(pos) {
-        const i0 = Math.floor(pos);
-        const lb = pos - i0;
-        const blend = lb * lb * (3 - 2 * lb);
-        const i1 = Math.min(i0 + 1, DOT_FRAME_COUNT - 1);
-        return { f0: dotGetFrame(i0), f1: dotGetFrame(i1), blend };
-      }
-      function dotSmoothstep(edge0, edge1, x) {
-        const t = dotClamp((x - edge0) / (edge1 - edge0), 0, 1);
-        return t * t * (3 - 2 * t);
-      }
+      window.addEventListener('resize', resize);
+      resize();
 
       // Mouse tracking
+      let mx = w / 2, my = h / 2;
       entryScreen.addEventListener('mousemove', (e) => {
-        dotMouseX = e.clientX;
-        dotMouseY = e.clientY;
+        mx = e.clientX;
+        my = e.clientY;
+        dotMouseX = mx;
+        dotMouseY = my;
       });
 
-      function dotDrawFrame(f0, f1, blend, masterAlpha, seconds) {
-        dctx.clearRect(0, 0, dw, dh);
+      // Ripple state — store past mouse positions as ripple sources
+      const ripples = [];
+      let lastRippleTime = 0;
 
-        let drawW = dw * 0.74;
-        let drawH = drawW * (DOT_ROWS / DOT_COLS);
-        if (drawH > dh * 0.66) {
-          drawH = dh * 0.66;
-          drawW = drawH * (DOT_COLS / DOT_ROWS);
+      // Capture video frame for inversion effect
+      const video = document.getElementById('entryVideo');
+
+      function drawRipple(now) {
+        const seconds = now * 0.001;
+        ctx.clearRect(0, 0, w, h);
+
+        // Add new ripple every 80ms while mouse moves
+        if (now - lastRippleTime > 80) {
+          ripples.push({ x: mx, y: my, t: seconds, r: 0 });
+          lastRippleTime = now;
+          // Keep max 30 ripples
+          if (ripples.length > 30) ripples.shift();
         }
-        const left = (dw - drawW) * 0.5;
-        const top = (dh - drawH) * 0.5;
-        const sx = drawW / DOT_COLS;
-        const sy = drawH / DOT_ROWS;
-        const dotR = Math.min(sx, sy) * 0.36;
 
-        const BASE_LOW = 0;
-        const INNER_R = 120;
-        const OUTER_R = 350;
+        const RADIUS = 350;
 
-        for (let r = 0; r < DOT_ROWS; r++) {
-          for (let c = 0; c < DOT_COLS; c++) {
-            const idx = r * DOT_COLS + c;
-            const raw = (f0[idx] + (f1[idx] - f0[idx]) * blend) / 255;
+        // Subtle glow around cursor — larger and softer
+        const grad = ctx.createRadialGradient(mx, my, 0, mx, my, RADIUS);
+        grad.addColorStop(0, 'rgba(255,255,255,0.04)');
+        grad.addColorStop(0.3, 'rgba(255,255,255,0.02)');
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
 
-            if (!dotSmoothedInit) {
-              dotSmoothed[idx] = raw;
-            } else {
-              dotSmoothed[idx] += (raw - dotSmoothed[idx]) * 0.16;
-            }
+        // Draw concentric ripple rings — slower expansion
+        ctx.lineWidth = 1;
+        for (let i = ripples.length - 1; i >= 0; i--) {
+          const rip = ripples[i];
+          const age = seconds - rip.t;
+          if (age > 6) { ripples.splice(i, 1); continue; }
 
-            const aBase = dotClamp(dotSmoothed[idx], 0, 1);
-            if (aBase < 0.02) continue;
+          const radius = age * 60; // expand at 60px/sec (half speed)
+          const fade = Math.max(0, 1 - age / 6);
+          const alpha = fade * 0.08;
 
-            const x = left + (c + 0.5) * sx;
-            const y = top + (r + 0.5) * sy;
-
-            const shimmer1 = 0.96 + 0.08 * Math.sin(seconds * 2.2 + c * 0.22 + r * 0.15);
-            const shimmer2 = 0.98 + 0.05 * Math.sin(seconds * 5.4 + c * 0.07 - r * 0.11);
-            const shimmer = dotClamp(shimmer1 * shimmer2, 0.90, 1.08);
-
-            // Mouse proximity — only visible near cursor (flashlight effect)
-            const dx = x - dotMouseX;
-            const dy = y - dotMouseY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const proxMult = dotSmoothstep(OUTER_R, INNER_R, dist);
-
-            const alpha = dotClamp((0.12 + aBase * 0.96) * masterAlpha * shimmer * proxMult, 0, 1);
-
-            dctx.beginPath();
-            dctx.arc(x, y, dotR, 0, Math.PI * 2);
-            dctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
-            dctx.fill();
+          // Multiple concentric rings per ripple
+          for (let ring = 0; ring < 3; ring++) {
+            const r = radius + ring * 15;
+            if (r < 2) continue;
+            const a = alpha * (1 - ring * 0.3);
+            if (a <= 0) continue;
+            ctx.beginPath();
+            ctx.arc(rip.x, rip.y, r, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,255,255,' + a.toFixed(4) + ')';
+            ctx.stroke();
           }
         }
-        dotSmoothedInit = true;
+
+        // Subtle glow near cursor
+        const glowGrad = ctx.createRadialGradient(mx, my, 0, mx, my, RADIUS * 0.5);
+        glowGrad.addColorStop(0, 'rgba(255,255,255,0.03)');
+        glowGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(mx, my, RADIUS * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        dotAnimId = requestAnimationFrame(drawRipple);
       }
 
-      function dotAnimate(now) {
-        if (dotStart === null) dotStart = now;
-        const seconds = (now - dotStart) * 0.001;
-        const contentDur = (DOT_FRAME_COUNT - 1.001) / DOT_FPS;
-        const totalDur = DOT_LEAD + contentDur + DOT_TRAIL;
-
-        dctx.clearRect(0, 0, dw, dh);
-
-        if (seconds >= DOT_LEAD && seconds <= DOT_LEAD + contentDur) {
-          const cs = seconds - DOT_LEAD;
-          const pos = dotForwardPos(cs);
-          const { f0, f1, blend } = dotInterpFrames(pos);
-          const fadeIn = dotClamp(cs / DOT_FADE_IN, 0, 1);
-          const fadeOut = dotClamp((contentDur - cs) / DOT_FADE_OUT, 0, 1);
-          const ma = Math.min(fadeIn, fadeOut);
-          dotDrawFrame(f0, f1, blend, ma, seconds);
-        }
-
-        // Loop the animation
-        if (seconds >= totalDur) {
-          dotStart = now;
-          dotSmoothedInit = false;
-        }
-
-        dotAnimId = requestAnimationFrame(dotAnimate);
-      }
-
-      dotAnimId = requestAnimationFrame(dotAnimate);
+      dotAnimId = requestAnimationFrame(drawRipple);
     })();
 
 
@@ -4218,8 +4965,8 @@
     const audioSrc = bgMusic.querySelector('source');
     if (audioSrc) {
       const filename = decodeURIComponent(audioSrc.src.split('/').pop().replace(/\.[^.]+$/, ''));
-      const np = document.getElementById('nowPlayingText');
-      if (np) np.textContent = filename + '  ·  ' + filename + '  ·  ';
+      const npTrack = document.getElementById('npTrackName');
+      if (npTrack) npTrack.textContent = filename;
     }
 
     const muteToggle = document.getElementById('muteToggle');
@@ -4243,9 +4990,9 @@
       canvas.height = 80 * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const W = rect.width;
-      const color = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
-      ctx.strokeStyle = color;
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
       ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(0, 40);
       ctx.lineTo(W, 40);
@@ -4268,7 +5015,7 @@
         const bufLen = an.frequencyBinCount;
         const waveData = new Uint8Array(bufLen);
         const H = 80;
-        const numPts = 200;
+        const numPts = 80;
         const step = Math.max(1, Math.floor(bufLen / numPts));
         const smoothed = new Float32Array(numPts).fill(0);
         function resizeOscCanvas() {
@@ -4286,8 +5033,8 @@
             an.getByteTimeDomainData(waveData);
             for (let i = 0; i < numPts; i++) {
               const raw = waveData[i * step] / 128.0 - 1.0;
-              const target = raw * 14.0;
-              smoothed[i] += (target - smoothed[i]) * 0.035;
+              const target = raw * 16.0;
+              smoothed[i] += (target - smoothed[i]) * 0.018;
             }
           } else {
             for (let i = 0; i < numPts; i++) smoothed[i] *= 0.95;
@@ -4313,27 +5060,54 @@
             ctx.lineTo(W, lastY);
           }
 
-          // Single clean stroke — no glow
           ctx.strokeStyle = color;
           ctx.lineWidth = 2;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           ctx.shadowBlur = 0;
+          ctx.shadowColor = 'transparent';
           buildWavePath();
           ctx.stroke();
           requestAnimationFrame(drawOsc);
         })();
     }
 
+    let entryClickCount = 0;
     entryScreen.addEventListener('click', () => {
-      // Stop dot overlay animation
-      if (dotAnimId) { cancelAnimationFrame(dotAnimId); dotAnimId = null; }
-      entryScreen.style.opacity = '0';
-      entryScreen.style.pointerEvents = 'none';
-      document.querySelector('header').style.opacity = '1';
-      document.getElementById('projectsView').style.opacity = '1';
-      entryScreen.addEventListener('transitionend', () => {
-        entryScreen.style.display = 'none';
-        staggerFadeIn(document.getElementById('projectsList'));
-      }, { once: true });
+      entryClickCount++;
+
+      if (entryClickCount === 1) {
+        // First click — start music (video already autoplaying)
+        bgMusic.play();
+        if (!window._audioCtx) initOscilloscope();
+
+        // Change button text to "Enter"
+        const btn = document.getElementById('enterBtn');
+        btn.style.transition = 'opacity 0.4s ease';
+        btn.style.opacity = '0';
+        setTimeout(() => {
+          btn.innerHTML = 'Enter<span class="entry-cursor"></span>';
+          btn.style.opacity = '1';
+        }, 400);
+
+      } else if (entryClickCount === 2) {
+        // Second click — enter the website
+        if (dotAnimId) { cancelAnimationFrame(dotAnimId); dotAnimId = null; }
+        entryScreen.style.opacity = '0';
+        entryScreen.style.pointerEvents = 'none';
+        document.querySelector('header').style.opacity = '1';
+        entryScreen.addEventListener('transitionend', () => {
+          entryScreen.style.display = 'none';
+          const pv = document.getElementById('projectsView');
+          const pl = document.getElementById('projectsList');
+          pl.querySelectorAll('.project-item, .category-divider').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+          });
+          pv.style.opacity = '1';
+          staggerFadeIn(pl);
+        }, { once: true });
+      }
     });
 
     // ─── WATER RIPPLE (DOM element transforms radiating from click) ────────────
@@ -4544,12 +5318,14 @@
       openBtn.addEventListener('click', () => {
         const items = [...document.querySelectorAll('.project-item')];
         if (!allOpenState) {
-          // Open all
+          // Open all — set flag to prevent each click from closing the previous
+          openAllMode = true;
           items.forEach(item => {
             if (item.querySelector('.project-accordion')) return; // already open
             const row = item.querySelector('.project-row');
             if (row) row.click();
           });
+          openAllMode = false;
           allOpenState = true;
           openBtn.classList.add('active');
           openBtn.textContent = 'Close';
