@@ -33,7 +33,7 @@
     }
 
     :root {
-      --bg: #141414;
+      --bg: #0d0d0d;
       --bg-fade: rgba(20, 20, 20, 0);
       --card: #090909;
       --text: #E4E4E4;
@@ -358,7 +358,7 @@
     #themeToggle .eye-open { display: none; }
     #themeToggle .eye-closed { display: block; }
     html.light-mode #themeToggle .eye-open { display: block; }
-    html.light-mode #themeToggle .eye-open circle { fill: var(--text); }
+    html.light-mode #themeToggle .eye-open circle { fill: var(--text-dim) !important; stroke: none !important; stroke-width: 0 !important; }
     html.light-mode #themeToggle .eye-closed { display: none; }
 
     /* Theme transition — applied temporarily during toggle */
@@ -443,9 +443,12 @@
       padding: 0;
       transition: color 0.2s;
       z-index: 200;
+      -webkit-tap-highlight-color: transparent;
     }
-    #organizeBtn:hover { color: var(--text); }
-    #organizeBtn.active { color: var(--text); }
+    @media (hover: hover) {
+      #organizeBtn:hover { color: var(--text-mid); }
+    }
+    #organizeBtn.active { color: var(--text-mid); }
 
     #openAllBtn {
       position: fixed;
@@ -462,9 +465,34 @@
       padding: 0;
       transition: color 0.2s;
       z-index: 200;
+      -webkit-tap-highlight-color: transparent;
     }
-    #openAllBtn:hover { color: var(--text); }
-    #openAllBtn.active { color: var(--text); }
+    @media (hover: hover) {
+      #openAllBtn:hover { color: var(--text-mid); }
+    }
+    #openAllBtn.active { color: var(--text-mid); }
+
+    #relevanceBtn {
+      position: fixed;
+      left: 0;
+      top: 0;
+      font-family: var(--font);
+      font-size: clamp(6px, 1.02vw, 21px);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+      z-index: 200;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (hover: hover) {
+      #relevanceBtn:hover { color: var(--text-mid); }
+    }
+    #relevanceBtn.active { color: var(--text-mid); }
 
     #categoryFilters {
       display: flex;
@@ -485,10 +513,13 @@
       white-space: nowrap;
       cursor: pointer;
       transition: color 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .cat-filter.active { color: var(--text); }
-    .cat-filter:hover { color: var(--text-mid); }
+    .cat-filter.active { color: var(--text-mid); }
+    @media (hover: hover) {
+      .cat-filter:hover { color: var(--text-mid); }
+    }
 
     /* ─── BOTTOM BAR ─────────────────────────────────── */
     #bottomBar {
@@ -616,17 +647,17 @@
       font-size: clamp(8px, 0.98vw, 18px);
       font-weight: 500;
       letter-spacing: 0;
-      color: var(--text);
+      color: var(--text-mid);
       transition: transform 0.3s ease;
     }
-    .now-playing-inner .np-prompt { color: var(--text); }
-    .now-playing-inner .np-track { color: var(--text); }
-    .now-playing-inner .np-meta { color: var(--text); }
+    .now-playing-inner .np-prompt { color: var(--text-mid); }
+    .now-playing-inner .np-track { color: var(--text-mid); }
+    .now-playing-inner .np-meta { color: var(--text-mid); }
     .now-playing-inner .np-cursor {
       display: inline-block;
       width: 10px;
       height: 1.1em;
-      background: var(--text);
+      background: var(--text-mid);
       animation: cursorBlink 1.2s step-end infinite;
       vertical-align: text-bottom;
       margin-left: 2px;
@@ -1231,6 +1262,9 @@
       overflow-y: auto;
       overflow-x: hidden;
       z-index: 200;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      overscroll-behavior: contain;
     }
     #rectGridView.active { display: block; }
     .archive-back {
@@ -1841,14 +1875,18 @@
       header nav, header #categoryBar, header button {
         pointer-events: auto;
       }
-      /* Fade gradient below header — visible on mobile only */
+      /* Fade gradient below header — visible on mobile only.
+         Solid for first portion, then fades, so scrolling projects
+         don't bleed through under the sort-buttons row. */
       #headerFade {
         display: block !important;
         position: fixed;
         left: 0;
         right: 0;
-        height: 160px;
-        background: linear-gradient(to bottom, var(--bg), var(--bg) 20%, rgba(0,0,0,0));
+        height: 28px;
+        background: var(--bg);
+        -webkit-mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 100%);
         pointer-events: none;
         z-index: 99;
       }
@@ -1859,12 +1897,13 @@
         left: var(--site-pad);
         right: var(--site-pad);
       }
-      .nav-left { gap: 18px; }
-      .nav-right { gap: 16px; }
+      .nav-left { gap: 30px; }
+      .nav-right { gap: 20px; }
       .nav-link, .nav-btn {
-        font-size: clamp(8px, 2.4vw, 11px) !important;
-        font-weight: 400 !important;
+        font-size: clamp(14px, 4.2vw, 20px) !important;
+        font-weight: 500 !important;
         color: var(--text-dim) !important;
+        padding: 6px 4px !important;
       }
       /* Search icon — match eyeball icon height */
       .search-icon-btn {
@@ -1886,15 +1925,23 @@
       #themeToggle svg {
         stroke: var(--text-dim) !important;
       }
+      /* Match nav border color to text dim on mobile */
+      nav::after {
+        background: var(--text-dim) !important;
+        opacity: 0.5;
+      }
       /* Hide text SEARCH on mobile */
       #searchToggle { display: none; }
 
+      main {
+        padding-top: 0 !important;
+      }
       .projects-list {
-        padding-top: 15px;
+        padding-top: 175px;
         padding-bottom: 100px;
       }
       .project-row {
-        padding: 10px var(--site-pad);
+        padding: 16px var(--site-pad);
       }
       .project-cat { display: none !important; }
       /* Hide hover tooltip on mobile */
@@ -1905,6 +1952,9 @@
       .project-year {
         font-size: clamp(9px, 2.8vw, 13px);
       }
+      .category-divider {
+        font-size: clamp(9px, 2.8vw, 13px);
+      }
 
       .accordion-content {
         min-height: 300px;
@@ -1913,38 +1963,73 @@
         height: 25vh;
       }
 
-      /* Category bar — wrap to fit */
+      /* Category bar — wrap to fit. Bottom padding extends the fixed header
+         visually so the Category/Relevance/Year row sits on header bg, not
+         over scrolling project content. */
       #categoryBar {
         justify-content: flex-start;
-        padding: 10px var(--site-pad) 12px;
+        padding: 12px var(--site-pad) 36px;
+        overflow: visible;
       }
       #categoryFilters {
-        gap: 6px 10px;
-        flex-wrap: nowrap;
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px 8px;
+        width: 100%;
+        flex-wrap: wrap;
         min-width: 0;
-        overflow-x: auto;
+        overflow: visible;
       }
       .cat-filter {
-        font-size: clamp(7px, 1.8vw, 10px) !important;
+        font-size: clamp(11px, 3.2vw, 15px) !important;
+        text-align: left;
         flex-shrink: 0;
+        padding: 0 !important;
+      }
+      /* Right-align the rightmost column (Architectural, Lighting) */
+      #categoryFilters .cat-filter:nth-child(4n) {
+        text-align: right;
       }
 
-      /* Repurpose Open button as Year on mobile */
-      #openAllBtn {
-        display: block !important;
-        font-size: clamp(7px, 1.8vw, 10px) !important;
-        position: fixed;
-        left: calc(var(--site-pad) + 14vw);
-        top: 88px !important;
+      /* Three sort buttons (Category / Relevance / Year) — evenly spaced row */
+      #organizeBtn, #relevanceBtn, #openAllBtn {
+        font-size: clamp(11px, 3vw, 14px) !important;
+        font-weight: 400 !important;
+        position: fixed !important;
+        top: 128px !important;
+        z-index: 210 !important;
       }
-      /* Organize button — below categories */
       #organizeBtn {
-        font-size: clamp(7px, 1.8vw, 10px);
-        position: fixed;
-        left: var(--site-pad);
-        top: 88px !important;
+        left: var(--site-pad) !important;
+      }
+      #relevanceBtn {
+        left: 50% !important;
+        transform: translateX(-50%);
+      }
+      #openAllBtn {
+        left: auto !important;
+        right: var(--site-pad);
       }
 
+      /* Archive top/bottom fade gradients — makes back button easier to see */
+      #rectGridView::before,
+      #rectGridView::after {
+        content: '';
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 70px;
+        pointer-events: none;
+        z-index: 230;
+      }
+      #rectGridView::before {
+        top: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+      }
+      #rectGridView::after {
+        bottom: 0;
+        background: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
+      }
       /* Archive — 3 columns on mobile, equal spacing */
       #archiveGrid {
         grid-template-columns: repeat(3, 1fr) !important;
@@ -2019,9 +2104,9 @@
       .archive-detail-field {
         padding: 4px 0 !important;
       }
-      /* Close button for mobile detail */
+      /* Close button hidden on mobile — tap anywhere to close */
       .archive-detail-close {
-        display: block;
+        display: none !important;
         position: fixed;
         top: 16px;
         right: 16px;
@@ -2077,10 +2162,10 @@
         height: 12px;
         color: var(--text-dim);
       }
-      #audioRewind { order: 2; }
-      #audioPlay { order: 3; }
-      .now-playing { order: 4; flex: 1; }
-      #audioForward { order: 5; margin-left: auto; }
+      #audioRewind { order: 2; flex: 0 0 auto; }
+      #audioPlay { order: 3; flex: 0 0 auto; }
+      .now-playing { order: 4; flex: 1 1 auto; width: auto; max-width: none; overflow: hidden; }
+      #audioForward { order: 5; flex: 0 0 auto; margin-left: auto; }
       #oscCanvas {
         width: 100% !important;
         height: 50px;
@@ -2188,8 +2273,8 @@
   <header>
     <nav>
       <div class="nav-left">
-        <a class="nav-link" id="navProjects">PROJECTS</a>
-        <a class="nav-link" id="navAbout">ABOUT</a>
+        <a class="nav-link" id="navProjects">Projects</a>
+        <a class="nav-link" id="navAbout">About</a>
       </div>
       <div class="nav-right">
         <button id="themeToggle" aria-label="Toggle light mode">
@@ -2201,7 +2286,7 @@
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
           </svg>
         </button>
-        <button class="nav-btn" id="rectGridBtn">ARCHIVE</button>
+        <button class="nav-btn" id="rectGridBtn">Archive</button>
         <button class="nav-btn" id="searchToggle">SEARCH</button>
         <button class="search-icon-btn" id="searchToggleMobile" aria-label="Search" style="display:none;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 748.49 603.2">
@@ -2217,6 +2302,7 @@
   </header>
   <div id="headerFade"></div>
   <button id="organizeBtn">Organize</button>
+  <button id="relevanceBtn" style="display:none;">Relevance</button>
   <button id="openAllBtn">Open</button>
 
   <!-- MAIN -->
@@ -3108,6 +3194,8 @@
       if (!skipAnimation) staggerFadeIn(container);
     }
 
+    let currentCatFilter = null;
+
     function buildCategoryFilters() {
       const cats = new Set();
       PROJECTS.forEach(p => (p.categories || []).forEach(c => cats.add(c)));
@@ -3119,10 +3207,12 @@
         btn.className = 'cat-filter';
         btn.textContent = cat;
         btn.addEventListener('click', () => {
-          if (btn.classList.contains('active')) {
+          if (currentCatFilter === cat) {
+            currentCatFilter = null;
             setActiveFilter(null);
             renderProjects(PROJECTS);
           } else {
+            currentCatFilter = cat;
             setActiveFilter(cat);
             renderProjects(PROJECTS.filter(p => (p.categories || []).includes(cat)));
           }
@@ -3132,7 +3222,9 @@
     }
 
     function setActiveFilter(active) {
-      document.querySelectorAll('.cat-filter').forEach(b => b.classList.toggle('active', b.textContent === active));
+      document.querySelectorAll('.cat-filter').forEach(b =>
+        b.classList.toggle('active', active !== null && b.textContent.trim() === active)
+      );
     }
 
     // Nav listeners handled by showView() above
@@ -3253,15 +3345,21 @@
       searchIconBtn.addEventListener('click', openSearch);
 
       const openBtn = document.getElementById('openAllBtn');
+      const organizeBtnEl = document.getElementById('organizeBtn');
+      const relevanceBtnEl = document.getElementById('relevanceBtn');
       function applyMobile(matches) {
         if (matches) {
           navLeft.appendChild(archiveBtn);
           searchIconBtn.style.display = 'flex';
           openBtn.textContent = 'Year';
+          organizeBtnEl.textContent = 'Category';
+          relevanceBtnEl.style.display = 'block';
         } else {
           navRight.insertBefore(archiveBtn, document.getElementById('searchToggle'));
           searchIconBtn.style.display = 'none';
           openBtn.textContent = 'Open';
+          organizeBtnEl.textContent = 'Organize';
+          relevanceBtnEl.style.display = 'none';
         }
       }
       applyMobile(mq.matches);
@@ -4436,6 +4534,12 @@
           archiveShowDetail(parseInt(cell.dataset.idx));
         }
       });
+      // Tap anywhere on rectGridView to dismiss the intro (mobile)
+      document.getElementById('rectGridView').addEventListener('click', (e) => {
+        if (archiveIntroShown && archiveIntroReady && !e.target.closest('.archive-cell') && !e.target.closest('#archiveDetail')) {
+          hideArchiveIntro();
+        }
+      });
 
       // Gravitational pull — images continuously drift toward cursor when mouse is still
       // After ~60 seconds of stillness, all images will have migrated to cursor
@@ -4501,6 +4605,34 @@
         scrollVelocity += e.deltaY * 0.03;
         if (!scrollMomentumRaf) scrollMomentumRaf = requestAnimationFrame(scrollMomentumTick);
       }, { passive: false });
+
+      // ── Touch momentum scrolling for mobile ──
+      let touchStartY = 0;
+      let touchLastY = 0;
+      let touchLastTime = 0;
+      let touchVelocity = 0;
+      scrollContainer.addEventListener('touchstart', (e) => {
+        touchStartY = touchLastY = e.touches[0].clientY;
+        touchLastTime = performance.now();
+        touchVelocity = 0;
+        if (scrollMomentumRaf) { cancelAnimationFrame(scrollMomentumRaf); scrollMomentumRaf = null; }
+        scrollVelocity = 0;
+      }, { passive: true });
+      scrollContainer.addEventListener('touchmove', (e) => {
+        const y = e.touches[0].clientY;
+        const now = performance.now();
+        const dt = Math.max(1, now - touchLastTime);
+        touchVelocity = (touchLastY - y) / dt * 16; // px per frame at 60fps
+        touchLastY = y;
+        touchLastTime = now;
+      }, { passive: true });
+      scrollContainer.addEventListener('touchend', () => {
+        // Apply momentum — decays smoothly
+        scrollVelocity = touchVelocity * 1.2;
+        if (!scrollMomentumRaf && Math.abs(scrollVelocity) > 0.5) {
+          scrollMomentumRaf = requestAnimationFrame(scrollMomentumTick);
+        }
+      }, { passive: true });
 
       // ── Slow constant vertical auto-drift via scrollTop ──
       let archiveAutoDriftRaf = null;
@@ -4831,9 +4963,11 @@
       const categoryBar = document.getElementById('categoryBar');
       const organizeBtn = document.getElementById('organizeBtn');
       const openAllBtn = document.getElementById('openAllBtn');
+      const relevanceBtn = document.getElementById('relevanceBtn');
       const headerEl = document.querySelector('header');
       const backBtn = document.getElementById('backToHome');
       const bottomBar = document.getElementById('bottomBar');
+      const isMobileView = window.innerWidth <= 768;
 
       if (view === 'projects') {
         // Close any open accordion when returning to projects
@@ -4848,16 +4982,20 @@
         categoryBar.style.display = '';
         organizeBtn.style.display = '';
         openAllBtn.style.display = 'block';
+        if (relevanceBtn) relevanceBtn.style.display = isMobileView ? 'block' : 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         stopBackBtnCycle();
         currentView = 'projects';
+        currentCatFilter = null;
+        setActiveFilter(null);
         staggerFadeIn(document.getElementById('projectsList'));
       } else if (view === 'project') {
         headerEl.style.display = '';
         categoryBar.style.display = 'none';
         organizeBtn.style.display = 'none';
         openAllBtn.style.display = 'none';
+        if (relevanceBtn) relevanceBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         stopBackBtnCycle();
@@ -4870,6 +5008,7 @@
         categoryBar.style.display = 'none';
         organizeBtn.style.display = 'none';
         openAllBtn.style.display = 'none';
+        if (relevanceBtn) relevanceBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         stopBackBtnCycle();
@@ -4878,6 +5017,7 @@
         headerEl.style.display = 'none';
         organizeBtn.style.display = 'none';
         openAllBtn.style.display = 'none';
+        if (relevanceBtn) relevanceBtn.style.display = 'none';
         backBtn.style.display = 'block';
         bottomBar.style.display = 'none';
         startBackBtnCycle();
@@ -4892,6 +5032,7 @@
         headerEl.style.display = 'none';
         organizeBtn.style.display = 'none';
         openAllBtn.style.display = 'none';
+        if (relevanceBtn) relevanceBtn.style.display = 'none';
         backBtn.style.display = 'block';
         bottomBar.style.display = 'none';
         startBackBtnCycle();
@@ -4904,10 +5045,14 @@
         startNavLogTypewriter();
       } else if (view === 'rectgrid') {
         headerEl.style.display = 'none';
+        categoryBar.style.display = 'none';
         organizeBtn.style.display = 'none';
         openAllBtn.style.display = 'none';
+        if (relevanceBtn) relevanceBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
+        const hf = document.getElementById('headerFade');
+        if (hf) hf.style.display = 'none';
         currentView = 'rectgrid';
         if (!archiveBuilt) buildArchive();
         archiveReset();
@@ -5310,7 +5455,7 @@
       canvas.height = 80 * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const W = rect.width;
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.beginPath();
@@ -5359,7 +5504,7 @@
           } else {
             for (let i = 0; i < numPts; i++) smoothed[i] *= 0.95;
           }
-          const color = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+          const color = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
           ctx.clearRect(0, 0, W, H);
 
           // Build path once, stroke twice (glow + sharp core)
@@ -5574,11 +5719,38 @@
       const bar = document.getElementById('categoryBar');
       const btn = document.getElementById('organizeBtn');
       const openBtn = document.getElementById('openAllBtn');
+      const relevanceBtn = document.getElementById('relevanceBtn');
       if (bar && btn) {
         const rect = bar.getBoundingClientRect();
         const yPos = (rect.bottom + 4) + 'px';
         btn.style.top = yPos;
         openBtn.style.top = yPos;
+        if (relevanceBtn) relevanceBtn.style.top = yPos;
+      }
+
+      // Relevance button — restores default order
+      if (relevanceBtn) {
+        relevanceBtn.addEventListener('click', () => {
+          const wasActive = relevanceBtn.classList.contains('active');
+          if (wasActive) {
+            relevanceBtn.classList.remove('active');
+            return;
+          }
+          // Toggle class immediately so rapid taps register
+          relevanceBtn.classList.add('active');
+          btn.classList.remove('active');
+          openBtn.classList.remove('active');
+          const list = document.getElementById('projectsList');
+          list.style.transition = 'opacity 300ms ease';
+          list.style.opacity = '0';
+          setTimeout(() => {
+            list.style.transition = 'none';
+            list.querySelectorAll('.category-divider').forEach(d => d.remove());
+            renderProjects(PROJECTS, true);
+            list.style.opacity = '1';
+            staggerFadeIn(list);
+          }, 340);
+        });
       }
 
       let organizedState = false;
@@ -5590,6 +5762,18 @@
         const items = [...list.querySelectorAll('.project-item')];
         const FADE_OUT_DUR = 300;
 
+        // Capture active state, then immediately toggle the class so
+        // rapid double-taps don't get swallowed during the animation.
+        const wasActive = btn.classList.contains('active');
+        organizedState = wasActive;
+        if (wasActive) {
+          btn.classList.remove('active');
+        } else {
+          btn.classList.add('active');
+          if (relevanceBtn) relevanceBtn.classList.remove('active');
+          openBtn.classList.remove('active');
+        }
+
         // Phase 1: fade entire list out
         list.style.transition = `opacity ${FADE_OUT_DUR}ms ease`;
         list.style.opacity = '0';
@@ -5598,7 +5782,7 @@
           list.style.transition = 'none';
 
           // Phase 2: reorder DOM while invisible
-          if (!organizedState) {
+          if (!wasActive) {
             originalOrder = [...items];
 
             const seen = new Set();
@@ -5619,12 +5803,10 @@
             originalOrder.filter(el => !cats.includes(el.dataset.cat0)).forEach(el => list.appendChild(el));
 
             organizedState = true;
-            btn.classList.add('active');
           } else {
             list.querySelectorAll('.category-divider').forEach(d => d.remove());
             originalOrder.forEach(el => list.appendChild(el));
             organizedState = false;
-            btn.classList.remove('active');
           }
 
           // Phase 3: make list visible, stagger items in
@@ -5645,11 +5827,21 @@
           const list = document.getElementById('projectsList');
           const items = [...list.querySelectorAll('.project-item')];
           const FADE_OUT_DUR = 300;
+          const wasActive = openBtn.classList.contains('active');
+          yearSorted = wasActive;
+          // Toggle class immediately so rapid taps register
+          if (wasActive) {
+            openBtn.classList.remove('active');
+          } else {
+            openBtn.classList.add('active');
+            btn.classList.remove('active');
+            if (relevanceBtn) relevanceBtn.classList.remove('active');
+          }
           list.style.transition = 'opacity ' + FADE_OUT_DUR + 'ms ease';
           list.style.opacity = '0';
           setTimeout(() => {
             list.style.transition = 'none';
-            if (!yearSorted) {
+            if (!wasActive) {
               yearOriginalOrder = [...items];
               const sorted = [...items].sort((a, b) => {
                 const ya = parseInt(a.querySelector('.project-year')?.textContent) || 0;
@@ -5659,11 +5851,9 @@
               list.querySelectorAll('.category-divider').forEach(d => d.remove());
               sorted.forEach(el => list.appendChild(el));
               yearSorted = true;
-              openBtn.classList.add('active');
             } else {
               if (yearOriginalOrder) yearOriginalOrder.forEach(el => list.appendChild(el));
               yearSorted = false;
-              openBtn.classList.remove('active');
             }
             list.style.opacity = '1';
             staggerFadeIn(list);
