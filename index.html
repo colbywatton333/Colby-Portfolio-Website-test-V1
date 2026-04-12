@@ -267,6 +267,7 @@
       opacity: 0;
       transition: opacity 0.9s ease;
     }
+    #headerFade { display: none; }
 
     nav {
       display: flex;
@@ -1236,7 +1237,7 @@
       position: fixed;
       top: 36px;
       left: 60px;
-      z-index: 215;
+      z-index: 240;
       background: none;
       border: none;
       color: #666;
@@ -1264,9 +1265,13 @@
       overflow: visible;
       cursor: pointer;
       border-radius: 2px;
-      transition: transform 4s ease-out, box-shadow 0.3s ease;
+      transition: transform 4s ease-out, box-shadow 0.3s ease, opacity 1.2s ease;
       will-change: transform;
       perspective: 600px;
+      opacity: 0;
+    }
+    .archive-cell.visible {
+      opacity: 1;
     }
     .archive-cell:hover {
       box-shadow: 0 14px 40px rgba(0,0,0,0.6);
@@ -1287,8 +1292,8 @@
     .archive-cell.ghost img {
       opacity: 0;
       filter: blur(8px) brightness(2);
-      transform: scale(0.7);
-      transition: opacity 0.8s ease, filter 0.8s ease, transform 1s ease;
+      transform: scale(2.5);
+      transition: opacity 0.6s ease, filter 0.6s ease, transform 0.6s ease;
     }
 
 
@@ -1831,9 +1836,21 @@
 
       /* Nav — move ARCHIVE next to ABOUT on left, search becomes icon */
       header {
-        padding-bottom: 120px;
-        -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 120px), transparent 100%);
-        mask-image: linear-gradient(to bottom, black calc(100% - 120px), transparent 100%);
+        pointer-events: none;
+      }
+      header nav, header #categoryBar, header button {
+        pointer-events: auto;
+      }
+      /* Fade gradient below header — visible on mobile only */
+      #headerFade {
+        display: block !important;
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 160px;
+        background: linear-gradient(to bottom, var(--bg), var(--bg) 20%, rgba(0,0,0,0));
+        pointer-events: none;
+        z-index: 99;
       }
       nav {
         padding: 10px var(--site-pad);
@@ -1928,14 +1945,31 @@
         top: 88px !important;
       }
 
-      /* Archive — 3 columns on mobile */
+      /* Archive — 3 columns on mobile, equal spacing */
       #archiveGrid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        padding: 60px 12px 100px;
-        margin-left: 0;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 4vw !important;
+        padding: 60px 8vw 100px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+        transition: filter 0.4s ease;
+        box-sizing: border-box;
       }
-      .archive-cell { max-width: none; }
+      .archive-cell {
+        max-width: none !important;
+        width: 75%;
+        margin: 0 auto;
+      }
+      .archive-cell img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      /* Blur grid when detail is open */
+      #rectGridView.detail-open #archiveGrid {
+        filter: blur(8px);
+      }
 
       /* Archive detail — full screen overlay on mobile */
       #archiveDetail {
@@ -1944,9 +1978,10 @@
         left: 0;
         width: 100%;
         height: 100%;
-        padding: 60px 20px 40px;
+        padding: 50px 16px 60px;
         z-index: 250;
-        background: #000;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(4px);
         overflow-y: auto;
         flex-direction: column;
         align-items: center;
@@ -1966,14 +2001,23 @@
         margin: 0 auto;
       }
       .archive-detail-title {
-        font-size: clamp(16px, 5vw, 26px);
-        margin-top: 20px;
+        font-size: clamp(13px, 4vw, 20px);
+        margin-top: 16px;
       }
       .archive-detail-info {
         width: 100%;
+        padding-bottom: 40px;
       }
       .archive-field-value {
-        font-size: clamp(12px, 3.5vw, 18px) !important;
+        font-size: clamp(10px, 2.8vw, 14px) !important;
+        line-height: 1.5 !important;
+        white-space: normal !important;
+      }
+      .archive-detail-fields {
+        gap: 8px !important;
+      }
+      .archive-detail-field {
+        padding: 4px 0 !important;
       }
       /* Close button for mobile detail */
       .archive-detail-close {
@@ -2006,37 +2050,45 @@
         font-size: clamp(13px, 3.5vw, 18px);
       }
 
-      /* Bottom bar — transport buttons + text + waveform */
+      /* Bottom bar — waveform on top, transport+text row below */
       #bottomBar {
         padding: 8px var(--site-pad) 16px;
         flex-direction: row;
+        flex-wrap: wrap;
         gap: 6px;
         border-top-color: var(--border);
         align-items: center;
       }
       #bottomBar .bar-spacer { display: none; }
+      /* Waveform takes full width on its own row */
+      .music-btn {
+        flex: 0 0 100%;
+        width: 100%;
+        order: 1;
+      }
+      /* Transport buttons and text share the second row */
       .audio-transport {
         display: flex !important;
-        color: var(--text-dim);
-        padding: 6px;
+        color: var(--text-dim) !important;
+        padding: 4px;
       }
       .audio-transport svg {
-        width: 18px;
-        height: 18px;
+        width: 12px;
+        height: 12px;
+        color: var(--text-dim);
       }
-      .music-btn {
-        flex: 1.5;
-      }
+      #audioRewind { order: 2; }
+      #audioPlay { order: 3; }
+      .now-playing { order: 4; flex: 1; }
+      #audioForward { order: 5; margin-left: auto; }
       #oscCanvas {
         width: 100% !important;
         height: 50px;
         opacity: 0.35;
       }
       .now-playing-inner,
-      .now-playing-inner .np-track,
-      .now-playing-inner .np-cursor {
+      .now-playing-inner .np-track {
         color: var(--text-dim) !important;
-        background-color: var(--text-dim);
       }
       .now-playing-inner .np-cursor {
         background: var(--text-dim) !important;
@@ -2073,10 +2125,19 @@
         width: 90vw;
       }
 
-      /* Archive intro text */
+      /* Archive intro text — centered on screen, left-aligned */
       .archive-intro-text {
-        font-size: clamp(13px, 3.5vw, 20px);
-        padding: 20px 16px;
+        font-size: clamp(8px, 2.2vw, 12px);
+        padding: 10px 12px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+        max-width: calc(100vw - 24px);
+        text-align: left;
+        z-index: 260;
+        line-height: 1.6;
       }
     }
 
@@ -2086,9 +2147,9 @@
       html.light-mode { --site-pad: 4vw; }
 
       #archiveGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        padding: 60px 12px 80px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        padding: 60px 18% 80px;
       }
 
       .nav-link {
@@ -2154,6 +2215,7 @@
       <div id="categoryFilters"></div>
     </div>
   </header>
+  <div id="headerFade"></div>
   <button id="organizeBtn">Organize</button>
   <button id="openAllBtn">Open</button>
 
@@ -3204,6 +3266,19 @@
       }
       applyMobile(mq.matches);
       mq.addEventListener('change', (e) => applyMobile(e.matches));
+
+      // Position #headerFade below the header
+      const headerEl = document.querySelector('header');
+      const fadeEl = document.getElementById('headerFade');
+      function positionHeaderFade() {
+        if (!fadeEl || !headerEl) return;
+        const rect = headerEl.getBoundingClientRect();
+        fadeEl.style.top = rect.bottom + 'px';
+      }
+      positionHeaderFade();
+      window.addEventListener('resize', positionHeaderFade);
+      new MutationObserver(positionHeaderFade).observe(headerEl, { attributes: true, childList: true, subtree: true });
+      setInterval(positionHeaderFade, 500);
     })();
 
     searchOverlay.addEventListener('click', (e) => {
@@ -4628,11 +4703,13 @@
       }
       void detailImgEl.offsetHeight;
       detail.classList.add('active');
+      document.getElementById('rectGridView').classList.add('detail-open');
     }
 
     function archiveCloseDetail() {
       const detail = document.getElementById('archiveDetail');
       detail.classList.remove('active');
+      document.getElementById('rectGridView').classList.remove('detail-open');
       document.querySelectorAll('.archive-cell.ghost').forEach(c => c.classList.remove('ghost'));
       setTimeout(() => { detail.style.display = 'none'; }, 350);
     }
@@ -4685,14 +4762,12 @@
       const inner = detail.querySelector('.archive-detail-inner');
       if (archiveIntroRaf) { cancelAnimationFrame(archiveIntroRaf); archiveIntroRaf = null; }
       if (intro) {
-        intro.style.transition = 'opacity 0.6s ease';
-        intro.style.opacity = '0';
+        // Trigger fade-out by removing .visible class — uses existing 4s CSS transition
+        intro.classList.remove('visible');
         setTimeout(() => {
           intro.style.display = 'none';
-          intro.style.transition = '';
-          intro.style.opacity = '';
           inner.style.display = '';
-        }, 600);
+        }, 4000);
       }
     }
 
@@ -4851,6 +4926,11 @@
               // Fade in the archive grid
               rectGridView.style.transition = 'opacity 3s ease';
               rectGridView.style.opacity = '1';
+              // Stagger fade in archive cells
+              const cells = document.querySelectorAll('.archive-cell');
+              cells.forEach((cell, i) => {
+                setTimeout(() => cell.classList.add('visible'), i * 30);
+              });
               // Show intro text
               showArchiveIntro();
               setTimeout(() => {
