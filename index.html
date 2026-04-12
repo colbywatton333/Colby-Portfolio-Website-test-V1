@@ -164,12 +164,12 @@
     }
     #enterBtn .entry-cursor {
       display: inline-block;
-      width: 0.5em;
+      width: 0.8em;
       height: 1em;
       background: #fff;
       vertical-align: text-bottom;
       margin-left: 6px;
-      animation: cursorBlink 0.65s step-end infinite;
+      animation: cursorBlink 1.2s step-end infinite;
     }
 
     /* ─── SEARCH OVERLAY ─────────────────────────────── */
@@ -216,11 +216,11 @@
     }
     .verse-cursor {
       display: inline-block;
-      width: 0.55em;
+      width: 0.8em;
       height: 1em;
       background: rgba(255, 255, 255, 0.85);
       vertical-align: text-bottom;
-      animation: verseBlink 0.65s step-end infinite;
+      animation: verseBlink 1.2s step-end infinite;
     }
     @keyframes verseBlink {
       0%, 100% { opacity: 1; }
@@ -349,7 +349,7 @@
       width: 18px;
       height: 18px;
       stroke: var(--text);
-      stroke-width: 1.8;
+      stroke-width: 3;
       stroke-linecap: round;
       stroke-linejoin: round;
       fill: none;
@@ -357,6 +357,7 @@
     #themeToggle .eye-open { display: none; }
     #themeToggle .eye-closed { display: block; }
     html.light-mode #themeToggle .eye-open { display: block; }
+    html.light-mode #themeToggle .eye-open circle { fill: var(--text); }
     html.light-mode #themeToggle .eye-closed { display: none; }
 
     /* Theme transition — applied temporarily during toggle */
@@ -412,7 +413,7 @@
       background: currentColor;
       vertical-align: text-bottom;
       margin-left: 8px;
-      animation: cursorBlink 0.65s step-end infinite;
+      animation: cursorBlink 1.2s step-end infinite;
     }
 
     /* ─── CATEGORY BAR ───────────────────────────────── */
@@ -567,7 +568,7 @@
       background: currentColor;
       vertical-align: text-bottom;
       margin-left: 2px;
-      animation: cursorBlink 0.65s step-end infinite;
+      animation: cursorBlink 1.2s step-end infinite;
     }
     .explorer-log-btn:hover .explorer-log-tooltip {
       opacity: 1;
@@ -590,9 +591,24 @@
       width: clamp(200px, 28vw, 500px);
       flex-shrink: 0;
       padding-right: 12px;
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
-      mask-image: linear-gradient(to right, transparent 0%, black 30%);
     }
+    .audio-transport {
+      display: none;
+      background: none;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      color: var(--text);
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+    }
+    .audio-transport svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .audio-transport:hover { opacity: 0.7; }
     .now-playing-inner {
       display: inline-block;
       font-family: var(--font);
@@ -607,10 +623,10 @@
     .now-playing-inner .np-meta { color: var(--text); }
     .now-playing-inner .np-cursor {
       display: inline-block;
-      width: 6px;
+      width: 10px;
       height: 1.1em;
       background: var(--text);
-      animation: cursorBlink 0.65s step-end infinite;
+      animation: cursorBlink 1.2s step-end infinite;
       vertical-align: text-bottom;
       margin-left: 2px;
     }
@@ -711,7 +727,7 @@
       width: 0.3em;
       margin-right: 10px;
       opacity: 1;
-      animation: cursorBlink 0.65s step-end infinite;
+      animation: cursorBlink 1.2s step-end infinite;
     }
 
     @keyframes cursorBlink {
@@ -904,7 +920,7 @@
     .category-divider {
       padding: 72px var(--site-pad) 14px;
       font-size: clamp(6px, 0.98vw, 20px);
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: 0.1em;
       color: var(--text);
       text-transform: capitalize;
@@ -1309,6 +1325,7 @@
       flex-direction: column;
       gap: 60px;
     }
+    .archive-detail-close { display: none; }
     /* Image */
     .archive-detail-img {
       width: 100%;
@@ -1494,7 +1511,7 @@
       background: var(--text);
       vertical-align: text-bottom;
       margin-left: 2px;
-      animation: cursorBlink 0.65s step-end infinite;
+      animation: cursorBlink 1.2s step-end infinite;
     }
     .nav-float-card img {
       filter: grayscale(1) sepia(1) saturate(3) hue-rotate(5deg) brightness(0.75) contrast(1.1);
@@ -1764,6 +1781,11 @@
       #entryScreen, #entryScreen * { cursor: auto !important; }
       .gallery-view, .float-card, .nav-float-card { cursor: auto !important; }
     }
+    @media (max-width: 768px) {
+      * { cursor: auto !important; }
+      body { cursor: auto !important; }
+      #galleryCursor { display: none !important; }
+    }
 
     /* Tablet and below */
     @media (max-width: 1024px) {
@@ -1808,17 +1830,24 @@
       html.light-mode { --site-pad: 5vw; }
 
       /* Nav — move ARCHIVE next to ABOUT on left, search becomes icon */
+      header {
+        padding-bottom: 120px;
+        -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 120px), transparent 100%);
+        mask-image: linear-gradient(to bottom, black calc(100% - 120px), transparent 100%);
+      }
       nav {
-        padding: 28px var(--site-pad);
+        padding: 10px var(--site-pad);
       }
       nav::after {
         left: var(--site-pad);
         right: var(--site-pad);
       }
-      .nav-left { gap: 14px; }
-      .nav-right { gap: 12px; }
+      .nav-left { gap: 18px; }
+      .nav-right { gap: 16px; }
       .nav-link, .nav-btn {
-        font-size: clamp(11px, 3.2vw, 15px) !important;
+        font-size: clamp(8px, 2.4vw, 11px) !important;
+        font-weight: 400 !important;
+        color: var(--text-dim) !important;
       }
       /* Search icon — match eyeball icon height */
       .search-icon-btn {
@@ -1834,17 +1863,30 @@
         height: 26px;
         width: auto;
       }
+      .search-icon-btn {
+        color: var(--text-dim);
+      }
+      #themeToggle svg {
+        stroke: var(--text-dim) !important;
+      }
       /* Hide text SEARCH on mobile */
       #searchToggle { display: none; }
 
-      .project-row {
-        padding: 14px var(--site-pad);
+      .projects-list {
+        padding-top: 15px;
+        padding-bottom: 100px;
       }
+      .project-row {
+        padding: 10px var(--site-pad);
+      }
+      .project-cat { display: none !important; }
+      /* Hide hover tooltip on mobile */
+      .project-desc-tooltip { display: none !important; }
       .project-title {
-        font-size: clamp(11px, 3.5vw, 16px);
+        font-size: clamp(9px, 2.8vw, 13px);
       }
       .project-year {
-        font-size: clamp(11px, 3.5vw, 16px);
+        font-size: clamp(9px, 2.8vw, 13px);
       }
 
       .accordion-content {
@@ -1857,7 +1899,7 @@
       /* Category bar — wrap to fit */
       #categoryBar {
         justify-content: flex-start;
-        padding: 14px var(--site-pad) 16px;
+        padding: 10px var(--site-pad) 12px;
       }
       #categoryFilters {
         gap: 6px 10px;
@@ -1870,36 +1912,88 @@
         flex-shrink: 0;
       }
 
-      /* Hide Open button on mobile */
+      /* Repurpose Open button as Year on mobile */
       #openAllBtn {
-        display: none !important;
+        display: block !important;
+        font-size: clamp(7px, 1.8vw, 10px) !important;
+        position: fixed;
+        left: calc(var(--site-pad) + 14vw);
+        top: 88px !important;
       }
       /* Organize button — below categories */
       #organizeBtn {
-        font-size: clamp(10px, 3vw, 14px);
+        font-size: clamp(7px, 1.8vw, 10px);
         position: fixed;
         left: var(--site-pad);
-        top: 145px !important;
+        top: 88px !important;
       }
 
-      /* Archive */
+      /* Archive — 3 columns on mobile */
       #archiveGrid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        padding: 70px 16px 100px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 60px 12px 100px;
+        margin-left: 0;
       }
       .archive-cell { max-width: none; }
+
+      /* Archive detail — full screen overlay on mobile */
       #archiveDetail {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        padding: 30px 16px 20px;
+        height: 100%;
+        padding: 60px 20px 40px;
+        z-index: 250;
+        background: #000;
+        overflow-y: auto;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .archive-detail-inner {
+        width: 100%;
+        max-width: 100%;
+      }
+      .archive-detail-img {
+        width: 100%;
+      }
+      .archive-detail-img img {
+        max-height: 50vh;
+        width: auto;
+        max-width: 100%;
+        margin: 0 auto;
       }
       .archive-detail-title {
-        font-size: clamp(14px, 5vw, 24px);
+        font-size: clamp(16px, 5vw, 26px);
+        margin-top: 20px;
+      }
+      .archive-detail-info {
+        width: 100%;
+      }
+      .archive-field-value {
+        font-size: clamp(12px, 3.5vw, 18px) !important;
+      }
+      /* Close button for mobile detail */
+      .archive-detail-close {
+        display: block;
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 260;
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 14px;
+        font-family: var(--font);
+        letter-spacing: 0.05em;
+        cursor: pointer;
       }
 
       /* About */
       .about-row {
-        padding: 20px var(--site-pad);
+        padding: 12px var(--site-pad);
       }
       .about-title {
         font-size: clamp(11px, 3.5vw, 16px);
@@ -1912,24 +2006,45 @@
         font-size: clamp(13px, 3.5vw, 18px);
       }
 
-      /* Bottom bar — wave full width */
+      /* Bottom bar — transport buttons + text + waveform */
       #bottomBar {
-        padding: 12px var(--site-pad) 24px;
-        flex-direction: column;
-        gap: 8px;
+        padding: 8px var(--site-pad) 16px;
+        flex-direction: row;
+        gap: 6px;
+        border-top-color: var(--border);
+        align-items: center;
       }
       #bottomBar .bar-spacer { display: none; }
+      .audio-transport {
+        display: flex !important;
+        color: var(--text-dim);
+        padding: 6px;
+      }
+      .audio-transport svg {
+        width: 18px;
+        height: 18px;
+      }
       .music-btn {
-        width: 100%;
+        flex: 1.5;
       }
       #oscCanvas {
         width: 100% !important;
         height: 50px;
+        opacity: 0.35;
+      }
+      .now-playing-inner,
+      .now-playing-inner .np-track,
+      .now-playing-inner .np-cursor {
+        color: var(--text-dim) !important;
+        background-color: var(--text-dim);
+      }
+      .now-playing-inner .np-cursor {
+        background: var(--text-dim) !important;
       }
       .now-playing {
-        width: 100%;
-        font-size: clamp(9px, 2.8vw, 13px);
-        text-align: center;
+        flex: 1;
+        width: auto;
+        font-size: clamp(8px, 2.2vw, 12px);
       }
 
       /* Footer — hide redundant links on mobile */
@@ -2029,8 +2144,8 @@
         <button class="nav-btn" id="searchToggle">SEARCH</button>
         <button class="search-icon-btn" id="searchToggleMobile" aria-label="Search" style="display:none;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 748.49 603.2">
-            <circle style="fill:none;stroke:var(--text);stroke-miterlimit:10;stroke-width:54.7px" cx="359.59" cy="281.94" r="101.92"/>
-            <line style="fill:none;stroke:var(--text);stroke-linecap:round;stroke-miterlimit:10;stroke-width:72.93px" x1="444.98" y1="367.33" x2="490.82" y2="413.17"/>
+            <circle style="fill:none;stroke:currentColor;stroke-miterlimit:10;stroke-width:54.7px" cx="359.59" cy="281.94" r="101.92"/>
+            <line style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:72.93px" x1="444.98" y1="367.33" x2="490.82" y2="413.17"/>
           </svg>
         </button>
       </div>
@@ -2061,6 +2176,7 @@
       <button class="archive-back" id="archiveBack">&#8592; BACK</button>
       <div id="archiveGrid"></div>
       <div id="archiveDetail">
+        <button class="archive-detail-close" id="archiveDetailClose">CLOSE</button>
         <div id="archiveIntroText" class="archive-intro-text"></div>
         <div class="archive-detail-inner">
           <div class="archive-detail-img"><img id="detailImg" /></div>
@@ -2157,18 +2273,27 @@
 
   <!-- BOTTOM BAR -->
   <div id="bottomBar">
+    <button class="audio-transport audio-rewind" id="audioRewind" aria-label="Rewind">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 6 L2 12 L11 18 Z M22 6 L13 12 L22 18 Z"/></svg>
+    </button>
+    <button class="audio-transport audio-play" id="audioPlay" aria-label="Play/Pause">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4 L20 12 L5 20 Z"/></svg>
+      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M5 4 H10 V20 H5 Z M14 4 H19 V20 H14 Z"/></svg>
+    </button>
+    <div class="now-playing"><span class="now-playing-inner" id="nowPlayingText">
+      <span class="np-prompt"></span>
+      <span class="np-track" id="npTrackName"></span>
+      <span class="np-meta" id="npMeta"></span>
+      <span class="np-cursor"></span>
+    </span></div>
     <div class="bar-spacer"></div>
     <button id="muteToggle" class="music-btn" aria-label="Toggle music">
       <canvas id="oscCanvas" width="2000" height="80"></canvas>
     </button>
-    <div class="bar-spacer" style="display:flex;justify-content:flex-end;">
-      <div class="now-playing"><span class="now-playing-inner" id="nowPlayingText">
-        <span class="np-prompt"></span>
-        <span class="np-track" id="npTrackName"></span>
-        <span class="np-meta" id="npMeta"></span>
-        <span class="np-cursor"></span>
-      </span></div>
-    </div>
+    <div class="bar-spacer"></div>
+    <button class="audio-transport audio-forward" id="audioForward" aria-label="Forward">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 6 L11 12 L2 18 Z M13 6 L22 12 L13 18 Z"/></svg>
+    </button>
   </div>
 
   <script>
@@ -3065,15 +3190,16 @@
 
       searchIconBtn.addEventListener('click', openSearch);
 
+      const openBtn = document.getElementById('openAllBtn');
       function applyMobile(matches) {
         if (matches) {
-          // Move ARCHIVE to nav-left after ABOUT
           navLeft.appendChild(archiveBtn);
           searchIconBtn.style.display = 'flex';
+          openBtn.textContent = 'Year';
         } else {
-          // Move ARCHIVE back to nav-right
           navRight.insertBefore(archiveBtn, document.getElementById('searchToggle'));
           searchIconBtn.style.display = 'none';
+          openBtn.textContent = 'Open';
         }
       }
       applyMobile(mq.matches);
@@ -4366,6 +4492,11 @@
       document.getElementById('archiveDetail').addEventListener('click', (e) => {
         if (e.target.closest('.archive-detail-nav')) return;
         if (e.target.closest('.archive-detail-img')) return;
+        if (e.target.closest('.archive-detail-close')) { archiveCloseDetail(); return; }
+        archiveCloseDetail();
+      });
+      document.getElementById('archiveDetailClose').addEventListener('click', (e) => {
+        e.stopPropagation();
         archiveCloseDetail();
       });
 
@@ -4566,7 +4697,28 @@
     }
 
     // ─── VIEW SWITCHING ────────────────────────────────────────────────────────
+    let viewTransitioning = false;
     function showView(view, projectData) {
+      // Fade out then swap — skip if first load or same view
+      const mainEl = document.querySelector('main');
+      if (currentView && currentView !== view && !viewTransitioning) {
+        viewTransitioning = true;
+        mainEl.style.transition = 'opacity 0.5s ease';
+        mainEl.style.opacity = '0';
+        setTimeout(() => {
+          _showViewImmediate(view, projectData);
+          mainEl.style.opacity = '1';
+          setTimeout(() => {
+            mainEl.style.transition = '';
+            viewTransitioning = false;
+          }, 500);
+        }, 500);
+        return;
+      }
+      _showViewImmediate(view, projectData);
+    }
+
+    function _showViewImmediate(view, projectData) {
       const projectsView = document.getElementById('projectsView');
       const projectDetailView = document.getElementById('projectDetailView');
       const aboutSection = document.getElementById('aboutSection');
@@ -4966,7 +5118,60 @@
     if (audioSrc) {
       const filename = decodeURIComponent(audioSrc.src.split('/').pop().replace(/\.[^.]+$/, ''));
       const npTrack = document.getElementById('npTrackName');
-      if (npTrack) npTrack.textContent = filename;
+      const npMeta = document.getElementById('npMeta');
+
+      const thoughts = [
+        'Now playing — ' + filename + ' — on repeat',
+        'Listening ···',
+        'Playing — ' + filename + ' — looping',
+        'Processing audio ··· mood: reflective',
+        'Thinking ·········',
+        'Audio — ' + filename + ' — streaming',
+        'Contemplating ···',
+        'On loop — ' + filename,
+        '··· elucidating ···',
+        'Interpreting — ' + filename + ' — continuous',
+        'Sound active — mode: infinite',
+        'Feeling the music ···',
+      ];
+
+      let thoughtIdx = 0;
+      let charIdx = 0;
+      let typeRaf = null;
+
+      function typeThought() {
+        const text = thoughts[thoughtIdx];
+        charIdx = 0;
+        if (npTrack) npTrack.textContent = '';
+        let startTime = null;
+        const charsPerSec = 8;
+
+        function tick(now) {
+          if (!startTime) startTime = now;
+          const elapsed = (now - startTime) * 0.001;
+          const target = Math.min(Math.floor(elapsed * charsPerSec), text.length);
+          if (target > charIdx) {
+            charIdx = target;
+            npTrack.textContent = text.slice(0, charIdx);
+          }
+          if (charIdx < text.length) {
+            typeRaf = requestAnimationFrame(tick);
+          }
+        }
+        typeRaf = requestAnimationFrame(tick);
+      }
+
+      function cycleThoughts() {
+        typeThought();
+        setInterval(() => {
+          thoughtIdx = (thoughtIdx + 1) % thoughts.length;
+          if (typeRaf) cancelAnimationFrame(typeRaf);
+          npTrack.textContent = '';
+          setTimeout(typeThought, 400);
+        }, 10000);
+      }
+
+      cycleThoughts();
     }
 
     const muteToggle = document.getElementById('muteToggle');
@@ -4978,6 +5183,41 @@
       } else {
         bgMusic.pause();
       }
+    });
+
+    // Audio transport buttons (rewind, play/pause, forward)
+    const audioPlayBtn = document.getElementById('audioPlay');
+    const audioRewindBtn = document.getElementById('audioRewind');
+    const audioForwardBtn = document.getElementById('audioForward');
+    const playIcon = audioPlayBtn?.querySelector('.icon-play');
+    const pauseIcon = audioPlayBtn?.querySelector('.icon-pause');
+
+    function updatePlayIcon() {
+      if (!playIcon || !pauseIcon) return;
+      if (bgMusic.paused) {
+        playIcon.style.display = '';
+        pauseIcon.style.display = 'none';
+      } else {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = '';
+      }
+    }
+    bgMusic.addEventListener('play', updatePlayIcon);
+    bgMusic.addEventListener('pause', updatePlayIcon);
+
+    if (audioPlayBtn) audioPlayBtn.addEventListener('click', () => {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        if (!window._audioCtx) initOscilloscope();
+      } else {
+        bgMusic.pause();
+      }
+    });
+    if (audioRewindBtn) audioRewindBtn.addEventListener('click', () => {
+      bgMusic.currentTime = Math.max(0, bgMusic.currentTime - 10);
+    });
+    if (audioForwardBtn) audioForwardBtn.addEventListener('click', () => {
+      bgMusic.currentTime = Math.min(bgMusic.duration || 0, bgMusic.currentTime + 10);
     });
 
     // Draw a static flat line so the canvas is visible before audio plays
@@ -5256,7 +5496,7 @@
       const openBtn = document.getElementById('openAllBtn');
       if (bar && btn) {
         const rect = bar.getBoundingClientRect();
-        const yPos = (rect.top + rect.height / 2 - btn.offsetHeight / 2) + 'px';
+        const yPos = (rect.bottom + 4) + 'px';
         btn.style.top = yPos;
         openBtn.style.top = yPos;
       }
@@ -5313,9 +5553,44 @@
         }, FADE_OUT_DUR + 40);
       });
 
-      // ── Open All button — expand every project accordion at once ──
+      // ── Open All / Year sort button ──
       let allOpenState = false;
+      let yearSorted = false;
+      let yearOriginalOrder = null;
       openBtn.addEventListener('click', () => {
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+          // Year sort mode on mobile
+          const list = document.getElementById('projectsList');
+          const items = [...list.querySelectorAll('.project-item')];
+          const FADE_OUT_DUR = 300;
+          list.style.transition = 'opacity ' + FADE_OUT_DUR + 'ms ease';
+          list.style.opacity = '0';
+          setTimeout(() => {
+            list.style.transition = 'none';
+            if (!yearSorted) {
+              yearOriginalOrder = [...items];
+              const sorted = [...items].sort((a, b) => {
+                const ya = parseInt(a.querySelector('.project-year')?.textContent) || 0;
+                const yb = parseInt(b.querySelector('.project-year')?.textContent) || 0;
+                return yb - ya;
+              });
+              list.querySelectorAll('.category-divider').forEach(d => d.remove());
+              sorted.forEach(el => list.appendChild(el));
+              yearSorted = true;
+              openBtn.classList.add('active');
+            } else {
+              if (yearOriginalOrder) yearOriginalOrder.forEach(el => list.appendChild(el));
+              yearSorted = false;
+              openBtn.classList.remove('active');
+            }
+            list.style.opacity = '1';
+            staggerFadeIn(list);
+          }, FADE_OUT_DUR + 40);
+          return;
+        }
+
         const items = [...document.querySelectorAll('.project-item')];
         if (!allOpenState) {
           // Open all — set flag to prevent each click from closing the previous
