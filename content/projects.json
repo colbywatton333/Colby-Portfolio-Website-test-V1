@@ -29,6 +29,9 @@
         ],
         [
           "IMAGES/BASS-SPEAKER/water-053.jpg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO.mov"
         ]
       ]
     },
@@ -73,6 +76,12 @@
         ],
         [
           "IMAGES/PATHWAY-TO-HEAVEN/PATHWAY_TO_HEAVEN_TEST.svg"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_360_SHOT_RENDER.mov"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_360_SHOT_RENDER.mov"
         ]
       ]
     },
@@ -442,6 +451,12 @@
         [
           "IMAGES/MULTITOOL-PROJECT/IMG_4525.PNG",
           "IMAGES/MULTITOOL-PROJECT/IMG_4706.jpeg"
+        ],
+        [
+          "IMAGES/MULTI-TOOL/MULTITOOL_1.svg"
+        ],
+        [
+          "IMAGES/MULTI-TOOL/MULTITOOL_2.svg"
         ]
       ]
     },
@@ -568,7 +583,11 @@
       "description": "",
       "materials": "",
       "process": "",
-      "images": []
+      "images": [
+        [
+          "IMAGES/SMOKE-GOGGLES/16-9_GLYCERIN_MASK_1.svg"
+        ]
+      ]
     },
     {
       "id": "mdf-press",

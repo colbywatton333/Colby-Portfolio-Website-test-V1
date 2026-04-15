@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="PROJECT_BOX_GRADIENT" data-name="PROJECT BOX + GRADIENT" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 748.49 603.2">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #5c5754;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M322.94,438.65c-7.25,0-14.5-2.77-20.03-8.3-11.06-11.06-11.06-29,0-40.06l93.29-93.29-93.29-93.29c-11.06-11.06-11.06-29,0-40.06,11.06-11.07,29-11.07,40.07,0l113.32,113.32c11.06,11.06,11.06,29,0,40.06l-113.32,113.32c-5.53,5.54-12.78,8.3-20.03,8.3Z"/>
+</svg>

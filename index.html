@@ -351,7 +351,8 @@
     #themeToggle svg {
       width: 18px;
       height: 18px;
-      stroke: var(--text);
+      color: var(--text);
+      stroke: currentColor;
       stroke-width: 3;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -360,7 +361,7 @@
     #themeToggle .eye-open { display: none; }
     #themeToggle .eye-closed { display: block; }
     html.light-mode #themeToggle .eye-open { display: block; }
-    html.light-mode #themeToggle .eye-open circle { fill: var(--text-dim) !important; stroke: none !important; stroke-width: 0 !important; }
+    html.light-mode #themeToggle .eye-open circle { fill: currentColor !important; stroke: none !important; stroke-width: 0 !important; }
     html.light-mode #themeToggle .eye-closed { display: none; }
 
     /* Theme transition — applied temporarily during toggle */
@@ -568,6 +569,13 @@
       mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
       pointer-events: none;
       z-index: -1;
+    }
+    /* Project content renders above the bottom fade so images aren't dimmed,
+       while the fade continues to dim the project list's title/year rows. */
+    .project-accordion.open,
+    #projectDetailView.active {
+      position: relative;
+      z-index: 240;
     }
 
     /* Explorer-Log pill button */
@@ -836,7 +844,7 @@
       opacity: 0;
     }
     .project-accordion.open {
-      max-height: 4000px;
+      max-height: 20000px;
       padding: 36px var(--site-pad) 56px;
       opacity: 1;
       overflow: visible;
@@ -893,7 +901,6 @@
     #projectDetailView {
       display: none;
       padding: 100px var(--site-pad) 60px;
-      min-height: 100vh;
     }
     #projectDetailView.active {
       display: block;
@@ -960,6 +967,119 @@
       height: auto;
       display: block;
       background: #1a1a1a;
+    }
+    .project-detail-gallery .hover-play-card {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Hover-play video card — vanilla port of HoverPlayCard.
+       Container uses the video's natural aspect-ratio once metadata loads
+       (see buildHoverPlayVideo), so there's no letterboxing. */
+    .hover-play-card {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      background: transparent;
+      border-radius: 14px;
+    }
+    .hover-play-card video {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: transparent;
+    }
+    /* In fullscreen, center video and use contain so the full frame shows */
+    .hover-play-card:fullscreen,
+    .hover-play-card:-webkit-full-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border-radius: 0;
+    }
+    .hover-play-card:fullscreen video,
+    .hover-play-card:-webkit-full-screen video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .hover-play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      z-index: 1;
+    }
+    .hover-play-btn-inner {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.18);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 0.5px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+      transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), background 180ms ease;
+    }
+    .hover-play-btn:hover .hover-play-btn-inner,
+    .hover-play-btn:active .hover-play-btn-inner { transform: scale(1.06); background: rgba(255, 255, 255, 0.26); }
+    .hover-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #fff;
+      margin-left: 2px; /* nudge play triangle optically-centered */
+    }
+    .hover-play-btn svg.icon-pause { margin-left: 0; }
+    .hover-play-card:hover .hover-play-btn,
+    .hover-play-card:not(.is-playing) .hover-play-btn { opacity: 1; }
+    @media (hover: none) {
+      .hover-play-btn { opacity: 1; }
+    }
+    .hover-play-controls {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      display: flex;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      z-index: 2;
+    }
+    .hover-play-card:hover .hover-play-controls { opacity: 1; }
+    .hp-ctrl {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.18);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      backdrop-filter: blur(18px) saturate(180%);
+      color: #fff;
+      border: 0.5px solid rgba(255, 255, 255, 0.22);
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+      transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), background 160ms ease;
+    }
+    .hp-ctrl:hover { transform: scale(1.08); background: rgba(255, 255, 255, 0.26); }
+    .hp-ctrl:active { transform: scale(0.96); }
+    .hp-ctrl svg { width: 18px; height: 18px; display: block; fill: #fff; }
+    @media (hover: none) {
+      .hover-play-controls { opacity: 1; }
     }
 
     /* ─── CATEGORY DIVIDER (organize view) ──────────── */
@@ -1938,7 +2058,7 @@
         color: var(--text-dim);
       }
       #themeToggle svg {
-        stroke: var(--text-dim) !important;
+        color: var(--text-dim) !important;
       }
       /* Match nav border color to text dim on mobile */
       nav::after {
@@ -2459,6 +2579,12 @@
   </div>
 
   <script>
+    // Always start at the top — disable the browser's auto scroll-restore
+    // (it normally returns to the previous scroll position on reload/back).
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+    window.addEventListener('load', () => window.scrollTo(0, 0));
+
     // ─── THEME TOGGLE ─────────────────────────────────────────────────────────
     document.getElementById('themeToggle').addEventListener('click', () => {
       document.documentElement.classList.add('theme-transitioning');
@@ -2749,33 +2875,34 @@
       container.appendChild(header);
 
       // ── Content area ─────────────────────────────────
-      const content = document.createElement('div');
+      let content = document.createElement('div');
       content.className = 'accordion-content';
       container.appendChild(content);
 
       // Create arrow buttons inside this accordion panel
       const { prev: arrowP, next: arrowN } = createAccordionArrows(container);
 
-      function fillContent(page) {
-        content.innerHTML = '';
+      function fillContent(page, target) {
+        const tgt = target || content;
+        tgt.innerHTML = '';
         if (page.type === 'info') {
           if (project.description) {
             const desc = document.createElement('div');
             desc.className = 'project-detail-description';
             desc.textContent = project.description;
-            content.appendChild(desc);
+            tgt.appendChild(desc);
           }
           if (project.materials) {
             const mat = document.createElement('div');
             mat.className = 'project-detail-materials';
             mat.innerHTML = '<div class="project-detail-label">Materials</div><div class="project-detail-value">' + project.materials + '</div>';
-            content.appendChild(mat);
+            tgt.appendChild(mat);
           }
           if (project.process) {
             const proc = document.createElement('div');
             proc.className = 'project-detail-process';
             proc.innerHTML = '<div class="project-detail-label">Process</div><div class="project-detail-value">' + project.process + '</div>';
-            content.appendChild(proc);
+            tgt.appendChild(proc);
           }
         } else {
           const gallery = document.createElement('div');
@@ -2786,7 +2913,7 @@
             img.loading = 'lazy';
             gallery.appendChild(img);
           });
-          content.appendChild(gallery);
+          tgt.appendChild(gallery);
         }
       }
 
@@ -2802,36 +2929,77 @@
         arrowN.classList.toggle('pulse', current < pages.length - 1);
       }
 
+      let sliding = false;
       function goTo(idx, animate) {
-        const direction = idx > current ? 1 : -1; // 1 = forward (slide left), -1 = back (slide right)
-        current = Math.max(0, Math.min(pages.length - 1, idx));
-        updateEdgeNav();
-        if (animate) {
-          // Slide current content out
-          content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
-          content.style.transform = 'translateX(' + (-direction * 100) + '%)';
-          content.style.opacity = '0';
-          setTimeout(() => {
-            // Swap content while off-screen
-            fillContent(pages[current]);
-            // Position new content on opposite side
-            content.style.transition = 'none';
-            content.style.transform = 'translateX(' + (direction * 100) + '%)';
-            content.style.opacity = '0';
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                // Slide new content in
-                content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
-                content.style.transform = 'translateX(0)';
-                content.style.opacity = '1';
-              });
-            });
-          }, 1800);
-        } else {
-          fillContent(pages[current]);
-          content.style.transform = 'translateX(0)';
-          content.style.opacity = '1';
+        const newIdx = Math.max(0, Math.min(pages.length - 1, idx));
+        if (!animate) {
+          current = newIdx;
+          updateEdgeNav();
+          fillContent(pages[current], content);
+          return;
         }
+        if (newIdx === current || sliding) return;
+        const direction = newIdx > current ? 1 : -1;
+        current = newIdx;
+        updateEdgeNav();
+
+        // Dual-pane simultaneous slide: lock outgoing in place, insert incoming
+        // offset by 100% in the direction of travel, then animate both together.
+        sliding = true;
+        const parent = content.parentElement;
+        const outgoing = content;
+        const prevParentPos = parent.style.position;
+        const prevParentOverflow = parent.style.overflow;
+        const prevParentMinH = parent.style.minHeight;
+        const outRect = outgoing.getBoundingClientRect();
+        parent.style.position = 'relative';
+        parent.style.overflow = 'hidden';
+        parent.style.minHeight = outRect.height + 'px';
+        outgoing.style.position = 'absolute';
+        outgoing.style.top = '0';
+        outgoing.style.left = '0';
+        outgoing.style.width = '100%';
+        outgoing.style.transition = 'none';
+        outgoing.style.transform = 'translateX(0)';
+        outgoing.style.opacity = '1';
+
+        const incoming = document.createElement('div');
+        incoming.className = 'accordion-content';
+        incoming.style.position = 'absolute';
+        incoming.style.top = '0';
+        incoming.style.left = '0';
+        incoming.style.width = '100%';
+        incoming.style.transition = 'none';
+        incoming.style.transform = 'translateX(' + (direction * 100) + '%)';
+        parent.appendChild(incoming);
+        fillContent(pages[current], incoming);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const DUR = 750;
+            const trans = 'transform ' + DUR + 'ms cubic-bezier(0.4, 0, 0.2, 1)';
+            outgoing.style.transition = trans;
+            outgoing.style.transform = 'translateX(' + (-direction * 100) + '%)';
+            incoming.style.transition = trans;
+            incoming.style.transform = 'translateX(0)';
+          });
+        });
+
+        setTimeout(() => {
+          outgoing.remove();
+          content = incoming;
+          // Reset incoming so it flows naturally again
+          content.style.position = '';
+          content.style.top = '';
+          content.style.left = '';
+          content.style.width = '';
+          content.style.transition = '';
+          content.style.transform = '';
+          parent.style.position = prevParentPos;
+          parent.style.overflow = prevParentOverflow;
+          parent.style.minHeight = prevParentMinH;
+          sliding = false;
+        }, 800);
       }
 
       arrowP.addEventListener('click', e => { e.stopPropagation(); goTo(current - 1, true); });
@@ -2880,16 +3048,28 @@
       wrapper.innerHTML = '';
       wrapper.style.position = 'relative';
       wrapper.style.width = '100%';
-      wrapper.style.maxWidth = (canvasWidth || 1200) + 'px';
+      wrapper.style.maxWidth = 'none';
 
       let maxBottom = 0;
+      const designWidth = canvasWidth || 1200;
       (elements || []).forEach(elData => {
         const el = document.createElement('div');
         el.style.position = 'absolute';
         el.style.left = elData.x + '%';
         el.style.top = elData.y + 'px';
         el.style.width = elData.width + '%';
-        if (elData.height !== 'auto') el.style.height = elData.height + 'px';
+        // For non-cropped media elements, skip explicit pixel height — the
+        // <img>/<video> inside sizes itself by natural aspect and the absolute
+        // container shrink-wraps around it. Text elements (and cropped images
+        // using imgRegion) need definite pixel heights.
+        const isMedia = elData.type === 'image';
+        const isCropped = isMedia && elData.imgRegion &&
+          (elData.imgRegion.x || elData.imgRegion.y ||
+           elData.imgRegion.w < 100 || elData.imgRegion.h < 100);
+        const needsPixelHeight = (!isMedia || isCropped) && elData.height !== 'auto';
+        if (needsPixelHeight) {
+          el.style.height = elData.height + 'px';
+        }
         el.style.zIndex = elData.zIndex || 0;
 
         if (elData.type === 'text') {
@@ -2897,6 +3077,15 @@
           el.style.wordBreak = 'break-word';
           el.textContent = elData.content;
           if (elData.style) Object.keys(elData.style).forEach(k => { el.style[k] = elData.style[k]; });
+        } else if (elData.type === 'image' && isVideoSrc(elData.src)) {
+          // Videos always render at full content width on the live site so
+          // there's no empty gutter/page-bg visible next to them. Their
+          // height is driven by the video's natural aspect via loadedmetadata.
+          el.style.left = '0';
+          el.style.width = '100%';
+          const vc = buildHoverPlayVideo(elData.src, project && project.title);
+          vc.style.width = '100%';
+          el.appendChild(vc);
         } else if (elData.type === 'image') {
           const img = document.createElement('img');
           img.src = elData.src;
@@ -2915,8 +3104,17 @@
             el.style.overflow = 'hidden';
           } else {
             img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = elData.objectFit || 'cover';
+            img.style.height = 'auto';
+            img.style.display = 'block';
+            // Respect the designed aspect (stored width× × height), not the
+            // image's natural aspect. aspect-ratio on a replaced <img> with
+            // width:100% + height:auto works without the percentage-height
+            // bug that breaks when aspect-ratio is on an absolute container.
+            if (elData.width && elData.height) {
+              const wPx = (elData.width / 100) * designWidth;
+              img.style.aspectRatio = wPx + ' / ' + elData.height;
+              img.style.objectFit = elData.objectFit || 'cover';
+            }
           }
           el.appendChild(img);
           // Visual crop preview (non-baked)
@@ -2933,7 +3131,37 @@
         wrapper.appendChild(el);
       });
 
-      wrapper.style.minHeight = (overrideHeight || Math.max(520, maxBottom)) + 'px';
+      // Initial min-height uses the design-time max-bottom as a starting estimate.
+      wrapper.style.minHeight = (overrideHeight || maxBottom) + 'px';
+
+      // Because image/video containers use aspect-ratio (not fixed pixel height),
+      // their actual rendered heights scale with the wrapper's width. Measure
+      // real positions after layout and keep wrapper tall enough to contain
+      // every element — no clipping, no extra whitespace.
+      const recompute = () => {
+        const wrapRect = wrapper.getBoundingClientRect();
+        let realBottom = 0;
+        for (const child of wrapper.children) {
+          const r = child.getBoundingClientRect();
+          const b = (r.bottom - wrapRect.top);
+          if (b > realBottom) realBottom = b;
+        }
+        if (realBottom > 0) {
+          wrapper.style.minHeight = Math.ceil(realBottom) + 'px';
+        }
+      };
+      // Run after images report their computed size, and on resize.
+      requestAnimationFrame(recompute);
+      setTimeout(recompute, 200);
+      new ResizeObserver(recompute).observe(wrapper);
+      // Re-measure each time an image or video finishes loading (changes height).
+      wrapper.querySelectorAll('img').forEach(img => {
+        if (img.complete) return;
+        img.addEventListener('load', recompute, { once: true });
+      });
+      wrapper.querySelectorAll('video').forEach(v => {
+        v.addEventListener('loadedmetadata', recompute, { once: true });
+      });
     }
 
     function renderFreeformLayout(container, project, layout) {
@@ -2945,7 +3173,7 @@
       // Pre-compute uniform height across all pages
       let globalMax = 0;
       pages.forEach(p => { globalMax = Math.max(globalMax, computePageMaxBottom(p)); });
-      const globalHeight = Math.max(520, globalMax);
+      const globalHeight = globalMax;
 
       if (pages.length <= 1) {
         // Single page — no pagination needed
@@ -2960,16 +3188,15 @@
       let current = 0;
       const content = document.createElement('div');
       content.className = 'accordion-content';
-      content.style.transition = 'opacity 0.3s ease';
       container.appendChild(content);
 
-      const wrapper = document.createElement('div');
+      let wrapper = document.createElement('div');
       content.appendChild(wrapper);
 
       const { prev: arrowP, next: arrowN } = createAccordionArrows(container);
 
-      function showPage(idx) {
-        renderFreeformPage(wrapper, pages[idx], project, layout.canvasWidth, globalHeight);
+      function showPage(idx, target) {
+        renderFreeformPage(target || wrapper, pages[idx], project, layout.canvasWidth, globalHeight);
       }
 
       function updateNav() {
@@ -2984,32 +3211,76 @@
         arrowN.classList.toggle('pulse', current < pages.length - 1);
       }
 
+      let sliding = false;
       function goTo(idx, animate) {
-        const direction = idx > current ? 1 : -1;
-        current = Math.max(0, Math.min(pages.length - 1, idx));
-        updateNav();
-        if (animate) {
-          content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
-          content.style.transform = 'translateX(' + (-direction * 100) + '%)';
-          content.style.opacity = '0';
-          setTimeout(() => {
-            showPage(current);
-            content.style.transition = 'none';
-            content.style.transform = 'translateX(' + (direction * 100) + '%)';
-            content.style.opacity = '0';
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                content.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.8s ease';
-                content.style.transform = 'translateX(0)';
-                content.style.opacity = '1';
-              });
-            });
-          }, 1800);
-        } else {
+        const newIdx = Math.max(0, Math.min(pages.length - 1, idx));
+        if (!animate) {
+          current = newIdx;
+          updateNav();
           showPage(current);
-          content.style.transform = 'translateX(0)';
-          content.style.opacity = '1';
+          return;
         }
+        if (newIdx === current || sliding) return;
+        const direction = newIdx > current ? 1 : -1;
+        current = newIdx;
+        updateNav();
+
+        // Dual-pane simultaneous slide — outgoing wrapper moves out while the
+        // incoming wrapper slides in from the opposite side.
+        sliding = true;
+        const outgoing = wrapper;
+        const outRect = outgoing.getBoundingClientRect();
+        const prevContentPos = content.style.position;
+        const prevContentOverflow = content.style.overflow;
+        const prevContentMinH = content.style.minHeight;
+        content.style.position = 'relative';
+        content.style.overflow = 'hidden';
+        content.style.minHeight = outRect.height + 'px';
+
+        outgoing.style.position = 'absolute';
+        outgoing.style.top = '0';
+        outgoing.style.left = '0';
+        outgoing.style.width = '100%';
+        outgoing.style.transition = 'none';
+        outgoing.style.transform = 'translateX(0)';
+
+        const incoming = document.createElement('div');
+        incoming.style.position = 'absolute';
+        incoming.style.top = '0';
+        incoming.style.left = '0';
+        incoming.style.width = '100%';
+        incoming.style.transition = 'none';
+        incoming.style.transform = 'translateX(' + (direction * 100) + '%)';
+        content.appendChild(incoming);
+        showPage(current, incoming);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const DUR = 750;
+            const trans = 'transform ' + DUR + 'ms cubic-bezier(0.4, 0, 0.2, 1)';
+            outgoing.style.transition = trans;
+            outgoing.style.transform = 'translateX(' + (-direction * 100) + '%)';
+            incoming.style.transition = trans;
+            incoming.style.transform = 'translateX(0)';
+          });
+        });
+
+        setTimeout(() => {
+          outgoing.remove();
+          wrapper = incoming;
+          // Keep position:relative so absolutely-positioned children size
+          // against this wrapper (not the body). renderFreeformPage set this.
+          wrapper.style.position = 'relative';
+          wrapper.style.top = '';
+          wrapper.style.left = '';
+          wrapper.style.width = '100%';
+          wrapper.style.transition = '';
+          wrapper.style.transform = '';
+          content.style.position = prevContentPos;
+          content.style.overflow = prevContentOverflow;
+          content.style.minHeight = prevContentMinH;
+          sliding = false;
+        }, 800);
       }
 
       arrowP.addEventListener('click', e => { e.stopPropagation(); goTo(current - 1, true); });
@@ -3062,7 +3333,11 @@
       gallery.className = 'project-detail-gallery';
       (project.images || []).forEach(slideGroup => {
         (Array.isArray(slideGroup) ? slideGroup : [slideGroup]).forEach(src => {
-          if (src && !src.toLowerCase().endsWith('.heic')) {
+          if (!src) return;
+          if (src.toLowerCase().endsWith('.heic')) return;
+          if (isVideoSrc(src)) {
+            gallery.appendChild(buildHoverPlayVideo(src, project && project.title));
+          } else {
             const img = document.createElement('img');
             img.src = src;
             img.alt = (project && project.title) || '';
@@ -3074,12 +3349,166 @@
       container.appendChild(gallery);
     }
 
+    function isVideoSrc(s) {
+      return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(s || '');
+    }
+
+    function buildHoverPlayVideo(src, altTitle) {
+      const wrap = document.createElement('div');
+      wrap.className = 'hover-play-card';
+
+      const video = document.createElement('video');
+      video.src = src;
+      video.loop = true;
+      video.playsInline = true;
+      video.muted = true;
+      video.preload = 'metadata';
+      video.setAttribute('aria-label', altTitle || '');
+      wrap.appendChild(video);
+
+      const btn = document.createElement('button');
+      btn.className = 'hover-play-btn';
+      btn.setAttribute('aria-label', 'Play video');
+      btn.innerHTML =
+        '<span class="hover-play-btn-inner">' +
+          '<svg viewBox="0 0 24 24" class="icon-play"><path d="M7 4.5 C7 3.5 8 3 8.8 3.5 L19.5 11 C20.3 11.5 20.3 12.5 19.5 13 L8.8 20.5 C8 21 7 20.5 7 19.5 Z"/></svg>' +
+          '<svg viewBox="0 0 24 24" class="icon-pause" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1.5"/><rect x="14" y="4" width="4" height="16" rx="1.5"/></svg>' +
+        '</span>';
+      wrap.appendChild(btn);
+
+      const controls = document.createElement('div');
+      controls.className = 'hover-play-controls';
+
+      const volBtn = document.createElement('button');
+      volBtn.className = 'hp-ctrl hp-vol';
+      volBtn.setAttribute('aria-label', 'Toggle sound');
+      volBtn.innerHTML =
+        '<svg viewBox="0 0 24 24" class="icon-muted"><path d="M11 5 L6.5 9 H3.5 V15 H6.5 L11 19 Z"/><path d="M15.5 9 L20 13.5 M20 9 L15.5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>' +
+        '<svg viewBox="0 0 24 24" class="icon-unmuted" style="display:none"><path d="M11 5 L6.5 9 H3.5 V15 H6.5 L11 19 Z"/><path d="M15 9.5 Q17 12 15 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M17 7.5 Q20 12 17 16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
+      controls.appendChild(volBtn);
+
+      const fsBtn = document.createElement('button');
+      fsBtn.className = 'hp-ctrl hp-fs';
+      fsBtn.setAttribute('aria-label', 'Fullscreen');
+      fsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9 V5 H9 M15 5 H19 V9 M19 15 V19 H15 M9 19 H5 V15"/></svg>';
+      controls.appendChild(fsBtn);
+
+      wrap.appendChild(controls);
+
+      // Once metadata loads, clear any pixel height on the freeform parent so
+      // the video's natural block size (which respects rotation metadata)
+      // can drive the wrap height — no black bars from aspect mismatch.
+      video.addEventListener('loadedmetadata', () => {
+        const pos = wrap.parentElement;
+        if (pos && pos.style.position === 'absolute') {
+          pos.style.height = 'auto';
+        }
+      });
+
+      let userStarted = false;
+
+      wrap.addEventListener('mouseenter', () => {
+        if (userStarted) return;
+        video.muted = true;
+        video.play().catch(() => {});
+      });
+      wrap.addEventListener('mouseleave', () => {
+        if (userStarted) return;
+        video.pause();
+      });
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (video.paused) {
+          userStarted = true;
+          video.muted = false;
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+
+      const syncIcon = () => {
+        wrap.classList.toggle('is-playing', !video.paused);
+        btn.querySelector('.icon-play').style.display = video.paused ? '' : 'none';
+        btn.querySelector('.icon-pause').style.display = video.paused ? 'none' : '';
+      };
+      video.addEventListener('play', syncIcon);
+      video.addEventListener('pause', syncIcon);
+      video.addEventListener('ended', () => { userStarted = false; syncIcon(); });
+
+      const syncVolIcon = () => {
+        volBtn.querySelector('.icon-muted').style.display = video.muted ? '' : 'none';
+        volBtn.querySelector('.icon-unmuted').style.display = video.muted ? 'none' : '';
+      };
+      video.addEventListener('volumechange', syncVolIcon);
+
+      volBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (video.muted) {
+          video.muted = false;
+          userStarted = true;
+          if (video.paused) video.play().catch(() => {});
+        } else {
+          video.muted = true;
+        }
+      });
+
+      fsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const doc = document;
+        const isFs = doc.fullscreenElement || doc.webkitFullscreenElement;
+        if (isFs) {
+          (doc.exitFullscreen || doc.webkitExitFullscreen).call(doc);
+        } else if (wrap.requestFullscreen) {
+          wrap.requestFullscreen();
+        } else if (wrap.webkitRequestFullscreen) {
+          wrap.webkitRequestFullscreen();
+        } else if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen();
+        }
+      });
+
+      return wrap;
+    }
+
     // ─── AUTO-INLINE SVGs ──────────────────────────────────────────────────
     // Replaces <img src="*.svg"> with inline <svg> so CSS can target
     // text/graphics for theme inversion while leaving embedded images alone
+    // Stroke boost + single theme observer for all inlined SVGs.
+    // Consolidated so flipping themes doesn't fan out to N separate observers
+    // (which caused flicker). Only reacts to actual `light-mode` class changes,
+    // ignoring transient `theme-transitioning` mutations.
+    function boostSvgStrokes(svg) {
+      const isLight = document.documentElement.classList.contains('light-mode');
+      const els = svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect');
+      if (isLight) {
+        els.forEach(el => { if (el.dataset.origSw) el.style.strokeWidth = ''; });
+      } else {
+        els.forEach(el => {
+          const cs = getComputedStyle(el);
+          const sw = parseFloat(cs.strokeWidth) || 0;
+          if (sw > 0) {
+            if (!el.dataset.origSw) el.dataset.origSw = sw;
+            el.style.strokeWidth = (parseFloat(el.dataset.origSw) + 0.5) + 'px';
+          }
+        });
+      }
+    }
+    let __lastLightMode = document.documentElement.classList.contains('light-mode');
+    new MutationObserver(() => {
+      const isLight = document.documentElement.classList.contains('light-mode');
+      if (isLight === __lastLightMode) return;
+      __lastLightMode = isLight;
+      document.querySelectorAll('svg.svg-inlined').forEach(boostSvgStrokes);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
     function inlineSVGs(root) {
       const imgs = (root || document).querySelectorAll('img[src$=".svg"], img[src$=".SVG"]');
-      const isBlackish = (c) => !c || c === 'none' || /^(#000000|#000|#231f20|#1a1a1a|black|rgb\(0,\s*0,\s*0\)|currentColor)$/i.test(c.trim());
+      // Catches colors that should flip with the theme — both blacks (authored
+      // for light mode) and whites (authored for dark mode) are swapped to
+      // var(--text), which is white in dark mode and dark in light mode.
+      const isThemable = (c) => !c || c === 'none' || /^(#000000|#000|#231f20|#1a1a1a|black|rgb\(0,\s*0,\s*0\)|#ffffff|#fff|white|rgb\(255,\s*255,\s*255\)|currentColor)$/i.test(c.trim());
 
       imgs.forEach(img => {
         if (img.dataset.svgInlined) return;
@@ -3095,44 +3524,33 @@
           if (img.width) svg.setAttribute('width', img.width);
           if (img.height) svg.setAttribute('height', img.height);
           if (img.className) svg.classList.add(...img.className.split(/\s+/).filter(Boolean));
+          // Inlined SVGs manage their own theme via var(--text) rewrites below.
+          // Removing .svg-invertable prevents the CSS `filter: invert(1)` rule
+          // from double-inverting the already-theme-correct paint in dark mode.
+          svg.classList.remove('svg-invertable');
           if (img.style.cssText) svg.style.cssText += img.style.cssText;
           svg.dataset.originalSrc = src;
 
-          // Rewrite embedded <style> blocks — swap black colors to var(--text)
+          // Rewrite embedded <style> blocks — swap black AND white colors
+          // to var(--text) so strokes/fills flip correctly with the theme.
           svg.querySelectorAll('style').forEach(styleEl => {
             let css = styleEl.textContent;
-            // Replace black colors
+            // Blacks
             css = css.replace(/#000000/gi, 'var(--text)');
             css = css.replace(/#000(?![0-9a-fA-F])/g, 'var(--text)');
             css = css.replace(/#231f20/gi, 'var(--text)');
             css = css.replace(/#1a1a1a/gi, 'var(--text)');
             css = css.replace(/\bblack\b/g, 'var(--text)');
+            // Whites (authored for dark mode)
+            css = css.replace(/#ffffff/gi, 'var(--text)');
+            css = css.replace(/#fff(?![0-9a-fA-F])/gi, 'var(--text)');
+            css = css.replace(/\bwhite\b/g, 'var(--text)');
             styleEl.textContent = css;
           });
 
-          // Boost all stroke-widths by 0.5px in dark mode
-          // Read computed stroke-widths after insertion and apply via inline style
-          const boostStrokes = () => {
-            if (document.documentElement.classList.contains('light-mode')) {
-              svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
-                if (el.dataset.origSw) el.style.strokeWidth = '';
-              });
-            } else {
-              svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
-                const cs = getComputedStyle(el);
-                const sw = parseFloat(cs.strokeWidth) || 0;
-                if (sw > 0) {
-                  if (!el.dataset.origSw) el.dataset.origSw = sw;
-                  el.style.strokeWidth = (parseFloat(el.dataset.origSw) + 0.5) + 'px';
-                }
-              });
-            }
-          };
-          // Run after DOM insertion
-          requestAnimationFrame(boostStrokes);
-          // Re-run on theme change
-          const strokeObs = new MutationObserver(boostStrokes);
-          strokeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+          // Initial stroke boost for this SVG in current theme.
+          // Global observer below handles subsequent theme changes for ALL inlined SVGs.
+          requestAnimationFrame(() => boostSvgStrokes(svg));
 
           // Text elements default to black fill (inherited) — set explicitly
           svg.querySelectorAll('text, tspan').forEach(el => {
@@ -3145,13 +3563,13 @@
             if (!el.getAttribute('fill')) el.setAttribute('fill', 'none');
           });
 
-          // Handle attribute-based colors on shapes
+          // Handle attribute-based colors on shapes — both blacks and whites
+          // get swapped to var(--text) for theme responsiveness.
           svg.querySelectorAll('path, rect, circle, ellipse, polyline, polygon').forEach(el => {
             const fill = el.getAttribute('fill');
             const stroke = el.getAttribute('stroke');
-            if (fill && isBlackish(fill) && fill !== 'none') el.setAttribute('fill', 'var(--text)');
-            if (stroke && isBlackish(stroke) && stroke !== 'none') el.setAttribute('stroke', 'var(--text)');
-            // Elements with no fill attribute default to black — set to var(--text)
+            if (fill && isThemable(fill) && fill !== 'none') el.setAttribute('fill', 'var(--text)');
+            if (stroke && isThemable(stroke) && stroke !== 'none') el.setAttribute('stroke', 'var(--text)');
             if (!fill && !el.getAttribute('class')) el.setAttribute('fill', 'var(--text)');
           });
 
@@ -5729,17 +6147,29 @@
       .catch(() => renderProjects([]));
 
     function initOrganizeBtn() {
-      // Position buttons vertically aligned with the category bar
+      // Position buttons vertically aligned with the category bar.
+      // Use a ResizeObserver so the two buttons stay on the same horizontal
+      // line when the category bar's height changes (filter content, resize, etc).
       const bar = document.getElementById('categoryBar');
       const btn = document.getElementById('organizeBtn');
       const openBtn = document.getElementById('openAllBtn');
       const relevanceBtn = document.getElementById('relevanceBtn');
       if (bar && btn) {
-        const rect = bar.getBoundingClientRect();
-        const yPos = (rect.bottom + 4) + 'px';
-        btn.style.top = yPos;
-        openBtn.style.top = yPos;
-        if (relevanceBtn) relevanceBtn.style.top = yPos;
+        const syncTop = () => {
+          // Align Organize / Open with the category filter buttons so they
+          // share one horizontal line with Object / Sound / Installation / etc.
+          const firstFilter = document.querySelector('#categoryFilters .cat-filter');
+          const ref = firstFilter || bar;
+          const rect = ref.getBoundingClientRect();
+          const yPos = rect.top + 'px';
+          btn.style.top = yPos;
+          openBtn.style.top = yPos;
+          if (relevanceBtn) relevanceBtn.style.top = yPos;
+        };
+        syncTop();
+        requestAnimationFrame(syncTop);
+        new ResizeObserver(syncTop).observe(bar);
+        window.addEventListener('resize', syncTop);
       }
 
       // Relevance button — restores default order

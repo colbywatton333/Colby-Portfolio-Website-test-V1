@@ -146,6 +146,7 @@
   },
   "bass-speaker": {
     "canvasWidth": 1200,
+    "pageHeight": null,
     "pages": [
       {
         "elements": [
@@ -223,12 +224,12 @@
         "elements": [
           {
             "type": "image",
-            "id": "el-mndppknu-xa2ti",
-            "src": "IMAGES/BASS-SPEAKER/IMG_0850.jpg",
-            "x": 0,
+            "id": "el-mnz3kscq-sgli8",
+            "src": "IMAGES/BASS-SPEAKER/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO.mov",
+            "x": 29.5,
             "y": 0,
-            "width": 26.888885498046875,
-            "height": 380.6666259765625,
+            "width": 41,
+            "height": 360,
             "zIndex": 0,
             "objectFit": "cover"
           }
@@ -688,11 +689,26 @@
             "src": "IMAGES/PATHWAY-TO-HEAVEN/PATHWAY_TO_HEAVEN_TEST.svg",
             "x": 0,
             "y": 0,
-            "width": 134.38887532552081,
-            "height": 897.0457427978515,
+            "width": 100,
+            "height": 667,
             "zIndex": 0,
             "objectFit": "scale-down",
             "invertDark": true
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnzkosu3-5krqn",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_360_SHOT_RENDER.mov",
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 675,
+            "zIndex": 0,
+            "objectFit": "scale-down"
           }
         ]
       },
@@ -885,6 +901,63 @@
             "height": 718.3041893005371,
             "zIndex": 0,
             "objectFit": "scale-down"
+          }
+        ]
+      }
+    ]
+  },
+  "multi-tool": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnz2m8gk-5eprp",
+            "src": "IMAGES/MULTI-TOOL/MULTITOOL_1.svg",
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 544,
+            "zIndex": 0,
+            "objectFit": "cover"
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnz4qclw-a4dhe",
+            "src": "IMAGES/MULTI-TOOL/MULTITOOL_2.svg",
+            "x": 0,
+            "y": 36.666656494140625,
+            "width": 100,
+            "height": 544,
+            "zIndex": 0,
+            "objectFit": "scale-down"
+          }
+        ]
+      }
+    ]
+  },
+  "smoke-goggles": {
+    "canvasWidth": 1200,
+    "pageHeight": null,
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "image",
+            "id": "el-mnzkmusm-i8h72",
+            "src": "IMAGES/SMOKE-GOGGLES/16-9_GLYCERIN_MASK_1.svg",
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 674,
+            "zIndex": 0,
+            "objectFit": "cover"
           }
         ]
       }
