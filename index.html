@@ -2710,6 +2710,144 @@
       .nav-left { gap: 10px; }
       .nav-right { gap: 8px; }
     }
+
+    /* ─── PLAYER VIEW ───────────────────────────────────────────────────── */
+    #playerView {
+      display: none;
+      padding: 120px var(--site-pad) 120px;
+      min-height: 100vh;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    #playerView.active {
+      display: block;
+      opacity: 1;
+    }
+    .player-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 80px;
+    }
+    .record-player {
+      width: 100%;
+      max-width: 640px;
+      position: relative;
+    }
+    .record-player .player-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .player-nowplaying {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      text-align: center;
+      min-height: 14px;
+      transition: color 600ms ease;
+    }
+    .player-nowplaying .np-label {
+      color: var(--text-dim);
+      margin-right: 8px;
+    }
+    .player-nowplaying .np-title {
+      color: var(--text);
+    }
+
+    /* Song grid */
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .player-tile {
+      position: relative;
+      padding: 16px 14px;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease, transform 200ms ease;
+      overflow: hidden;
+    }
+    .player-tile:hover { border-color: var(--text-mid); }
+    .player-tile:focus-visible { outline: 1px solid var(--text-mid); outline-offset: 2px; }
+    .player-tile:active { transform: scale(0.98); }
+    .player-tile .tile-num {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-right: 10px;
+      letter-spacing: 0.08em;
+      min-width: 18px;
+    }
+    .player-tile .tile-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .player-tile .tile-state {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-left: 8px;
+      background: transparent;
+      border: 1px solid var(--text-dim);
+      flex-shrink: 0;
+    }
+    .player-tile.active {
+      border-color: var(--text);
+      color: var(--text);
+    }
+    .player-tile.active .tile-state {
+      background: var(--text);
+      border-color: var(--text);
+      animation: rp-pulse 1.2s ease-in-out infinite;
+    }
+    .player-tile.paused .tile-state {
+      background: transparent;
+      animation: none;
+    }
+    .player-tile.empty {
+      border-style: dashed;
+      border-color: var(--border);
+      color: var(--text-dim);
+      cursor: default;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    @keyframes rp-pulse {
+      0%, 100% { transform: scale(1);   opacity: 1; }
+      50%      { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    @media (max-width: 900px) {
+      #playerView { padding: 100px 6vw 100px; }
+      .player-grid { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(5, 1fr); }
+    }
+    @media (max-width: 500px) {
+      #playerView { padding: 90px 5vw 80px; }
+      .player-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; gap: 8px; }
+      .player-tile { padding: 12px 10px; min-height: 54px; font-size: 10px; }
+      .record-player { max-width: 440px; }
+    }
   </style>
 </head>
 <body>
@@ -2740,6 +2878,7 @@
       <div class="nav-left">
         <a class="nav-link" id="navProjects">Projects</a>
         <a class="nav-link" id="navAbout" tabindex="0">About</a>
+        <a class="nav-link" id="navPlayer" tabindex="0">Player</a>
       </div>
       <div class="nav-right">
         <button id="themeToggle" aria-label="Toggle light mode">
@@ -2857,6 +2996,20 @@
         </div>
       </div>
     </div>
+
+    <!-- PLAYER VIEW -->
+    <section id="playerView" class="player-view" aria-hidden="true">
+      <div class="player-stage">
+        <div class="record-player" id="recordPlayer" aria-label="Record player">
+          <video class="player-video" id="playerVideo" autoplay loop muted playsinline>
+            <source src="MUSIC-ASSETS/record-player.mov" type="video/mp4">
+          </video>
+        </div>
+        <div class="player-nowplaying" id="playerNowPlaying" aria-live="polite"></div>
+      </div>
+      <div class="player-grid" id="playerGrid" role="list"></div>
+      <audio id="playerAudio" preload="metadata"></audio>
+    </section>
   </main>
 
   <!-- FOOTER -->
@@ -6040,6 +6193,7 @@
       const galleryView = document.getElementById('galleryView');
       const navigationView = document.getElementById('navigationView');
       const rectGridView = document.getElementById('rectGridView');
+      const playerView = document.getElementById('playerView');
 
       projectsView.style.display = 'none';
       projectDetailView.classList.remove('active');
@@ -6047,6 +6201,10 @@
       galleryView.classList.remove('active');
       navigationView.classList.remove('active');
       rectGridView.classList.remove('active');
+      if (playerView && currentView === 'player' && view !== 'player') {
+        if (typeof stopPlayer === 'function') stopPlayer();
+      }
+      if (playerView) playerView.classList.remove('active');
       if (window._archiveStopDrift) window._archiveStopDrift();
       stopArchiveLoop();
       stopNavLogTypewriter();
@@ -6073,6 +6231,7 @@
       const openAllBtn = document.getElementById('openAllBtn');
       const relevanceBtn = document.getElementById('relevanceBtn');
       const gridBtn = document.getElementById('gridBtn');
+      const mobileOpenBtn = document.getElementById('mobileOpenBtn');
       const headerEl = document.querySelector('header');
       const backBtn = document.getElementById('backToHome');
       const bottomBar = document.getElementById('bottomBar');
@@ -6093,6 +6252,7 @@
         openAllBtn.style.display = 'block';
         if (relevanceBtn) relevanceBtn.style.display = isMobileView ? 'block' : 'none';
         if (gridBtn) gridBtn.style.display = '';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = isMobileView ? 'block' : 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         stopBackBtnCycle();
@@ -6107,6 +6267,7 @@
         openAllBtn.style.display = 'none';
         if (relevanceBtn) relevanceBtn.style.display = 'none';
         if (gridBtn) gridBtn.style.display = 'none';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         stopBackBtnCycle();
@@ -6121,6 +6282,7 @@
         openAllBtn.style.display = 'none';
         if (relevanceBtn) relevanceBtn.style.display = 'none';
         if (gridBtn) gridBtn.style.display = 'none';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         stopBackBtnCycle();
@@ -6131,6 +6293,7 @@
         openAllBtn.style.display = 'none';
         if (relevanceBtn) relevanceBtn.style.display = 'none';
         if (gridBtn) gridBtn.style.display = 'none';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
         backBtn.style.display = 'block';
         bottomBar.style.display = 'none';
         startBackBtnCycle();
@@ -6147,6 +6310,7 @@
         openAllBtn.style.display = 'none';
         if (relevanceBtn) relevanceBtn.style.display = 'none';
         if (gridBtn) gridBtn.style.display = 'none';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
         backBtn.style.display = 'block';
         bottomBar.style.display = 'none';
         startBackBtnCycle();
@@ -6164,6 +6328,7 @@
         openAllBtn.style.display = 'none';
         if (relevanceBtn) relevanceBtn.style.display = 'none';
         if (gridBtn) gridBtn.style.display = 'none';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
         const hf = document.getElementById('headerFade');
@@ -6208,6 +6373,20 @@
         rectGridView.classList.add('active');
         // Start auto-drift after grid is visible
         if (window._archiveStartDrift) window._archiveStartDrift();
+      } else if (view === 'player') {
+        headerEl.style.display = '';
+        categoryBar.style.display = 'none';
+        organizeBtn.style.display = 'none';
+        openAllBtn.style.display = 'none';
+        if (relevanceBtn) relevanceBtn.style.display = 'none';
+        if (gridBtn) gridBtn.style.display = 'none';
+        if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
+        backBtn.style.display = 'none';
+        bottomBar.style.display = '';
+        stopBackBtnCycle();
+        currentView = 'player';
+        playerView.classList.add('active');
+        if (typeof initPlayer === 'function') initPlayer();
       }
     }
 
@@ -6244,6 +6423,7 @@
       else location.hash = '#/';
     });
     document.getElementById('navAbout').addEventListener('click', () => { location.hash = '#/about'; });
+    document.getElementById('navPlayer').addEventListener('click', () => { location.hash = '#/player'; });
     document.getElementById('rectGridBtn').addEventListener('click', () => { location.hash = '#/archive'; });
     document.getElementById('backToHome').addEventListener('click', () => { location.hash = '#/'; });
 
@@ -6283,10 +6463,129 @@
       }
       if (hash === '#/about') { showView('about'); return; }
       if (hash === '#/archive') { showView('rectgrid'); return; }
+      if (hash === '#/player') { showView('player'); return; }
       showView('projects');
     }
 
     window.addEventListener('hashchange', handleHashRoute);
+
+    // ─── PLAYER (record player + song grid) ────────────────────────────────
+    let playerTracks = [];
+    let playerInited = false;
+    let playerCurrentIdx = null;
+    let playerTransition = null; // in-flight setTimeout id
+
+    function formatTrackName(raw) {
+      // Title-case words, preserve ALL-CAPS acronyms, trim trailing " (version)" if empty
+      return raw.split(/\s+/).map(w => {
+        if (/^[A-Z0-9]{2,}$/.test(w)) return w;
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+      }).join(' ');
+    }
+
+    async function initPlayer() {
+      if (playerInited) return;
+      playerInited = true;
+      try {
+        const res = await fetch('/api/music', { cache: 'no-cache' });
+        const data = await res.json();
+        playerTracks = Array.isArray(data.tracks) ? data.tracks : [];
+      } catch {
+        playerTracks = [];
+      }
+      renderPlayerGrid();
+    }
+
+    function renderPlayerGrid() {
+      const grid = document.getElementById('playerGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const total = 15;
+      for (let i = 0; i < total; i++) {
+        const t = playerTracks[i];
+        const tile = document.createElement('div');
+        tile.className = 'player-tile' + (t ? '' : ' empty');
+        tile.setAttribute('role', 'listitem');
+        if (t) {
+          tile.tabIndex = 0;
+          tile.dataset.idx = String(i);
+          tile.innerHTML =
+            '<span class="tile-num">' + String(i + 1).padStart(2, '0') + '</span>' +
+            '<span class="tile-name"></span>' +
+            '<span class="tile-state" aria-hidden="true"></span>';
+          tile.querySelector('.tile-name').textContent = formatTrackName(t.name);
+          tile.addEventListener('click', () => playTrack(i));
+          tile.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playTrack(i); }
+          });
+        } else {
+          tile.innerHTML =
+            '<span class="tile-num">' + String(i + 1).padStart(2, '0') + '</span>' +
+            '<span class="tile-name">—</span>';
+        }
+        grid.appendChild(tile);
+      }
+    }
+
+    function setNowPlaying(text) {
+      const el = document.getElementById('playerNowPlaying');
+      if (!el) return;
+      if (!text) { el.innerHTML = ''; return; }
+      el.innerHTML = '<span class="np-label">Now playing</span><span class="np-title"></span>';
+      el.querySelector('.np-title').textContent = text;
+    }
+
+    function highlightTile(activeIdx, paused) {
+      document.querySelectorAll('.player-tile').forEach(tile => {
+        tile.classList.remove('active', 'paused');
+        if (Number(tile.dataset.idx) === activeIdx) {
+          tile.classList.add('active');
+          if (paused) tile.classList.add('paused');
+        }
+      });
+    }
+
+    function clearPlayerTransition() {
+      if (playerTransition) { clearTimeout(playerTransition); playerTransition = null; }
+    }
+
+    function playTrack(i) {
+      const track = playerTracks[i];
+      if (!track) return;
+      const audio = document.getElementById('playerAudio');
+      const video = document.getElementById('playerVideo');
+      if (!audio) return;
+
+      if (i === playerCurrentIdx) {
+        if (audio.paused) { audio.play().catch(() => {}); highlightTile(i, false); }
+        else              { audio.pause(); highlightTile(i, true); }
+        return;
+      }
+
+      playerCurrentIdx = i;
+      audio.src = track.src;
+      setNowPlaying(formatTrackName(track.name));
+      highlightTile(i, false);
+      if (video) { try { video.currentTime = 0; video.play().catch(() => {}); } catch (_) {} }
+      audio.play().catch(() => {});
+    }
+
+    function stopPlayer() {
+      const audio = document.getElementById('playerAudio');
+      clearPlayerTransition();
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+      playerCurrentIdx = null;
+      setNowPlaying('');
+      highlightTile(null, false);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('playerAudio');
+      if (!audio) return;
+      audio.addEventListener('ended', () => {
+        if (playerCurrentIdx != null) highlightTile(playerCurrentIdx, true);
+      });
+    });
 
     // ─── HIDE BOTTOM BAR WHEN FOOTER VISIBLE ────────────────────────────────────
     const footerObs = new IntersectionObserver(([e]) => {

@@ -11,20 +11,44 @@
         "An independent design practice working across product, furniture, and spatial objects. Studio Colby Design operates at the boundary between craft and manufacturing — building things that are made well, last long, and carry a clear point of view."
       ],
       "images": [
-        null,
-        null,
-        null,
-        null
-      ]
+        {
+          "src": "IMAGES/ABOUT/IMG_6273.JPG",
+          "x": 72,
+          "y": 0,
+          "w": 28,
+          "h": 496,
+          "aspectW": 371,
+          "aspectH": 496
+        }
+      ],
+      "textWidthPct": 56,
+      "titleFontSize": 14,
+      "titleFontWeight": 500,
+      "titleTransform": "none",
+      "titleLetterSpacing": 0,
+      "textFontSize": 16,
+      "textFontWeight": 400,
+      "textLineHeight": 1.6,
+      "textColor": "#E4E4E4"
     },
     {
       "id": "contact",
       "title": "Contact",
       "type": "contact",
       "lines": [
-        "colby@studiocolby.com",
-        "@studiocolby"
-      ]
+        "For contact please reach out to info@Colbyonline.com ",
+        "For more a comprehensive Portfolio please email to receive a PDF",
+        ""
+      ],
+      "textWidthPct": 53,
+      "titleFontSize": 14,
+      "titleFontWeight": 500,
+      "titleTransform": "none",
+      "titleLetterSpacing": 0,
+      "textFontSize": 16,
+      "textFontWeight": 400,
+      "textLineHeight": 1.5,
+      "textColor": "#E4E4E4"
     }
   ]
 }

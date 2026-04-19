@@ -2,6 +2,7 @@ node_modules/
 ENTRY-VIDEO/
 *.ai
 *.mov
+!MUSIC-ASSETS/record-player.mov
 desktop.ini
 DESIGNING THE WEBSITE/
 PORTFOLIO WEBSITE IMAGE SAMPLES/
@@ -15,3 +16,55 @@ screenshot.js
 package.json
 package-lock.json
 temporary screenshots/
+
+# Dev scripts (one-off puppeteer / utility scripts)
+shot-*.mjs
+test-*.mjs
+test-*.js
+inject-archive-dots.mjs
+get-dims.ps1
+crop-*.ps1
+screenshot.mjs
+serve.mjs.bak
+
+# Large reference / capture artifacts
+Products _ Bjarke Ingels Group*.mp4
+Screenshot 2026-*.png
+127.0.0.1_5500_index.html*.png
+Artboard 2*.png
+IMG_*.PNG
+IMG_*.png
+IMG_*.JPG
+IMG_*.jpg
+IMG_*.jpeg
+
+# Old / reference HTMLs not used by production site
+ARCHIVE INTRO ANIMATION.html
+FOR INTRO DOT ANIMATION.html
+record_player_animation_instant.html.html
+editor.old.html
+page.html
+project.html
+
+# Scratch inspo / progress dirs
+WEBSITE INSPO/
+WEBSITE PROGRESS/
+MUSIC-ASSETS/_source.html
+
+# Build / env
+.DS_Store
+
+# Large binary source assets not needed by deployed site
+*.ai
+*.mp4
+*.MP4
+*.wav
+*.WAV
+*.als
+*.HEIC
+*.heic
+*.psd
+*.PSD
+brand_assets/*.ai
+ENTRY-AUDIO/WEBSITE SOUNDS Project/
+

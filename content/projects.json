@@ -413,6 +413,9 @@
         ],
         [
           "IMAGES/POLY-CHAIR/IMG_0104.png"
+        ],
+        [
+          "IMAGES/POLY-CHAIR/ICON_-_Polychair.svg"
         ]
       ]
     },
@@ -583,22 +586,6 @@
       ]
     },
     {
-      "id": "chair-one",
-      "categories": [
-        "Furniture"
-      ],
-      "title": "Chair One",
-      "year": 2025,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/CHAIR-ONE/CHAIR ONE copy.PNG"
-        ]
-      ]
-    },
-    {
       "id": "chair-press",
       "categories": [
         "Mechanical",
@@ -667,23 +654,6 @@
       "materials": "",
       "process": "",
       "images": []
-    },
-    {
-      "id": "smoke-goggles",
-      "categories": [
-        "Object",
-        "Mechanical"
-      ],
-      "title": "Smoke Goggles",
-      "year": 2025,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/SMOKE-GOGGLES/16-9_GLYCERIN_MASK_1.svg"
-        ]
-      ]
     },
     {
       "id": "hull-chair-fiberglass-mold",

@@ -361,6 +361,19 @@
     }
     .panel-splitter:hover,
     .panel-splitter.dragging { background: var(--accent); }
+    /* Collapsed side panels: zero-width with no border so the canvas gets the
+       full remaining space. Splitters stay in place so the drag-to-resize
+       gesture can still recover the panel. */
+    #assets.collapsed,
+    #inspector.collapsed {
+      width: 0 !important;
+      min-width: 0 !important;
+      border: 0 !important;
+      overflow: hidden;
+    }
+    .panel-splitter.hidden { display: none; }
+    #toggleLeftPanel.on,
+    #toggleRightPanel.on { color: var(--text); }
 
     #assets {
       width: 290px;
@@ -837,7 +850,12 @@
     .selection-frame .handle.r { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; width: 8px; height: 16px; border-radius: 0; }
     .selection-frame .handle.b { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; width: 16px; height: 8px; border-radius: 0; }
 
+    /* Corner handles — all four. Each anchors the opposite corner. */
+    .handle.tl { left: -6px;  top: -6px;    cursor: nwse-resize; z-index: 11; }
+    .handle.tr { right: -6px; top: -6px;    cursor: nesw-resize; z-index: 11; }
+    .handle.bl { left: -6px;  bottom: -6px; cursor: nesw-resize; z-index: 11; }
     .handle.br { right: -6px; bottom: -6px; cursor: nwse-resize; z-index: 11; }
+    /* Edge handles — right + bottom (+ left + top for symmetry). */
     .handle.r {
       right: -6px;
       top: 50%;
@@ -846,8 +864,24 @@
       width: 8px; height: 16px;
       border-radius: 0;
     }
+    .handle.l {
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: ew-resize;
+      width: 8px; height: 16px;
+      border-radius: 0;
+    }
     .handle.b {
       bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: ns-resize;
+      width: 16px; height: 8px;
+      border-radius: 0;
+    }
+    .handle.t {
+      top: -6px;
       left: 50%;
       transform: translateX(-50%);
       cursor: ns-resize;
@@ -1182,11 +1216,17 @@
       border: 1px solid var(--border);
     }
     .align-grid .btn {
-      padding: 8px 0;
+      padding: 8px 2px;
       height: 32px;
-      font-size: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
       justify-content: center;
       background: var(--bg);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* ── POPOVER (tab menu, add dialog) ───────────────── */
@@ -2036,6 +2076,9 @@
     <div class="tab-add" id="addBpBtn" title="Add breakpoint">+</div>
 
     <div class="tabbar-right">
+      <button class="btn ghost" id="toggleLeftPanel" title="Collapse/expand the left Assets panel (Alt+[)" style="padding:0 8px;">◧</button>
+      <button class="btn ghost" id="toggleRightPanel" title="Collapse/expand the right Inspector panel (Alt+])" style="padding:0 8px;">◨</button>
+      <span class="sep">|</span>
       <label class="toggle" id="snapToggle">
         <input type="checkbox" checked>
         <span class="toggle-box"></span>
@@ -2169,7 +2212,7 @@
         </div>
         <div class="field-row">
           <label>Side pad</label>
-          <input type="number" id="canvasPad" value="3" min="0" max="50" step="0.5" title="Percentage of breakpoint width reserved as left/right padding.">
+          <input type="number" id="canvasPad" value="10" min="0" max="50" step="0.5" title="Percentage of breakpoint width reserved as left/right padding.">
           <span style="color:var(--text-dim);font-size:11px;font-weight:700;">%</span>
         </div>
         <div class="field-row">
@@ -2325,22 +2368,22 @@
       <div class="insp-section">
         <div class="insp-title">Align</div>
         <div class="align-grid">
-          <button class="btn ghost" data-align="left">⇤ L</button>
-          <button class="btn ghost" data-align="cx">⇔ C</button>
-          <button class="btn ghost" data-align="right">R ⇥</button>
-          <button class="btn ghost" data-align="top">⇡ T</button>
-          <button class="btn ghost" data-align="cy">⇕ M</button>
-          <button class="btn ghost" data-align="bottom">B ⇣</button>
+          <button class="btn ghost" data-align="left"   title="Align left edges">Left</button>
+          <button class="btn ghost" data-align="cx"     title="Align horizontal centers">Center</button>
+          <button class="btn ghost" data-align="right"  title="Align right edges">Right</button>
+          <button class="btn ghost" data-align="top"    title="Align top edges">Top</button>
+          <button class="btn ghost" data-align="cy"     title="Align vertical centers">Middle</button>
+          <button class="btn ghost" data-align="bottom" title="Align bottom edges">Bottom</button>
         </div>
         <div class="align-grid" style="margin-top:5px;">
-          <button class="btn ghost" data-align="dist-h" title="Distribute horizontally">⇔ ⇔</button>
-          <button class="btn ghost" data-align="dist-v" title="Distribute vertically">⇕ ⇕</button>
-          <button class="btn ghost" data-align="fit-w" title="Match widest">≡ W</button>
+          <button class="btn ghost" data-align="dist-h" title="Distribute horizontally (equal gaps)">Distribute H</button>
+          <button class="btn ghost" data-align="dist-v" title="Distribute vertically (equal gaps)">Distribute V</button>
+          <button class="btn ghost" data-align="fit-w"  title="Match widest (set all widths to largest)">Match Widest</button>
         </div>
         <div class="align-grid" style="margin-top:5px;">
-          <button class="btn ghost" data-align="fit-h" title="Match tallest">≡ H</button>
-          <button class="btn ghost" data-align="fit-same" title="Match both (size of the largest)">≡ WH</button>
-          <button class="btn ghost" data-align="fit-smallest" title="Match smallest">≡ ⌐</button>
+          <button class="btn ghost" data-align="fit-h"        title="Match tallest (set all heights to largest)">Match Tallest</button>
+          <button class="btn ghost" data-align="fit-same"     title="Match both (set W and H to largest)">Match W+H</button>
+          <button class="btn ghost" data-align="fit-smallest" title="Match smallest (set W and H to smallest)">Match Smallest</button>
         </div>
       </div>
 
@@ -3065,7 +3108,7 @@
       const sections = aboutData.sections || [];
       state.breakpoints.forEach(bp => {
         let z = 1;
-        const pad = Math.round(bp.w * (bp.padPct || 3) / 100);
+        const pad = Math.round(bp.w * (bp.padPct || defaultPadPct(bp.w)) / 100);
         const contentW = bp.w - pad * 2;
         const isWide = bp.w >= 1000;
         const textW = isWide ? Math.round(contentW * 0.48) : contentW;
@@ -3510,7 +3553,7 @@
           if (sec.type === 'bio') {
             if (sectionTexts.length) sec.text = sectionTexts;
             // Save text layout from canvas
-            const pad = Math.round(bp.w * (bp.padPct || 2) / 100);
+            const pad = Math.round(bp.w * (bp.padPct || defaultPadPct(bp.w)) / 100);
             const contentW = bp.w - pad * 2;
             const bodyTexts = textItems.filter(it => it._aboutSectionIdx === sIdx && it._aboutFieldIdx >= 0);
             if (bodyTexts.length) {
@@ -3551,7 +3594,7 @@
             if (sectionTexts.length) sec.lines = sectionTexts;
             const bodyTexts = textItems.filter(it => it._aboutSectionIdx === sIdx && it._aboutFieldIdx >= 0);
             if (bodyTexts.length) {
-              const pad = Math.round(bp.w * (bp.padPct || 2) / 100);
+              const pad = Math.round(bp.w * (bp.padPct || defaultPadPct(bp.w)) / 100);
               const contentW = bp.w - pad * 2;
               sec.textWidthPct = Math.round(Math.max(...bodyTexts.map(it => it.w)) / contentW * 100);
             }
@@ -4368,9 +4411,7 @@
     }
 
     function defaultPadPct(w) {
-      if (w <= 600) return 5;
-      if (w <= 1100) return 4;
-      return 3;
+      return 10;
     }
 
     function normalizeBp(bp) {
@@ -5516,21 +5557,27 @@
       if (!isSelected || state.selection.size > 1) return;
       // Crop mode suppresses all standard handles (crop has its own).
       if (state.croppingId === item.id) return;
-      const r = document.createElement('div');
-      r.className = 'handle r';
-      r.dataset.axis = 'x';
-      r.addEventListener('pointerdown', onResizeDown);
-      el.appendChild(r);
-      const bE = document.createElement('div');
-      bE.className = 'handle b';
-      bE.dataset.axis = 'y';
-      bE.addEventListener('pointerdown', onResizeDown);
-      el.appendChild(bE);
-      const br = document.createElement('div');
-      br.className = 'handle br';
-      br.dataset.axis = 'xy';
-      br.addEventListener('pointerdown', onResizeDown);
-      el.appendChild(br);
+      // Four corners + four edges. `anchor` names the corner of the bbox
+      // that stays fixed while the opposite handle is dragged — so the
+      // resize math can compute both position and size from one pointer.
+      const handleSpecs = [
+        { cls: 'tl', axis: 'xy', anchor: 'br' },
+        { cls: 'tr', axis: 'xy', anchor: 'bl' },
+        { cls: 'bl', axis: 'xy', anchor: 'tr' },
+        { cls: 'br', axis: 'xy', anchor: 'tl' },
+        { cls: 't',  axis: 'y',  anchor: 'b'  },
+        { cls: 'b',  axis: 'y',  anchor: 't'  },
+        { cls: 'l',  axis: 'x',  anchor: 'r'  },
+        { cls: 'r',  axis: 'x',  anchor: 'l'  },
+      ];
+      handleSpecs.forEach(({ cls, axis, anchor }) => {
+        const h = document.createElement('div');
+        h.className = 'handle ' + cls;
+        h.dataset.axis = axis;
+        h.dataset.anchor = anchor;
+        h.addEventListener('pointerdown', onResizeDown);
+        el.appendChild(h);
+      });
       const rot = document.createElement('div');
       rot.className = 'handle rot';
       rot.addEventListener('pointerdown', onRotateDown);
@@ -6028,32 +6075,56 @@
     function onResizeDown(e) {
       e.stopPropagation(); e.preventDefault();
       const axis = e.currentTarget.dataset.axis || 'xy';
+      // Anchor = the corner of the bbox that stays pinned while dragging.
+      // Inferred for backward-compat when a handle has no explicit anchor.
+      const anchor = e.currentTarget.dataset.anchor || (
+        axis === 'x' ? 'l' :
+        axis === 'y' ? 't' : 'tl'
+      );
+      const leftFixed   = anchor === 'tl' || anchor === 'bl' || anchor === 'l';
+      const rightFixed  = anchor === 'tr' || anchor === 'br' || anchor === 'r';
+      const topFixed    = anchor === 'tl' || anchor === 'tr' || anchor === 't';
+      const bottomFixed = anchor === 'bl' || anchor === 'br' || anchor === 'b';
       const id = e.currentTarget.parentElement.dataset.id;
       const item = findItem(id); if (!item) return;
       const startX = e.clientX, startY = e.clientY;
-      const origW = item.w, origH = item.h;
-      const ratio = origH / origW;
+      const origX = item.x, origY = item.y, origW = item.w, origH = item.h;
+      const ratio = origW > 0 ? (origH / origW) : 1;
       const scale = canvasScale();
       pushHistory();
       function move(ev) {
         const dx = (ev.clientX - startX) / scale;
         const dy = (ev.clientY - startY) / scale;
-        // Ratio-lock default only applies to the diagonal handle.
-        // Shift inverts: diagonal → free, edge → locked ratio.
+        // Ratio-lock default applies to any corner (xy) drag. Shift inverts:
+        // corner → free, edge → locked ratio. This is the "diagonal snap"
+        // behavior — the dragged corner stays on the line from the anchor
+        // corner at the item's original aspect ratio.
         const ratioLock = axis === 'xy' ? !ev.shiftKey : ev.shiftKey;
         const c = currentBp();
-        const maxW = c.w - item.x;
-        const maxH = c.h - item.y;
-        let nw = origW, nh = origH;
-        if (axis === 'x' || axis === 'xy') nw = Math.max(10, Math.min(maxW, origW + dx));
-        if (axis === 'y' || axis === 'xy') nh = Math.max(10, Math.min(maxH, origH + dy));
+        // Each fixed edge defines how much room the drag has on its axis.
+        const maxW = leftFixed ? (c.w - origX) : (origX + origW);
+        const maxH = topFixed  ? (c.h - origY) : (origY + origH);
+        let nw = origW, nh = origH, nx = origX, ny = origY;
+        if (axis === 'x' || axis === 'xy') {
+          if (leftFixed)       nw = Math.max(10, Math.min(maxW, origW + dx));
+          else if (rightFixed) nw = Math.max(10, Math.min(maxW, origW - dx));
+        }
+        if (axis === 'y' || axis === 'xy') {
+          if (topFixed)          nh = Math.max(10, Math.min(maxH, origH + dy));
+          else if (bottomFixed)  nh = Math.max(10, Math.min(maxH, origH - dy));
+        }
         if (ratioLock) {
           if (axis === 'x') nh = Math.min(maxH, Math.max(10, nw * ratio));
           else if (axis === 'y') nw = Math.min(maxW, Math.max(10, nh / ratio));
-          else { nh = nw * ratio; if (nh > maxH) { nh = maxH; nw = nh / ratio; } }
+          else {
+            nh = nw * ratio;
+            if (nh > maxH) { nh = maxH; nw = nh / ratio; }
+          }
         }
+        // Recompute x/y from fixed-anchor after size is final
+        nx = leftFixed ? origX : (origX + origW - nw);
+        ny = topFixed  ? origY : (origY + origH - nh);
         // ── SAME-SIZE SNAP ────────────────────────────────
-        // When a peer item has the same width/height within tolerance, lock to it.
         const SNAP = SNAP_TOL;
         const peers = currentItems().filter(it => it.id !== item.id);
         const guides = [];
@@ -6077,33 +6148,39 @@
             }
           }
         }
-        // ── EDGE SNAP (to padding + other items' edges) ──
-        const pad = Math.round(c.w * (c.padPct || 0) / 100);
+        // ── EDGE SNAP (to padding + peer edges on the moving side) ──
+        const pad = Math.round(c.w * (c.padPct != null ? c.padPct : defaultPadPct(c.w)) / 100);
         if (axis !== 'y') {
-          const rightEdge = item.x + nw;
+          const movingEdge = leftFixed ? (origX + nw) : (origX + origW - nw);
           const edgesX = [pad, c.w - pad];
           peers.forEach(p => { edgesX.push(p.x, p.x + p.w); });
           for (const cx of edgesX) {
-            if (Math.abs(rightEdge - cx) <= SNAP) {
-              nw = cx - item.x;
+            if (Math.abs(movingEdge - cx) <= SNAP) {
+              if (leftFixed) nw = cx - origX;
+              else           nw = (origX + origW) - cx;
               if (ratioLock) nh = nw * ratio;
               break;
             }
           }
         }
         if (axis !== 'x') {
-          const bottomEdge = item.y + nh;
+          const movingEdge = topFixed ? (origY + nh) : (origY + origH - nh);
           const edgesY = [0, c.h];
           peers.forEach(p => { edgesY.push(p.y, p.y + p.h); });
           for (const cy of edgesY) {
-            if (Math.abs(bottomEdge - cy) <= SNAP) {
-              nh = cy - item.y;
+            if (Math.abs(movingEdge - cy) <= SNAP) {
+              if (topFixed) nh = cy - origY;
+              else          nh = (origY + origH) - cy;
               if (ratioLock) nw = nh / ratio;
               break;
             }
           }
         }
+        // Re-apply anchor math after snaps tweak nw/nh
+        nx = leftFixed ? origX : (origX + origW - nw);
+        ny = topFixed  ? origY : (origY + origH - nh);
         drawSizeMatchIndicators(guides, item);
+        item.x = Math.round(nx); item.y = Math.round(ny);
         item.w = Math.round(nw); item.h = Math.round(nh);
         if (item.wPct != null) item.wPct = Math.round(item.w / c.w * 100);
         clampItem(item, c);
@@ -6171,7 +6248,7 @@
       let dx = 0, dy = 0;
       const myLefts = [rect.x, rect.x + rect.w / 2, rect.x + rect.w];
       const myTops  = [rect.y, rect.y + rect.h / 2, rect.y + rect.h];
-      const pad = Math.round(c.w * (c.padPct || 0) / 100);
+      const pad = Math.round(c.w * (c.padPct != null ? c.padPct : defaultPadPct(c.w)) / 100);
       const candidatesX = [0, c.w / 2, c.w, pad, c.w - pad];
       const candidatesY = [0, c.h / 2, c.h];
       currentItems().forEach(it => {
@@ -7492,6 +7569,45 @@
       }
       initSplitter('splitterLeft', assetsEl, 'left');
       initSplitter('splitterRight', inspectorEl, 'right');
+
+      // Collapse / expand the asides. Each toggle button flips a `.collapsed`
+      // class on its aside and hides the matching splitter so the canvas can
+      // claim the freed width. State persists per side so reopening the
+      // editor remembers the user's last layout.
+      const leftToggle  = document.getElementById('toggleLeftPanel');
+      const rightToggle = document.getElementById('toggleRightPanel');
+      const splitterL   = document.getElementById('splitterLeft');
+      const splitterR   = document.getElementById('splitterRight');
+      function applyPanelState(side, collapsed) {
+        const aside    = side === 'left' ? assetsEl    : inspectorEl;
+        const splitter = side === 'left' ? splitterL   : splitterR;
+        const toggle   = side === 'left' ? leftToggle  : rightToggle;
+        aside.classList.toggle('collapsed', collapsed);
+        splitter.classList.toggle('hidden', collapsed);
+        toggle.classList.toggle('on', !collapsed);
+        toggle.title = (collapsed ? 'Expand' : 'Collapse') + ' the ' +
+                       (side === 'left' ? 'left Assets' : 'right Inspector') +
+                       ' panel (Alt+' + (side === 'left' ? '[' : ']') + ')';
+      }
+      const initLeft  = localStorage.getItem('editor-panel-left-collapsed')  === '1';
+      const initRight = localStorage.getItem('editor-panel-right-collapsed') === '1';
+      applyPanelState('left',  initLeft);
+      applyPanelState('right', initRight);
+      function togglePanel(side) {
+        const aside = side === 'left' ? assetsEl : inspectorEl;
+        const next = !aside.classList.contains('collapsed');
+        applyPanelState(side, next);
+        try { localStorage.setItem('editor-panel-' + side + '-collapsed', next ? '1' : '0'); } catch {}
+      }
+      leftToggle.addEventListener('click',  () => togglePanel('left'));
+      rightToggle.addEventListener('click', () => togglePanel('right'));
+      window.addEventListener('keydown', (e) => {
+        if (!e.altKey || e.ctrlKey || e.metaKey) return;
+        const tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if (e.key === '[') { e.preventDefault(); togglePanel('left'); }
+        else if (e.key === ']') { e.preventDefault(); togglePanel('right'); }
+      });
     }
 
     // ── INIT ──────────────────────────────────────────────

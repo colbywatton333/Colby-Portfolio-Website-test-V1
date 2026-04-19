@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="GRAPHIC" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1584 720">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-width: .39px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-2 {
+        stroke-width: .73px;
+      }
+    </style>
+  </defs>
+  <g id="ELLIPSE">
+    <path class="cls-2" d="M1184.5,498.58c-14.16,1.53-18.49,4.77-9.67,7.22,8.82,2.46,27.44,3.21,41.6,1.68,14.16-1.53,18.49-4.77,9.67-7.22-2.44-.68-5.75-1.26-9.67-1.68"/>
+  </g>
+  <g id="ELLIPSE-2" data-name="ELLIPSE">
+    <path class="cls-2" d="M1216.43,498.58c3.92.42,7.23,1,9.67,1.68,8.82,2.46,4.49,5.69-9.67,7.22-14.16,1.53-32.78.78-41.6-1.68-8.82-2.46-4.49-5.69,9.67-7.22"/>
+  </g>
+  <g id="ELLIPSE-3" data-name="ELLIPSE">
+    <path class="cls-2" d="M1254.22,514.02c5.8,3.26,1.37,6.82-11.69,9.37-20.63,4.03-56.19,4.4-79.43.82-23.23-3.58-25.34-9.76-4.71-13.79"/>
+  </g>
+  <g id="ELLIPSE-4" data-name="ELLIPSE">
+    <path class="cls-2" d="M1143.72,516.5c-5.61,5.44,15.24,10.64,46.58,11.62,31.34.97,61.29-2.65,66.9-8.09,1.2-1.17,1.2-2.36,0-3.53"/>
+  </g>
+  <g id="ELLIPSE-5" data-name="ELLIPSE">
+    <path class="cls-2" d="M1258.11,536.75c0,5.53-25.81,10.01-57.64,10.01s-57.64-4.48-57.64-10.01"/>
+  </g>
+  <g id="ELLIPSE-6" data-name="ELLIPSE">
+    <path class="cls-2" d="M1145.08,539.84c5.48,5.31,34.72,8.85,65.3,7.89,23.17-.72,41.31-3.87,45.46-7.89"/>
+  </g>
+  <g id="ELLIPSE-7" data-name="ELLIPSE">
+    <path class="cls-2" d="M1216.43,496.47c9.84.72,17.67,2.08,21.83,3.79,8.82,3.62-.96,7.8-21.83,9.34-20.87,1.53-44.95-.17-53.76-3.79s.96-7.8,21.83-9.34"/>
+  </g>
+  <g id="ELLIPSE-8" data-name="ELLIPSE">
+    <path class="cls-2" d="M1241.13,552.92c-2.45,3.19-16.89,5.69-35.25,6.12-22.46.52-43.1-2.22-46.1-6.12"/>
+  </g>
+  <g id="ELLIPSE-9" data-name="ELLIPSE">
+    <path class="cls-2" d="M1242.53,550.62c0,4.03-18.83,7.3-42.07,7.3s-42.07-3.27-42.07-7.3"/>
+  </g>
+  <g id="ELLIPSE-10" data-name="ELLIPSE">
+    <path class="cls-2" d="M1242.16,503.43c.49.64.49,1.29,0,1.93-3.07,4-24.23,6.81-47.26,6.27-23.03-.53-39.21-4.21-36.13-8.21"/>
+  </g>
+  <g id="LINE">
+    <line class="cls-2" x1="1255.84" y1="515.18" x2="1257.2" y2="516.5"/>
+  </g>
+  <g id="LINE-2" data-name="LINE">
+    <line class="cls-2" x1="1145.08" y1="515.18" x2="1143.72" y2="516.5"/>
+  </g>
+  <g id="LINE-3" data-name="LINE">
+    <line class="cls-2" x1="1258.11" y1="518.26" x2="1258.11" y2="536.75"/>
+  </g>
+  <g id="LINE-4" data-name="LINE">
+    <line class="cls-2" x1="1142.82" y1="518.26" x2="1142.82" y2="536.75"/>
+  </g>
+  <g id="LINE-5" data-name="LINE">
+    <line class="cls-2" x1="1145.08" y1="539.84" x2="1143.72" y2="538.52"/>
+  </g>
+  <g id="LINE-6" data-name="LINE">
+    <line class="cls-2" x1="1255.84" y1="539.84" x2="1257.2" y2="538.52"/>
+  </g>
+  <g id="LINE-7" data-name="LINE">
+    <line class="cls-2" x1="1159.79" y1="552.92" x2="1158.77" y2="551.59"/>
+  </g>
+  <g id="LINE-8" data-name="LINE">
+    <line class="cls-2" x1="1241.13" y1="552.92" x2="1242.16" y2="551.59"/>
+  </g>
+  <g id="LINE-9" data-name="LINE">
+    <line class="cls-2" x1="1158.4" y1="550.62" x2="1158.4" y2="544.6"/>
+  </g>
+  <g id="LINE-10" data-name="LINE">
+    <line class="cls-2" x1="1242.53" y1="550.62" x2="1242.53" y2="544.6"/>
+  </g>
+  <g id="SPLINE">
+    <path class="cls-2" d="M1242.53,514.79c0,.3.11.54.11.54"/>
+  </g>
+  <g id="SPLINE-2" data-name="SPLINE">
+    <path class="cls-2" d="M1158.28,515.33s.11-.23.11-.54"/>
+  </g>
+  <g id="LINE-11" data-name="LINE">
+    <line class="cls-2" x1="1158.4" y1="514.79" x2="1158.4" y2="504.39"/>
+  </g>
+  <g id="LINE-12" data-name="LINE">
+    <line class="cls-2" x1="1242.53" y1="514.79" x2="1242.53" y2="504.39"/>
+  </g>
+  <g id="LINE-13" data-name="LINE">
+    <line class="cls-2" x1="1241.13" y1="502.09" x2="1242.16" y2="503.43"/>
+  </g>
+  <g id="LINE-14" data-name="LINE">
+    <line class="cls-2" x1="1159.79" y1="502.09" x2="1158.77" y2="503.43"/>
+  </g>
+  <g id="ELLIPSE-11" data-name="ELLIPSE">
+    <path class="cls-2" d="M1062.56,476.17c3.93.42,7.26.99,9.72,1.67,8.9,2.45,4.68,5.69-9.43,7.23-14.11,1.55-32.76.81-41.66-1.64-8.9-2.45-4.68-5.69,9.43-7.23"/>
+  </g>
+  <g id="ELLIPSE-12" data-name="ELLIPSE">
+    <path class="cls-2" d="M1100.5,491.62c5.8,3.26,1.37,6.82-11.69,9.37-20.63,4.03-56.19,4.4-79.43.82-23.23-3.58-25.34-9.76-4.71-13.79"/>
+  </g>
+  <g id="ELLIPSE-13" data-name="ELLIPSE">
+    <path class="cls-2" d="M990,494.1c-5.61,5.44,15.24,10.64,46.58,11.62,31.34.97,61.29-2.65,66.9-8.09,1.2-1.17,1.2-2.36,0-3.53"/>
+  </g>
+  <g id="ELLIPSE-14" data-name="ELLIPSE">
+    <path class="cls-2" d="M1104.38,514.35c0,5.53-25.81,10.01-57.64,10.01s-57.64-4.48-57.64-10.01"/>
+  </g>
+  <g id="ELLIPSE-15" data-name="ELLIPSE">
+    <path class="cls-2" d="M991.36,517.44c5.48,5.31,34.72,8.85,65.3,7.89,23.17-.72,41.31-3.87,45.46-7.89"/>
+  </g>
+  <g id="ELLIPSE-16" data-name="ELLIPSE">
+    <path class="cls-2" d="M1062.56,474.06c9.86.72,17.72,2.07,21.91,3.78,8.9,3.62-.78,7.81-21.62,9.35-20.84,1.55-44.95-.14-53.85-3.75-8.9-3.62.78-7.81,21.62-9.35"/>
+  </g>
+  <g id="ELLIPSE-17" data-name="ELLIPSE">
+    <path class="cls-2" d="M1087.41,530.52c-2.45,3.19-16.89,5.69-35.25,6.12-22.46.52-43.1-2.22-46.1-6.12"/>
+  </g>
+  <g id="ELLIPSE-18" data-name="ELLIPSE">
+    <path class="cls-2" d="M1088.81,528.22c0,4.03-18.83,7.3-42.07,7.3s-42.07-3.27-42.07-7.3"/>
+  </g>
+  <g id="ELLIPSE-19" data-name="ELLIPSE">
+    <path class="cls-2" d="M1088.44,481.03c.49.64.49,1.29,0,1.93-3.07,4-24.23,6.81-47.26,6.27s-39.21-4.21-36.13-8.21"/>
+  </g>
+  <g id="LINE-15" data-name="LINE">
+    <line class="cls-2" x1="1102.12" y1="492.78" x2="1103.48" y2="494.1"/>
+  </g>
+  <g id="LINE-16" data-name="LINE">
+    <line class="cls-2" x1="991.36" y1="492.78" x2="990" y2="494.1"/>
+  </g>
+  <g id="LINE-17" data-name="LINE">
+    <line class="cls-2" x1="1104.38" y1="495.86" x2="1104.38" y2="514.35"/>
+  </g>
+  <g id="LINE-18" data-name="LINE">
+    <line class="cls-2" x1="989.1" y1="495.86" x2="989.1" y2="514.35"/>
+  </g>
+  <g id="LINE-19" data-name="LINE">
+    <line class="cls-2" x1="991.36" y1="517.44" x2="990" y2="516.12"/>
+  </g>
+  <g id="LINE-20" data-name="LINE">
+    <line class="cls-2" x1="1102.12" y1="517.44" x2="1103.48" y2="516.12"/>
+  </g>
+  <g id="LINE-21" data-name="LINE">
+    <line class="cls-2" x1="1006.07" y1="530.52" x2="1005.04" y2="529.19"/>
+  </g>
+  <g id="LINE-22" data-name="LINE">
+    <line class="cls-2" x1="1087.41" y1="530.52" x2="1088.44" y2="529.19"/>
+  </g>
+  <g id="LINE-23" data-name="LINE">
+    <line class="cls-2" x1="1004.67" y1="528.22" x2="1004.67" y2="522.2"/>
+  </g>
+  <g id="LINE-24" data-name="LINE">
+    <line class="cls-2" x1="1088.81" y1="528.22" x2="1088.81" y2="522.2"/>
+  </g>
+  <g id="SPLINE-3" data-name="SPLINE">
+    <path class="cls-2" d="M1088.81,492.4c0,.3.11.54.11.54"/>
+  </g>
+  <g id="SPLINE-4" data-name="SPLINE">
+    <path class="cls-2" d="M1004.56,492.93s.11-.23.11-.54"/>
+  </g>
+  <g id="LINE-25" data-name="LINE">
+    <line class="cls-2" x1="1004.67" y1="492.4" x2="1004.67" y2="481.99"/>
+  </g>
+  <g id="LINE-26" data-name="LINE">
+    <line class="cls-2" x1="1088.81" y1="492.4" x2="1088.81" y2="481.99"/>
+  </g>
+  <g id="LINE-27" data-name="LINE">
+    <line class="cls-2" x1="1087.41" y1="479.69" x2="1088.44" y2="481.03"/>
+  </g>
+  <g id="LINE-28" data-name="LINE">
+    <line class="cls-2" x1="1006.07" y1="479.69" x2="1005.04" y2="481.03"/>
+  </g>
+  <g id="ELLIPSE-20" data-name="ELLIPSE">
+    <path class="cls-2" d="M1030.63,476.2c-14.11,1.55-18.33,4.78-9.43,7.23,8.9,2.45,27.55,3.18,41.66,1.64,14.11-1.55,18.33-4.78,9.43-7.23-2.46-.68-5.79-1.25-9.72-1.67"/>
+  </g>
+  <g id="ELLIPSE-21" data-name="ELLIPSE">
+    <path class="cls-2" d="M1531.65,554.56h0c1.52-.31,2.75,1.32,2.75,3.65"/>
+  </g>
+  <g id="LINE-29" data-name="LINE">
+    <line class="cls-2" x1="1531.65" y1="554.56" x2="1530.06" y2="554.89"/>
+  </g>
+  <g id="ELLIPSE-22" data-name="ELLIPSE">
+    <path class="cls-2" d="M1527.3,559.67h0c0-2.33,1.23-4.47,2.75-4.78"/>
+  </g>
+  <g id="LINE-30" data-name="LINE">
+    <line class="cls-2" x1="1527.3" y1="559.67" x2="1527.3" y2="569.73"/>
+  </g>
+  <g id="ELLIPSE-23" data-name="ELLIPSE">
+    <path class="cls-2" d="M1525.75,572.43c.86-.18,1.55-1.39,1.55-2.7h0"/>
+  </g>
+  <g id="LINE-31" data-name="LINE">
+    <line class="cls-2" x1="1525.75" y1="572.43" x2="1524.76" y2="572.64"/>
+  </g>
+  <g id="ELLIPSE-24" data-name="ELLIPSE">
+    <path class="cls-2" d="M1523.66,572.17c.29.39.69.55,1.1.47"/>
+  </g>
+  <g id="LINE-32" data-name="LINE">
+    <line class="cls-2" x1="1523.66" y1="572.17" x2="1515.56" y2="561.43"/>
+  </g>
+  <g id="ELLIPSE-25" data-name="ELLIPSE">
+    <path class="cls-2" d="M1513.13,552.94c0,3.37.87,6.42,2.43,8.49"/>
+  </g>
+  <g id="LINE-33" data-name="LINE">
+    <line class="cls-2" x1="1513.13" y1="552.94" x2="1513.13" y2="542.08"/>
+  </g>
+  <g id="ELLIPSE-26" data-name="ELLIPSE">
+    <path class="cls-2" d="M1515.56,532.59c-1.56,2.71-2.43,6.12-2.43,9.49"/>
+  </g>
+  <g id="LINE-34" data-name="LINE">
+    <line class="cls-2" x1="1515.56" y1="532.59" x2="1523.66" y2="518.49"/>
+  </g>
+  <g id="ELLIPSE-27" data-name="ELLIPSE">
+    <path class="cls-2" d="M1524.76,517.57c-.41.09-.81.42-1.1.92"/>
+  </g>
+  <g id="LINE-35" data-name="LINE">
+    <line class="cls-2" x1="1524.76" y1="517.57" x2="1525.75" y2="517.37"/>
+  </g>
+  <g id="ELLIPSE-28" data-name="ELLIPSE">
+    <path class="cls-2" d="M1527.3,519.42c0-1.31-.7-2.24-1.55-2.06"/>
+  </g>
+  <g id="LINE-36" data-name="LINE">
+    <line class="cls-2" x1="1527.3" y1="519.42" x2="1527.3" y2="529.48"/>
+  </g>
+  <g id="ELLIPSE-29" data-name="ELLIPSE">
+    <path class="cls-2" d="M1530.06,533.13h0c-1.52.31-2.75-1.32-2.75-3.65"/>
+  </g>
+  <g id="LINE-37" data-name="LINE">
+    <line class="cls-2" x1="1530.06" y1="533.13" x2="1531.65" y2="532.8"/>
+  </g>
+  <g id="ELLIPSE-30" data-name="ELLIPSE">
+    <path class="cls-2" d="M1534.4,528.02h0c0,2.33-1.23,4.47-2.75,4.78"/>
+  </g>
+  <g id="LINE-38" data-name="LINE">
+    <line class="cls-2" x1="1534.4" y1="528.02" x2="1534.4" y2="500.62"/>
+  </g>
+  <g id="ELLIPSE-31" data-name="ELLIPSE">
+    <path class="cls-2" d="M1528.86,493.27h0c3.06-.63,5.55,2.66,5.55,7.35"/>
+  </g>
+  <g id="LINE-39" data-name="LINE">
+    <line class="cls-2" x1="1528.86" y1="493.27" x2="1510.98" y2="496.97"/>
+  </g>
+  <g id="ELLIPSE-32" data-name="ELLIPSE">
+    <path class="cls-2" d="M1508.22,501.75h0c0-2.33,1.23-4.47,2.75-4.78"/>
+  </g>
+  <g id="LINE-40" data-name="LINE">
+    <line class="cls-2" x1="1508.22" y1="501.75" x2="1508.22" y2="504.2"/>
+  </g>
+  <g id="ELLIPSE-33" data-name="ELLIPSE">
+    <path class="cls-2" d="M1510.98,507.85h0c-1.52.31-2.75-1.32-2.75-3.65"/>
+  </g>
+  <g id="LINE-41" data-name="LINE">
+    <line class="cls-2" x1="1510.98" y1="507.85" x2="1517.54" y2="506.49"/>
+  </g>
+  <g id="ELLIPSE-34" data-name="ELLIPSE">
+    <path class="cls-2" d="M1519.1,508.54c0-1.31-.7-2.24-1.55-2.06"/>
+  </g>
+  <g id="LINE-42" data-name="LINE">
+    <line class="cls-2" x1="1519.1" y1="508.54" x2="1519.1" y2="510.07"/>
+  </g>
+  <g id="ELLIPSE-35" data-name="ELLIPSE">
+    <path class="cls-2" d="M1518.64,511.84c.29-.51.45-1.15.45-1.78"/>
+  </g>
+  <g id="LINE-43" data-name="LINE">
+    <line class="cls-2" x1="1518.64" y1="511.84" x2="1510.54" y2="525.94"/>
+  </g>
+  <g id="ELLIPSE-36" data-name="ELLIPSE">
+    <path class="cls-2" d="M1504.67,530.88c2.2-.46,4.31-2.23,5.87-4.94"/>
+  </g>
+  <g id="LINE-44" data-name="LINE">
+    <line class="cls-2" x1="1504.67" y1="530.88" x2="1497.58" y2="532.34"/>
+  </g>
+  <g id="ELLIPSE-37" data-name="ELLIPSE">
+    <path class="cls-2" d="M1491.71,529.83c1.56,2.06,3.67,2.96,5.87,2.51"/>
+  </g>
+  <g id="LINE-45" data-name="LINE">
+    <line class="cls-2" x1="1491.71" y1="529.83" x2="1483.61" y2="519.09"/>
+  </g>
+  <g id="ELLIPSE-38" data-name="ELLIPSE">
+    <path class="cls-2" d="M1483.15,517.5c0,.63.16,1.2.45,1.59"/>
+  </g>
+  <g id="LINE-46" data-name="LINE">
+    <line class="cls-2" x1="1483.15" y1="517.5" x2="1483.15" y2="515.98"/>
+  </g>
+  <g id="ELLIPSE-39" data-name="ELLIPSE">
+    <path class="cls-2" d="M1484.71,513.28c-.86.18-1.55,1.39-1.55,2.7h0"/>
+  </g>
+  <g id="LINE-47" data-name="LINE">
+    <line class="cls-2" x1="1484.71" y1="513.28" x2="1491.27" y2="511.92"/>
+  </g>
+  <g id="ELLIPSE-40" data-name="ELLIPSE">
+    <path class="cls-2" d="M1494.02,507.14h0c0,2.33-1.23,4.47-2.75,4.78"/>
+  </g>
+  <g id="LINE-48" data-name="LINE">
+    <line class="cls-2" x1="1494.02" y1="507.14" x2="1494.02" y2="504.69"/>
+  </g>
+  <g id="ELLIPSE-41" data-name="ELLIPSE">
+    <path class="cls-2" d="M1491.27,501.05h0c1.52-.31,2.75,1.32,2.75,3.65"/>
+  </g>
+  <g id="LINE-49" data-name="LINE">
+    <line class="cls-2" x1="1491.27" y1="501.05" x2="1473.39" y2="504.75"/>
+  </g>
+  <g id="ELLIPSE-42" data-name="ELLIPSE">
+    <path class="cls-2" d="M1467.84,514.39c0-4.69,2.48-9.01,5.55-9.65"/>
+  </g>
+  <g id="LINE-50" data-name="LINE">
+    <line class="cls-2" x1="1467.84" y1="514.39" x2="1467.84" y2="541.79"/>
+  </g>
+  <g id="ELLIPSE-43" data-name="ELLIPSE">
+    <path class="cls-2" d="M1470.6,545.44h0c-1.52.31-2.75-1.32-2.75-3.65"/>
+  </g>
+  <g id="LINE-51" data-name="LINE">
+    <line class="cls-2" x1="1470.6" y1="545.44" x2="1472.19" y2="545.11"/>
+  </g>
+  <g id="ELLIPSE-44" data-name="ELLIPSE">
+    <path class="cls-2" d="M1474.94,540.32h0c0,2.33-1.23,4.47-2.75,4.78"/>
+  </g>
+  <g id="LINE-52" data-name="LINE">
+    <line class="cls-2" x1="1474.94" y1="540.32" x2="1474.94" y2="530.26"/>
+  </g>
+  <g id="ELLIPSE-45" data-name="ELLIPSE">
+    <path class="cls-2" d="M1476.5,527.56c-.86.18-1.55,1.39-1.55,2.7h0"/>
+  </g>
+  <g id="LINE-53" data-name="LINE">
+    <line class="cls-2" x1="1476.5" y1="527.56" x2="1477.49" y2="527.35"/>
+  </g>
+  <g id="ELLIPSE-46" data-name="ELLIPSE">
+    <path class="cls-2" d="M1478.59,527.82c-.29-.39-.69-.55-1.1-.47"/>
+  </g>
+  <g id="LINE-54" data-name="LINE">
+    <line class="cls-2" x1="1478.59" y1="527.82" x2="1486.69" y2="538.56"/>
+  </g>
+  <g id="ELLIPSE-47" data-name="ELLIPSE">
+    <path class="cls-2" d="M1489.12,547.05c0-3.37-.87-6.42-2.43-8.49"/>
+  </g>
+  <g id="LINE-55" data-name="LINE">
+    <line class="cls-2" x1="1489.12" y1="547.05" x2="1489.12" y2="557.91"/>
+  </g>
+  <g id="ELLIPSE-48" data-name="ELLIPSE">
+    <path class="cls-2" d="M1486.69,567.4c1.56-2.71,2.43-6.12,2.43-9.49"/>
+  </g>
+  <g id="LINE-56" data-name="LINE">
+    <line class="cls-2" x1="1486.69" y1="567.4" x2="1478.59" y2="581.5"/>
+  </g>
+  <g id="ELLIPSE-49" data-name="ELLIPSE">
+    <path class="cls-2" d="M1477.49,582.42c.41-.09.81-.42,1.1-.92"/>
+  </g>
+  <g id="LINE-57" data-name="LINE">
+    <line class="cls-2" x1="1477.49" y1="582.42" x2="1476.5" y2="582.63"/>
+  </g>
+  <g id="ELLIPSE-50" data-name="ELLIPSE">
+    <path class="cls-2" d="M1474.94,580.57c0,1.31.7,2.24,1.55,2.06"/>
+  </g>
+  <g id="LINE-58" data-name="LINE">
+    <line class="cls-2" x1="1474.94" y1="580.57" x2="1474.94" y2="570.51"/>
+  </g>
+  <g id="ELLIPSE-51" data-name="ELLIPSE">
+    <path class="cls-2" d="M1472.19,566.86h0c1.52-.31,2.75,1.32,2.75,3.65"/>
+  </g>
+  <g id="LINE-59" data-name="LINE">
+    <line class="cls-2" x1="1472.19" y1="566.86" x2="1470.6" y2="567.19"/>
+  </g>
+  <g id="ELLIPSE-52" data-name="ELLIPSE">
+    <path class="cls-2" d="M1467.84,571.98h0c0-2.33,1.23-4.47,2.75-4.78"/>
+  </g>
+  <g id="LINE-60" data-name="LINE">
+    <line class="cls-2" x1="1467.84" y1="571.98" x2="1467.84" y2="599.37"/>
+  </g>
+  <g id="ELLIPSE-53" data-name="ELLIPSE">
+    <path class="cls-2" d="M1473.39,606.72h0c-3.06.63-5.55-2.66-5.55-7.35"/>
+  </g>
+  <g id="LINE-61" data-name="LINE">
+    <line class="cls-2" x1="1473.39" y1="606.72" x2="1491.27" y2="603.02"/>
+  </g>
+  <g id="ELLIPSE-54" data-name="ELLIPSE">
+    <path class="cls-2" d="M1494.02,598.24h0c0,2.33-1.23,4.47-2.75,4.78"/>
+  </g>
+  <g id="LINE-62" data-name="LINE">
+    <line class="cls-2" x1="1494.02" y1="598.24" x2="1494.02" y2="595.79"/>
+  </g>
+  <g id="ELLIPSE-55" data-name="ELLIPSE">
+    <path class="cls-2" d="M1491.27,592.14h0c1.52-.31,2.75,1.32,2.75,3.65"/>
+  </g>
+  <g id="LINE-63" data-name="LINE">
+    <line class="cls-2" x1="1491.27" y1="592.14" x2="1484.71" y2="593.5"/>
+  </g>
+  <g id="ELLIPSE-56" data-name="ELLIPSE">
+    <path class="cls-2" d="M1483.15,591.45c0,1.31.7,2.24,1.55,2.06"/>
+  </g>
+  <g id="LINE-64" data-name="LINE">
+    <line class="cls-2" x1="1483.15" y1="591.45" x2="1483.15" y2="589.93"/>
+  </g>
+  <g id="ELLIPSE-57" data-name="ELLIPSE">
+    <path class="cls-2" d="M1483.61,588.15c-.29.51-.45,1.15-.45,1.78"/>
+  </g>
+  <g id="LINE-65" data-name="LINE">
+    <line class="cls-2" x1="1483.61" y1="588.15" x2="1491.71" y2="574.05"/>
+  </g>
+  <g id="ELLIPSE-58" data-name="ELLIPSE">
+    <path class="cls-2" d="M1497.58,569.12c-2.2.46-4.31,2.23-5.87,4.94"/>
+  </g>
+  <g id="LINE-66" data-name="LINE">
+    <line class="cls-2" x1="1497.58" y1="569.12" x2="1504.67" y2="567.65"/>
+  </g>
+  <g id="ELLIPSE-59" data-name="ELLIPSE">
+    <path class="cls-2" d="M1510.54,570.16c-1.56-2.06-3.67-2.96-5.87-2.51"/>
+  </g>
+  <g id="LINE-67" data-name="LINE">
+    <line class="cls-2" x1="1510.54" y1="570.16" x2="1518.64" y2="580.9"/>
+  </g>
+  <g id="ELLIPSE-60" data-name="ELLIPSE">
+    <path class="cls-2" d="M1519.1,582.49c0-.63-.16-1.2-.45-1.59"/>
+  </g>
+  <g id="LINE-68" data-name="LINE">
+    <line class="cls-2" x1="1519.1" y1="582.49" x2="1519.1" y2="584.01"/>
+  </g>
+  <g id="ELLIPSE-61" data-name="ELLIPSE">
+    <path class="cls-2" d="M1517.54,586.71c.86-.18,1.55-1.39,1.55-2.7h0"/>
+  </g>
+  <g id="LINE-69" data-name="LINE">
+    <line class="cls-2" x1="1517.54" y1="586.71" x2="1510.98" y2="588.07"/>
+  </g>
+  <g id="ELLIPSE-62" data-name="ELLIPSE">
+    <path class="cls-2" d="M1508.22,592.85h0c0-2.33,1.23-4.47,2.75-4.78"/>
+  </g>
+  <g id="LINE-70" data-name="LINE">
+    <line class="cls-2" x1="1508.22" y1="592.85" x2="1508.22" y2="595.3"/>
+  </g>
+  <g id="ELLIPSE-63" data-name="ELLIPSE">
+    <path class="cls-2" d="M1510.98,598.95h0c-1.52.31-2.75-1.32-2.75-3.65"/>
+  </g>
+  <g id="LINE-71" data-name="LINE">
+    <line class="cls-2" x1="1510.98" y1="598.95" x2="1528.86" y2="595.24"/>
+  </g>
+  <g id="ELLIPSE-64" data-name="ELLIPSE">
+    <path class="cls-2" d="M1534.4,585.6c0,4.69-2.48,9.01-5.55,9.65"/>
+  </g>
+  <g id="LINE-72" data-name="LINE">
+    <line class="cls-2" x1="1534.4" y1="585.6" x2="1534.4" y2="558.2"/>
+  </g>
+  <g id="LINE-73" data-name="LINE">
+    <line class="cls-2" x1="1506.4" y1="552.66" x2="1508.71" y2="555.73"/>
+  </g>
+  <g id="ELLIPSE-65" data-name="ELLIPSE">
+    <path class="cls-2" d="M1505.89,560.64c.78,1.03,2.04.77,2.82-.58.78-1.36.78-3.29,0-4.33"/>
+  </g>
+  <g id="LINE-74" data-name="LINE">
+    <line class="cls-2" x1="1505.89" y1="560.64" x2="1503.57" y2="557.57"/>
+  </g>
+  <g id="ELLIPSE-66" data-name="ELLIPSE">
+    <path class="cls-2" d="M1498.68,558.58c1.55.78,3.34.41,4.9-1.01"/>
+  </g>
+  <g id="LINE-75" data-name="LINE">
+    <line class="cls-2" x1="1498.68" y1="558.58" x2="1496.36" y2="562.61"/>
+  </g>
+  <g id="ELLIPSE-67" data-name="ELLIPSE">
+    <path class="cls-2" d="M1493.54,558.87c-.78,1.36-.78,3.29,0,4.33s2.04.77,2.82-.58"/>
+  </g>
+  <g id="LINE-76" data-name="LINE">
+    <line class="cls-2" x1="1493.54" y1="558.87" x2="1495.85" y2="554.84"/>
+  </g>
+  <g id="ELLIPSE-68" data-name="ELLIPSE">
+    <path class="cls-2" d="M1495.85,547.34c-.72,2.53-.72,5.27,0,7.5"/>
+  </g>
+  <g id="LINE-77" data-name="LINE">
+    <line class="cls-2" x1="1495.85" y1="547.34" x2="1493.54" y2="544.27"/>
+  </g>
+  <g id="ELLIPSE-69" data-name="ELLIPSE">
+    <path class="cls-2" d="M1496.36,539.35c-.78-1.03-2.04-.77-2.82.58-.78,1.36-.78,3.29,0,4.33"/>
+  </g>
+  <g id="LINE-78" data-name="LINE">
+    <line class="cls-2" x1="1496.36" y1="539.35" x2="1498.68" y2="542.42"/>
+  </g>
+  <g id="ELLIPSE-70" data-name="ELLIPSE">
+    <path class="cls-2" d="M1503.57,541.41c-1.55-.78-3.34-.41-4.9,1.01"/>
+  </g>
+  <g id="LINE-79" data-name="LINE">
+    <line class="cls-2" x1="1503.57" y1="541.41" x2="1505.89" y2="537.38"/>
+  </g>
+  <g id="ELLIPSE-71" data-name="ELLIPSE">
+    <path class="cls-2" d="M1508.71,541.12c.78-1.36.78-3.29,0-4.33s-2.04-.77-2.82.58"/>
+  </g>
+  <g id="LINE-80" data-name="LINE">
+    <line class="cls-2" x1="1508.71" y1="541.12" x2="1506.4" y2="545.15"/>
+  </g>
+  <g id="ELLIPSE-72" data-name="ELLIPSE">
+    <path class="cls-2" d="M1506.4,552.66c.72-2.53.72-5.27,0-7.5"/>
+  </g>
+  <g id="LINE-81" data-name="LINE">
+    <line class="cls-2" x1="1503.57" y1="557.57" x2="1495" y2="556.32"/>
+  </g>
+  <g id="LINE-82" data-name="LINE">
+    <line class="cls-2" x1="1498.68" y1="558.58" x2="1494.08" y2="557.91"/>
+  </g>
+  <g id="LINE-83" data-name="LINE">
+    <line class="cls-2" x1="1498.68" y1="542.42" x2="1492.99" y2="541.6"/>
+  </g>
+  <g id="LINE-84" data-name="LINE">
+    <line class="cls-2" x1="1503.57" y1="541.41" x2="1501.23" y2="541.07"/>
+  </g>
+  <g id="LINE-85" data-name="LINE">
+    <line class="cls-2" x1="1506.4" y1="545.15" x2="1493.06" y2="543.21"/>
+  </g>
+  <g id="LINE-86" data-name="LINE">
+    <line class="cls-2" x1="1506.4" y1="552.66" x2="1495.31" y2="551.04"/>
+  </g>
+  <g id="ELLIPSE-73" data-name="ELLIPSE">
+    <path class="cls-2" d="M85.16,282.91c.42-.09.84-.1,1.24-.04"/>
+  </g>
+  <g id="LINE-87" data-name="LINE">
+    <line class="cls-2" x1="67.28" y1="286.61" x2="85.16" y2="282.91"/>
+  </g>
+  <g id="ELLIPSE-74" data-name="ELLIPSE">
+    <path class="cls-2" d="M64.53,291.4h0c0-2.33,1.23-4.47,2.75-4.78"/>
+  </g>
+  <g id="LINE-88" data-name="LINE">
+    <line class="cls-2" x1="64.53" y1="293.05" x2="64.53" y2="291.4"/>
+  </g>
+  <g id="ELLIPSE-75" data-name="ELLIPSE">
+    <path class="cls-2" d="M47.58,290.69c.21-.04.41-.05.62-.02"/>
+  </g>
+  <g id="LINE-89" data-name="LINE">
+    <line class="cls-2" x1="29.7" y1="294.39" x2="47.58" y2="290.69"/>
+  </g>
+  <g id="ELLIPSE-76" data-name="ELLIPSE">
+    <path class="cls-2" d="M24.15,304.03c0-4.69,2.48-9.01,5.55-9.65"/>
+  </g>
+  <g id="LINE-90" data-name="LINE">
+    <line class="cls-2" x1="24.15" y1="331.43" x2="24.15" y2="304.03"/>
+  </g>
+  <g id="ELLIPSE-77" data-name="ELLIPSE">
+    <path class="cls-2" d="M26.29,335.1c-1.25-.18-2.13-1.7-2.13-3.67"/>
+  </g>
+  <g id="LINE-91" data-name="LINE">
+    <line class="cls-2" x1="45.43" y1="347.55" x2="45.43" y2="337.89"/>
+  </g>
+  <g id="ELLIPSE-78" data-name="ELLIPSE">
+    <path class="cls-2" d="M43,357.04c1.56-2.71,2.43-6.12,2.43-9.49"/>
+  </g>
+  <g id="LINE-92" data-name="LINE">
+    <line class="cls-2" x1="42.22" y1="358.39" x2="43" y2="357.04"/>
+  </g>
+  <g id="ELLIPSE-79" data-name="ELLIPSE">
+    <path class="cls-2" d="M28.5,356.5c.21-.04.41-.05.62-.02"/>
+  </g>
+  <g id="LINE-93" data-name="LINE">
+    <line class="cls-2" x1="26.9" y1="356.83" x2="28.5" y2="356.5"/>
+  </g>
+  <g id="ELLIPSE-80" data-name="ELLIPSE">
+    <path class="cls-2" d="M24.15,361.62h0c0-2.33,1.23-4.47,2.75-4.78"/>
+  </g>
+  <g id="LINE-94" data-name="LINE">
+    <line class="cls-2" x1="24.15" y1="389.02" x2="24.15" y2="361.62"/>
+  </g>
+  <g id="ELLIPSE-81" data-name="ELLIPSE">
+    <path class="cls-2" d="M28.45,396.41c-2.52-.37-4.3-3.43-4.3-7.39"/>
+  </g>
+  <g id="LINE-95" data-name="LINE">
+    <line class="cls-2" x1="1529.44" y1="533.15" x2="1516.33" y2="531.24"/>
+  </g>
+  <g id="LINE-96" data-name="LINE">
+    <line class="cls-2" x1="1530.1" y1="493.23" x2="1328.44" y2="463.84"/>
+  </g>
+  <g id="LINE-97" data-name="LINE">
+    <line class="cls-2" x1="801.33" y1="387.04" x2="86.41" y2="282.87"/>
+  </g>
+  <g id="LINE-98" data-name="LINE">
+    <line class="cls-2" x1="1510.36" y1="507.87" x2="1494.02" y2="505.49"/>
+  </g>
+  <g id="LINE-99" data-name="LINE">
+    <line class="cls-2" x1="1491.89" y1="501.03" x2="1290.54" y2="471.69"/>
+  </g>
+  <g id="LINE-100" data-name="LINE">
+    <line class="cls-2" x1="801.33" y1="400.41" x2="48.2" y2="290.67"/>
+  </g>
+  <g id="LINE-101" data-name="LINE">
+    <line class="cls-2" x1="1469.98" y1="545.46" x2="1242.53" y2="512.32"/>
+  </g>
+  <g id="LINE-102" data-name="LINE">
+    <line class="cls-2" x1="1161.95" y1="500.57" x2="1088.81" y2="489.92"/>
+  </g>
+  <g id="LINE-103" data-name="LINE">
+    <line class="cls-2" x1="1008.23" y1="478.18" x2="26.29" y2="335.1"/>
+  </g>
+  <g id="LINE-104" data-name="LINE">
+    <line class="cls-2" x1="1472.81" y1="566.84" x2="1258.11" y2="535.56"/>
+  </g>
+  <g id="LINE-105" data-name="LINE">
+    <line class="cls-2" x1="1142.82" y1="518.76" x2="1104.38" y2="513.16"/>
+  </g>
+  <g id="LINE-106" data-name="LINE">
+    <line class="cls-2" x1="989.1" y1="496.36" x2="29.12" y2="356.48"/>
+  </g>
+  <g id="LINE-107" data-name="LINE">
+    <line class="cls-2" x1="1472.15" y1="606.76" x2="28.45" y2="396.41"/>
+  </g>
+  <g id="LINE-108" data-name="LINE">
+    <line class="cls-2" x1="1491.89" y1="592.12" x2="1483.15" y2="590.85"/>
+  </g>
+  <g id="LINE-109" data-name="LINE">
+    <line class="cls-2" x1="1510.36" y1="598.97" x2="1494.02" y2="596.59"/>
+  </g>
+  <g id="LINE-110" data-name="LINE">
+    <line class="cls-2" x1="1532.27" y1="554.53" x2="1513.13" y2="551.75"/>
+  </g>
+  <g id="ELLIPSE-82" data-name="ELLIPSE">
+    <path class="cls-2" d="M1216.43,503.03c0,1.53-7.15,2.77-15.97,2.77s-15.97-1.24-15.97-2.77"/>
+  </g>
+  <g id="LINE-111" data-name="LINE">
+    <line class="cls-2" x1="1184.5" y1="503.03" x2="1184.5" y2="489.26"/>
+  </g>
+  <g id="LINE-112" data-name="LINE">
+    <line class="cls-2" x1="1216.43" y1="503.03" x2="1216.43" y2="487.02"/>
+  </g>
+  <g id="LINE-113" data-name="LINE">
+    <line class="cls-2" x1="1209.87" y1="488.38" x2="1420.65" y2="444.76"/>
+  </g>
+  <g id="LINE-114" data-name="LINE">
+    <line class="cls-2" x1="1424.61" y1="440.24" x2="1213.84" y2="483.86"/>
+  </g>
+  <g id="ELLIPSE-83" data-name="ELLIPSE">
+    <path class="cls-2" d="M1180.7,488.82c8.76,1.28,21.82,1.08,29.18-.44"/>
+  </g>
+  <g id="ELLIPSE-84" data-name="ELLIPSE">
+    <path class="cls-2" d="M1213.84,483.86h0c-9.19,1.9-25.52,2.15-36.47.55"/>
+  </g>
+  <g id="LINE-115" data-name="LINE">
+    <line class="cls-2" x1="949.7" y1="455.17" x2="1180.7" y2="488.82"/>
+  </g>
+  <g id="LINE-116" data-name="LINE">
+    <line class="cls-2" x1="1177.37" y1="484.41" x2="946.37" y2="450.76"/>
+  </g>
+  <g id="ELLIPSE-85" data-name="ELLIPSE">
+    <path class="cls-2" d="M942.63,453.05c.86.83,3.36,1.58,7.07,2.12"/>
+  </g>
+  <g id="ELLIPSE-86" data-name="ELLIPSE">
+    <path class="cls-2" d="M946.37,450.76c-5.86-.85-9.25-2.11-9.25-3.44"/>
+  </g>
+  <g id="ELLIPSE-87" data-name="ELLIPSE">
+    <path class="cls-2" d="M1420.65,444.76c2.32-.48,3.88-1.06,4.52-1.68"/>
+  </g>
+  <g id="ELLIPSE-88" data-name="ELLIPSE">
+    <path class="cls-2" d="M1430.67,437.35c0,1.06-2.14,2.08-6.06,2.89"/>
+  </g>
+  <g id="LINE-117" data-name="LINE">
+    <line class="cls-2" x1="942.63" y1="453.05" x2="937.53" y2="448.11"/>
+  </g>
+  <g id="LINE-118" data-name="LINE">
+    <line class="cls-2" x1="1425.17" y1="443.09" x2="1430.27" y2="438.14"/>
+  </g>
+  <g id="LINE-119" data-name="LINE">
+    <line class="cls-2" x1="937.12" y1="437.02" x2="937.12" y2="447.31"/>
+  </g>
+  <g id="LINE-120" data-name="LINE">
+    <line class="cls-2" x1="1430.67" y1="424.36" x2="1430.67" y2="437.35"/>
+  </g>
+  <g id="SPLINE-5" data-name="SPLINE">
+    <path class="cls-2" d="M1553.62,179.77c1.32.19,2.48.43,3.5.76.6.19,1.17.42,1.76.76.48.28,1,.66,1.46,1.14.43.46.81,1.02,1.06,1.63.11.28.2.58.27.89.05.26.08.53.1.8.02.3.02.61.02.9"/>
+  </g>
+  <g id="LINE-121" data-name="LINE">
+    <line class="cls-2" x1="1181.98" y1="125.62" x2="1553.62" y2="179.77"/>
+  </g>
+  <g id="ARC">
+    <path class="cls-2" d="M1181.98,125.62c-5.97-.8-12.03-.7-17.97.29"/>
+  </g>
+  <g id="LINE-122" data-name="LINE">
+    <line class="cls-2" x1="807.8" y1="199.63" x2="1164.01" y2="125.91"/>
+  </g>
+  <g id="SPLINE-6" data-name="SPLINE">
+    <path class="cls-2" d="M801.33,206.23c0-.21,0-.43,0-.64,0-.23.02-.46.05-.69.04-.33.11-.64.21-.94.14-.44.34-.85.59-1.22.31-.47.71-.89,1.11-1.23.43-.36.87-.63,1.29-.84.51-.26,1.01-.45,1.54-.61s1.07-.3,1.67-.42"/>
+  </g>
+  <g id="LINE-123" data-name="LINE">
+    <line class="cls-2" x1="1561.79" y1="391.96" x2="1561.79" y2="186.66"/>
+  </g>
+  <g id="LINE-124" data-name="LINE">
+    <line class="cls-2" x1="801.33" y1="411.53" x2="801.33" y2="206.23"/>
+  </g>
+  <g id="LINE-125" data-name="LINE">
+    <line class="cls-2" x1="1181.14" y1="472.57" x2="809.5" y2="418.42"/>
+  </g>
+  <g id="SPLINE-7" data-name="SPLINE">
+    <path class="cls-2" d="M809.5,418.42c-1.32-.19-2.48-.43-3.5-.76-.6-.19-1.17-.42-1.76-.76-.48-.28-1-.66-1.46-1.14-.43-.46-.81-1.02-1.06-1.63-.11-.28-.2-.58-.27-.89-.05-.26-.08-.53-.1-.8-.02-.3-.02-.61-.02-.9"/>
+  </g>
+  <g id="SPLINE-8" data-name="SPLINE">
+    <path class="cls-2" d="M1561.79,391.96c0,.21,0,.43,0,.64,0,.23-.02.46-.05.69-.04.33-.11.64-.21.94-.14.44-.34.85-.59,1.22-.31.47-.71.89-1.11,1.23-.43.36-.87.63-1.29.84-.51.26-1.01.45-1.54.61s-1.07.3-1.67.42"/>
+  </g>
+  <g id="LINE-126" data-name="LINE">
+    <line class="cls-2" x1="1555.32" y1="398.56" x2="1199.11" y2="472.28"/>
+  </g>
+  <g id="ARC-2" data-name="ARC">
+    <path class="cls-2" d="M1181.14,472.57c5.97.8,12.03.7,17.97-.29"/>
+  </g>
+  <g id="LINE-127" data-name="LINE">
+    <line class="cls-2" x1="1337.17" y1="462.04" x2="1337.17" y2="465.12"/>
+  </g>
+  <g id="ELLIPSE-89" data-name="ELLIPSE">
+    <path class="cls-2" d="M1030.63,480.61c0,1.53,7.15,2.77,15.97,2.77s15.97-1.24,15.97-2.77"/>
+  </g>
+  <g id="LINE-128" data-name="LINE">
+    <line class="cls-2" x1="1062.56" y1="471.61" x2="1062.56" y2="480.61"/>
+  </g>
+  <g id="LINE-129" data-name="LINE">
+    <line class="cls-2" x1="1030.63" y1="466.96" x2="1030.63" y2="480.61"/>
+  </g>
+  <g id="ELLIPSE-90" data-name="ELLIPSE">
+    <path class="cls-1" d="M1242.53,514.87c2.14,1.33,2.14,2.74,0,4.07-6.47,4.03-30.56,6.39-53.79,5.27-23.23-1.12-36.82-5.31-30.35-9.34"/>
+  </g>
+  <g id="ELLIPSE-91" data-name="ELLIPSE">
+    <path class="cls-1" d="M1242.53,514.79c0,1.72-3.48,3.38-9.84,4.7"/>
+  </g>
+  <g id="ELLIPSE-92" data-name="ELLIPSE">
+    <path class="cls-1" d="M1232.69,519.49c-7.99,1.65-19.79,2.61-32.23,2.61-23.23,0-42.07-3.27-42.07-7.3"/>
+  </g>
+  <g id="ELLIPSE-93" data-name="ELLIPSE">
+    <path class="cls-1" d="M1088.81,492.47c2.14,1.33,2.14,2.74,0,4.07-6.47,4.03-30.56,6.39-53.79,5.27-23.23-1.12-36.82-5.31-30.35-9.34"/>
+  </g>
+  <g id="ELLIPSE-94" data-name="ELLIPSE">
+    <path class="cls-1" d="M1088.81,492.4c0,1.72-3.48,3.38-9.84,4.7"/>
+  </g>
+  <g id="ELLIPSE-95" data-name="ELLIPSE">
+    <path class="cls-1" d="M1078.96,497.09c-7.99,1.65-19.79,2.61-32.23,2.61-23.23,0-42.07-3.27-42.07-7.3"/>
+  </g>
+  <g id="LINE-130" data-name="LINE">
+    <line class="cls-1" x1="1531.65" y1="554.56" x2="1513.13" y2="551.86"/>
+  </g>
+  <g id="LINE-131" data-name="LINE">
+    <line class="cls-1" x1="1527.3" y1="559.67" x2="1513.76" y2="557.7"/>
+  </g>
+  <g id="LINE-132" data-name="LINE">
+    <line class="cls-1" x1="1527.3" y1="569.73" x2="1521.14" y2="568.83"/>
+  </g>
+  <g id="LINE-133" data-name="LINE">
+    <line class="cls-1" x1="1524.76" y1="572.64" x2="1524.08" y2="572.54"/>
+  </g>
+  <g id="LINE-134" data-name="LINE">
+    <line class="cls-1" x1="1527.3" y1="529.48" x2="1518.11" y2="528.15"/>
+  </g>
+  <g id="LINE-135" data-name="LINE">
+    <line class="cls-1" x1="1528.86" y1="493.27" x2="1327.81" y2="463.97"/>
+  </g>
+  <g id="LINE-136" data-name="LINE">
+    <line class="cls-1" x1="1510.98" y1="496.97" x2="1309.93" y2="467.67"/>
+  </g>
+  <g id="LINE-137" data-name="LINE">
+    <line class="cls-1" x1="801.33" y1="393.57" x2="67.28" y2="286.61"/>
+  </g>
+  <g id="LINE-138" data-name="LINE">
+    <line class="cls-1" x1="1518.64" y1="511.84" x2="1493.93" y2="508.24"/>
+  </g>
+  <g id="LINE-139" data-name="LINE">
+    <line class="cls-1" x1="1510.54" y1="525.94" x2="1486.08" y2="522.37"/>
+  </g>
+  <g id="LINE-140" data-name="LINE">
+    <line class="cls-1" x1="1504.67" y1="530.88" x2="1491" y2="528.88"/>
+  </g>
+  <g id="LINE-141" data-name="LINE">
+    <line class="cls-1" x1="1497.58" y1="532.34" x2="1493.95" y2="531.81"/>
+  </g>
+  <g id="LINE-142" data-name="LINE">
+    <line class="cls-1" x1="1491.27" y1="501.05" x2="1290.23" y2="471.75"/>
+  </g>
+  <g id="LINE-143" data-name="LINE">
+    <line class="cls-1" x1="1473.39" y1="504.75" x2="1272.35" y2="475.45"/>
+  </g>
+  <g id="LINE-144" data-name="LINE">
+    <line class="cls-1" x1="801.33" y1="406.82" x2="29.7" y2="294.39"/>
+  </g>
+  <g id="LINE-145" data-name="LINE">
+    <line class="cls-1" x1="1467.84" y1="514.39" x2="1242.7" y2="481.59"/>
+  </g>
+  <g id="LINE-146" data-name="LINE">
+    <line class="cls-1" x1="937.12" y1="437.06" x2="24.15" y2="304.03"/>
+  </g>
+  <g id="LINE-147" data-name="LINE">
+    <line class="cls-1" x1="1467.84" y1="541.79" x2="1242.53" y2="508.96"/>
+  </g>
+  <g id="LINE-148" data-name="LINE">
+    <line class="cls-1" x1="1169.61" y1="498.34" x2="1088.81" y2="486.56"/>
+  </g>
+  <g id="LINE-149" data-name="LINE">
+    <line class="cls-1" x1="1015.89" y1="475.94" x2="24.15" y2="331.43"/>
+  </g>
+  <g id="LINE-150" data-name="LINE">
+    <line class="cls-1" x1="1478.59" y1="527.82" x2="1476.61" y2="527.53"/>
+  </g>
+  <g id="LINE-151" data-name="LINE">
+    <line class="cls-1" x1="1486.69" y1="538.56" x2="1474.94" y2="536.85"/>
+  </g>
+  <g id="LINE-152" data-name="LINE">
+    <line class="cls-1" x1="1489.12" y1="547.05" x2="1473.06" y2="544.71"/>
+  </g>
+  <g id="LINE-153" data-name="LINE">
+    <line class="cls-1" x1="1489.12" y1="557.91" x2="1258.11" y2="524.25"/>
+  </g>
+  <g id="LINE-154" data-name="LINE">
+    <line class="cls-1" x1="1158.4" y1="509.72" x2="1104.38" y2="501.85"/>
+  </g>
+  <g id="LINE-155" data-name="LINE">
+    <line class="cls-1" x1="1004.67" y1="487.32" x2="45.43" y2="347.55"/>
+  </g>
+  <g id="LINE-156" data-name="LINE">
+    <line class="cls-1" x1="1476.5" y1="582.63" x2="1475.82" y2="582.53"/>
+  </g>
+  <g id="LINE-157" data-name="LINE">
+    <line class="cls-1" x1="1142.82" y1="518.87" x2="1104.38" y2="513.27"/>
+  </g>
+  <g id="LINE-158" data-name="LINE">
+    <line class="cls-1" x1="989.1" y1="496.47" x2="28.5" y2="356.5"/>
+  </g>
+  <g id="LINE-159" data-name="LINE">
+    <line class="cls-1" x1="1467.84" y1="571.98" x2="1254.42" y2="540.88"/>
+  </g>
+  <g id="LINE-160" data-name="LINE">
+    <line class="cls-1" x1="1142.82" y1="524.62" x2="1100.7" y2="518.48"/>
+  </g>
+  <g id="LINE-161" data-name="LINE">
+    <line class="cls-1" x1="989.1" y1="502.22" x2="24.15" y2="361.62"/>
+  </g>
+  <g id="LINE-162" data-name="LINE">
+    <line class="cls-1" x1="1467.84" y1="599.37" x2="1189.82" y2="558.86"/>
+  </g>
+  <g id="LINE-163" data-name="LINE">
+    <line class="cls-1" x1="1163.29" y1="555" x2="1036.1" y2="536.46"/>
+  </g>
+  <g id="LINE-164" data-name="LINE">
+    <line class="cls-1" x1="1009.56" y1="532.6" x2="24.15" y2="389.02"/>
+  </g>
+  <g id="LINE-165" data-name="LINE">
+    <line class="cls-1" x1="1491.27" y1="592.14" x2="1483.15" y2="590.96"/>
+  </g>
+  <g id="LINE-166" data-name="LINE">
+    <line class="cls-1" x1="1484.71" y1="593.5" x2="1484.03" y2="593.41"/>
+  </g>
+  <g id="LINE-167" data-name="LINE">
+    <line class="cls-1" x1="1518.64" y1="580.9" x2="1490.16" y2="576.75"/>
+  </g>
+  <g id="LINE-168" data-name="LINE">
+    <line class="cls-1" x1="1517.54" y1="586.71" x2="1487" y2="582.26"/>
+  </g>
+  <g id="LINE-169" data-name="LINE">
+    <line class="cls-1" x1="1510.98" y1="588.07" x2="1485.77" y2="584.39"/>
+  </g>
+  <g id="LINE-170" data-name="LINE">
+    <line class="cls-1" x1="1213.84" y1="483.86" x2="1209.87" y2="488.38"/>
+  </g>
+  <g id="LINE-171" data-name="LINE">
+    <line class="cls-1" x1="1420.65" y1="444.76" x2="1424.61" y2="440.24"/>
+  </g>
+  <g id="LINE-172" data-name="LINE">
+    <line class="cls-1" x1="1177.37" y1="484.41" x2="1180.7" y2="488.82"/>
+  </g>
+  <g id="LINE-173" data-name="LINE">
+    <line class="cls-1" x1="946.37" y1="450.76" x2="949.7" y2="455.17"/>
+  </g>
+  <g id="LINE-174" data-name="LINE">
+    <line class="cls-1" x1="946.37" y1="438.37" x2="946.37" y2="450.76"/>
+  </g>
+  <g id="LINE-175" data-name="LINE">
+    <line class="cls-1" x1="1177.37" y1="472.03" x2="1177.37" y2="484.41"/>
+  </g>
+  <g id="LINE-176" data-name="LINE">
+    <line class="cls-1" x1="1213.84" y1="469.23" x2="1213.84" y2="483.86"/>
+  </g>
+  <g id="LINE-177" data-name="LINE">
+    <line class="cls-1" x1="1424.61" y1="425.61" x2="1424.61" y2="440.24"/>
+  </g>
+  <g id="SPLINE-9" data-name="SPLINE">
+    <polyline class="cls-1" points="1197.6 256.24 1197.88 256.28 1198.17 256.33 1198.45 256.4 1198.73 256.49 1199.01 256.6 1199.28 256.74 1199.55 256.91 1199.82 257.12 1200.08 257.36 1200.33 257.62 1200.57 257.92 1200.79 258.24 1201 258.57 1201.18 258.92 1201.33 259.28 1201.46 259.64 1201.56 260.01 1201.64 260.37 1201.7 260.74 1201.74 261.11 1201.76 261.47 1201.76 261.83 1201.76 262.2"/>
+  </g>
+  <g id="LINE-178" data-name="LINE">
+    <line class="cls-1" x1="1201.76" y1="262.2" x2="1557.98" y2="188.48"/>
+  </g>
+  <g id="SPLINE-10" data-name="SPLINE">
+    <polyline class="cls-1" points="1557.98 188.48 1557.98 188.12 1557.97 187.75 1557.95 187.39 1557.91 187.02 1557.86 186.66 1557.78 186.29 1557.67 185.92 1557.54 185.56 1557.39 185.2 1557.21 184.86 1557.01 184.52 1556.78 184.2 1556.55 183.91 1556.3 183.64 1556.04 183.4 1555.77 183.2 1555.49 183.02 1555.22 182.88 1554.94 182.77 1554.66 182.68 1554.38 182.62 1554.1 182.57 1553.81 182.52"/>
+  </g>
+  <g id="LINE-179" data-name="LINE">
+    <line class="cls-1" x1="1553.81" y1="182.52" x2="1197.6" y2="256.24"/>
+  </g>
+  <g id="SPLINE-11" data-name="SPLINE">
+    <path class="cls-1" d="M1553.62,179.77s-.01,0-.02,0c-.37-.05-.75.02-1.13.1"/>
+  </g>
+  <g id="ELLIPSE-96" data-name="ELLIPSE">
+    <path class="cls-1" d="M1552.47,179.86c4.6.67,5.2,1.86,1.34,2.66"/>
+  </g>
+  <g id="ELLIPSE-97" data-name="ELLIPSE">
+    <path class="cls-1" d="M1557.98,188.48c2.46-.51,3.82-1.15,3.82-1.82"/>
+  </g>
+  <g id="SPLINE-12" data-name="SPLINE">
+    <polyline class="cls-1" points="1181.98 125.62 1181.92 125.61 1181.85 125.6 1181.78 125.6 1181.72 125.6 1181.65 125.6 1181.58 125.6 1181.51 125.6 1181.45 125.61 1181.38 125.62 1181.31 125.63 1181.24 125.64 1181.18 125.65 1181.11 125.66 1181.04 125.67 1180.97 125.68 1180.91 125.7 1180.84 125.71"/>
+  </g>
+  <g id="LINE-180" data-name="LINE">
+    <line class="cls-1" x1="1180.84" y1="125.71" x2="1552.47" y2="179.86"/>
+  </g>
+  <g id="SPLINE-13" data-name="SPLINE">
+    <path class="cls-1" d="M1164.01,125.92c.05-.01.11-.02.16-.03.44-.06.89,0,1.34.06"/>
+  </g>
+  <g id="ELLIPSE-98" data-name="ELLIPSE">
+    <path class="cls-1" d="M1165.52,125.95c3.86-.8,10.72-.9,15.32-.23"/>
+  </g>
+  <g id="SPLINE-14" data-name="SPLINE">
+    <polyline class="cls-1" points="807.8 199.63 807.89 199.61 807.98 199.6 808.06 199.59 808.15 199.58 808.24 199.58 808.33 199.57 808.42 199.57 808.51 199.58 808.6 199.58 808.68 199.59 808.77 199.59 808.86 199.6 808.95 199.61 809.04 199.62 809.13 199.64 809.22 199.65 809.31 199.66"/>
+  </g>
+  <g id="LINE-181" data-name="LINE">
+    <line class="cls-1" x1="809.31" y1="199.66" x2="1165.52" y2="125.95"/>
+  </g>
+  <g id="SPLINE-15" data-name="SPLINE">
+    <path class="cls-1" d="M807.15,208.4c0-1.09.07-2.2.48-3.27.43-1.11,1.16-2.04,1.88-2.44.37-.2.75-.29,1.13-.37"/>
+  </g>
+  <g id="ELLIPSE-99" data-name="ELLIPSE">
+    <path class="cls-1" d="M810.65,202.32c-4.6-.67-5.2-1.86-1.34-2.66"/>
+  </g>
+  <g id="ELLIPSE-100" data-name="ELLIPSE">
+    <path class="cls-1" d="M801.33,206.23c0,.84,2.13,1.63,5.83,2.17"/>
+  </g>
+  <g id="SPLINE-16" data-name="SPLINE">
+    <polyline class="cls-1" points="1178.79 262.55 1178.79 262.18 1178.8 261.82 1178.81 261.45 1178.84 261.09 1178.89 260.72 1178.96 260.35 1179.04 259.98 1179.15 259.62 1179.28 259.25 1179.43 258.9 1179.6 258.56 1179.79 258.23 1179.99 257.93 1180.2 257.66 1180.42 257.41 1180.64 257.2 1180.87 257.02 1181.1 256.87 1181.34 256.75 1181.57 256.65 1181.81 256.58 1182.05 256.52 1182.28 256.47"/>
+  </g>
+  <g id="LINE-182" data-name="LINE">
+    <line class="cls-1" x1="1182.28" y1="256.47" x2="810.65" y2="202.32"/>
+  </g>
+  <g id="LINE-183" data-name="LINE">
+    <line class="cls-1" x1="807.15" y1="208.4" x2="1178.79" y2="262.55"/>
+  </g>
+  <g id="ELLIPSE-101" data-name="ELLIPSE">
+    <path class="cls-1" d="M1197.6,256.24c-3.86.8-10.72.9-15.32.23"/>
+  </g>
+  <g id="ELLIPSE-102" data-name="ELLIPSE">
+    <path class="cls-1" d="M1178.79,262.55c6.9,1.01,17.18.85,22.97-.35h0"/>
+  </g>
+  <g id="LINE-184" data-name="LINE">
+    <line class="cls-1" x1="1557.98" y1="393.78" x2="1557.98" y2="188.48"/>
+  </g>
+  <g id="ELLIPSE-103" data-name="ELLIPSE">
+    <path class="cls-1" d="M1561.79,391.96c0,.67-1.35,1.31-3.82,1.82"/>
+  </g>
+  <g id="LINE-185" data-name="LINE">
+    <line class="cls-1" x1="1201.76" y1="467.5" x2="1201.76" y2="262.2"/>
+  </g>
+  <g id="LINE-186" data-name="LINE">
+    <line class="cls-1" x1="1557.98" y1="393.78" x2="1201.76" y2="467.5"/>
+  </g>
+  <g id="LINE-187" data-name="LINE">
+    <line class="cls-1" x1="1178.79" y1="467.85" x2="1178.79" y2="262.55"/>
+  </g>
+  <g id="ELLIPSE-104" data-name="ELLIPSE">
+    <path class="cls-1" d="M1201.76,467.5h0c-5.79,1.2-16.07,1.35-22.97.35"/>
+  </g>
+  <g id="ELLIPSE-105" data-name="ELLIPSE">
+    <path class="cls-1" d="M807.15,413.7c-3.69-.54-5.83-1.33-5.83-2.17"/>
+  </g>
+  <g id="LINE-188" data-name="LINE">
+    <line class="cls-1" x1="807.15" y1="413.7" x2="807.15" y2="208.4"/>
+  </g>
+  <g id="LINE-189" data-name="LINE">
+    <line class="cls-1" x1="1178.79" y1="467.85" x2="807.15" y2="413.7"/>
+  </g>
+  <g id="SPLINE-17" data-name="SPLINE">
+    <path class="cls-1" d="M809.5,418.41c-.32-.04-.62-.16-.92-.39-.67-.52-1.18-1.53-1.34-2.61-.08-.55-.09-1.13-.09-1.71"/>
+  </g>
+  <g id="SPLINE-18" data-name="SPLINE">
+    <polyline class="cls-1" points="1178.79 467.85 1178.79 468.14 1178.79 468.42 1178.8 468.71 1178.82 468.99 1178.84 469.27 1178.88 469.54 1178.92 469.82 1178.98 470.08 1179.05 470.34 1179.14 470.6 1179.24 470.84 1179.35 471.08 1179.48 471.3 1179.61 471.51 1179.76 471.71 1179.91 471.89 1180.07 472.05 1180.24 472.19 1180.42 472.31 1180.59 472.41 1180.77 472.48 1180.95 472.54 1181.14 472.57"/>
+  </g>
+  <g id="SPLINE-19" data-name="SPLINE">
+    <polyline class="cls-1" points="1555.32 398.56 1555.53 398.51 1555.74 398.44 1555.95 398.34 1556.15 398.23 1556.35 398.1 1556.54 397.95 1556.72 397.78 1556.9 397.59 1557.06 397.39 1557.22 397.18 1557.35 396.95 1557.48 396.72 1557.59 396.47 1557.68 396.22 1557.76 395.96 1557.83 395.7 1557.88 395.43 1557.92 395.16 1557.95 394.89 1557.96 394.62 1557.97 394.34 1557.98 394.06 1557.98 393.78"/>
+  </g>
+  <g id="SPLINE-20" data-name="SPLINE">
+    <polyline class="cls-1" points="1199.11 472.28 1199.32 472.23 1199.53 472.15 1199.73 472.06 1199.94 471.95 1200.13 471.82 1200.33 471.67 1200.51 471.5 1200.69 471.31 1200.85 471.11 1201 470.89 1201.14 470.67 1201.27 470.43 1201.38 470.19 1201.47 469.94 1201.55 469.68 1201.62 469.42 1201.67 469.15 1201.71 468.88 1201.73 468.61 1201.75 468.33 1201.76 468.06 1201.76 467.78 1201.76 467.5"/>
+  </g>
+</svg>

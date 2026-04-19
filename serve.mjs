@@ -259,6 +259,26 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ── API: list MP3s in MUSIC/ folder for the Player page ──
+  if (req.method === 'GET' && req.url === '/api/music') {
+    const dir = path.join(__dirname, 'MUSIC');
+    let tracks = [];
+    try {
+      tracks = fs.readdirSync(dir)
+        .filter(f => f.toLowerCase().endsWith('.mp3'))
+        .sort()
+        .slice(0, 15)
+        .map(f => ({
+          name: f.replace(/\.mp3$/i, '').replace(/[_-]+/g, ' '),
+          src: 'MUSIC/' + encodeURIComponent(f),
+          sizeBytes: fs.statSync(path.join(dir, f)).size,
+        }));
+    } catch {}
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+    res.end(JSON.stringify({ tracks }));
+    return;
+  }
+
   // ── Static file serving ──
   let urlPath = decodeURIComponent(req.url.split('?')[0]);
   if (urlPath === '/') urlPath = '/index.html';
