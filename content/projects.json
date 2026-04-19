@@ -28,7 +28,9 @@
     },
     {
       "id": "carbon-chair-one",
-      "categories": [],
+      "categories": [
+        "Furniture"
+      ],
       "title": "Carbon Chair one",
       "year": 2025,
       "description": "",
@@ -61,6 +63,90 @@
         ],
         [
           "IMAGES/MOTORIZED-CAMERA-DOLLY/ICON_-_CAMERA_DOLLY.svg"
+        ]
+      ]
+    },
+    {
+      "id": "roto-cast-3d-printed-mold",
+      "categories": [
+        "Manufacturing"
+      ],
+      "title": "Roto cast 3D printed Mold",
+      "year": 2026,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/ROTO-CAST-3D-PRINTED-MOLD/ICON_-DOME_LIGHT_3D_PRINTED_MOLD.svg"
+        ]
+      ]
+    },
+    {
+      "id": "hull-chair-fiberglass-mold",
+      "categories": [
+        "Manufacturing"
+      ],
+      "title": "Hull Chair Fiberglass Mold",
+      "year": 2024,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/HULL-CHAIR-FIBERGLASS-MOLD/ICON_-_Hull_Chair_Fiberglass_Mold.svg"
+        ]
+      ]
+    },
+    {
+      "id": "axis-knife-study",
+      "categories": [
+        "Manufacturing",
+        "Mechanical"
+      ],
+      "title": "Axis Knife Study",
+      "year": 2026,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/AXIS-KNIFE-STUDY/ICON_-_AXIS_KNIFE_STUDY.svg"
+        ]
+      ]
+    },
+    {
+      "id": "kanami-sound-boy",
+      "categories": [
+        "Object",
+        "Sound"
+      ],
+      "title": "KA-NA-MI RADIO Sound Boy",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/KANAMI -SOUND-BOY/ANTENNA SOUND BOY DRAWING-CLEAR.png"
+        ],
+        [
+          "IMAGES/KANAMI -SOUND-BOY/IMG_1377.jpeg"
+        ],
+        [
+          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 220927.png",
+          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 235824.png"
+        ],
+        [
+          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 001027.png",
+          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 120230.png"
+        ],
+        [
+          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png",
+          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121249.png"
+        ],
+        [
+          "IMAGES/KANAMI-SOUND-BOY/ICON_-_KANAMI_SOUND_BOY.svg"
         ]
       ]
     },
@@ -131,16 +217,26 @@
       ]
     },
     {
-      "id": "roto-cast-3d-printed-mold",
-      "categories": [],
-      "title": "Roto cast 3D printed Mold",
-      "year": 2026,
+      "id": "sound-table",
+      "categories": [
+        "Sound",
+        "Mechanical"
+      ],
+      "title": "Sound Table",
+      "year": 2023,
       "description": "",
       "materials": "",
       "process": "",
       "images": [
         [
-          "IMAGES/ROTO-CAST-3D-PRINTED-MOLD/ICON_-DOME_LIGHT_3D_PRINTED_MOLD.svg"
+          "IMAGES/SOUND-TABLE/IMG_9417.jpeg"
+        ],
+        [
+          "IMAGES/SOUND-TABLE/Photo 2023-06-24, 2 46 50 AM.jpg",
+          "IMAGES/SOUND-TABLE/Photo 2023-06-26, 2 55 12 PM.jpg"
+        ],
+        [
+          "IMAGES/SOUND-TABLE/ICON_-_SOUND_TABLE.svg"
         ]
       ]
     },
@@ -329,41 +425,6 @@
       ]
     },
     {
-      "id": "kanami-sound-boy",
-      "categories": [
-        "Object",
-        "Sound"
-      ],
-      "title": "KA-NA-MI RADIO Sound Boy",
-      "year": 2025,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/KANAMI -SOUND-BOY/ANTENNA SOUND BOY DRAWING-CLEAR.png"
-        ],
-        [
-          "IMAGES/KANAMI -SOUND-BOY/IMG_1377.jpeg"
-        ],
-        [
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 220927.png",
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 235824.png"
-        ],
-        [
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 001027.png",
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 120230.png"
-        ],
-        [
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png",
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121249.png"
-        ],
-        [
-          "IMAGES/KANAMI-SOUND-BOY/ICON_-_KANAMI_SOUND_BOY.svg"
-        ]
-      ]
-    },
-    {
       "id": "light-table",
       "categories": [
         "Furniture",
@@ -416,30 +477,6 @@
         ],
         [
           "IMAGES/POLY-CHAIR/ICON_-_Polychair.svg"
-        ]
-      ]
-    },
-    {
-      "id": "sound-table",
-      "categories": [
-        "Sound",
-        "Mechanical"
-      ],
-      "title": "Sound Table",
-      "year": 2023,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/SOUND-TABLE/IMG_9417.jpeg"
-        ],
-        [
-          "IMAGES/SOUND-TABLE/Photo 2023-06-24, 2 46 50 AM.jpg",
-          "IMAGES/SOUND-TABLE/Photo 2023-06-26, 2 55 12 PM.jpg"
-        ],
-        [
-          "IMAGES/SOUND-TABLE/ICON_-_SOUND_TABLE.svg"
         ]
       ]
     },
@@ -654,34 +691,6 @@
       "materials": "",
       "process": "",
       "images": []
-    },
-    {
-      "id": "hull-chair-fiberglass-mold",
-      "categories": [],
-      "title": "Hull Chair Fiberglass Mold",
-      "year": 2024,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/HULL-CHAIR-FIBERGLASS-MOLD/ICON_-_Hull_Chair_Fiberglass_Mold.svg"
-        ]
-      ]
-    },
-    {
-      "id": "axis-knife-study",
-      "categories": [],
-      "title": "Axis Knife Study",
-      "year": 2026,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/AXIS-KNIFE-STUDY/ICON_-_AXIS_KNIFE_STUDY.svg"
-        ]
-      ]
     }
   ],
   "galleryImages": [

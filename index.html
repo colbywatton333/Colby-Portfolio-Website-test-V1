@@ -663,10 +663,10 @@
       bottom: calc(100% - 1px);
       left: 0;
       right: 0;
-      height: 350px;
+      height: 420px;
       background: var(--bg);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, black 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 75%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 75%);
       pointer-events: none;
       z-index: -1;
     }
@@ -797,21 +797,28 @@
       background: var(--bg);
     }
     .footer-logo {
-      height: 40px;
+      height: 32px;
       width: auto;
+      /* Tint to #a8a8a8 exactly — matches the project-title colour.
+         brightness(0) flattens any source colour to black, then invert(66%)
+         remaps black to rgb(168,168,168) ≈ #a8a8a8. */
+      filter: brightness(0) invert(66%);
     }
     html.light-mode .footer-logo {
-      filter: invert(1);
+      /* #575757 (34%) to match the light-mode project-title colour */
+      filter: brightness(0) invert(34%);
     }
     .footer-link {
-      color: var(--text);
+      color: #a8a8a8;
       font-size: clamp(10px, 0.9vw, 15px);
       letter-spacing: 0.08em;
       text-decoration: none;
       cursor: pointer;
       transition: color 0.15s;
     }
-    .footer-link:hover { color: var(--text); }
+    .footer-link:hover { color: #a8a8a8; }
+    html.light-mode .footer-link,
+    html.light-mode .footer-link:hover { color: #575757; }
 
     /* ─── MAIN ───────────────────────────────────────── */
     main {
@@ -2322,7 +2329,49 @@
       /* Nav — move ARCHIVE next to ABOUT on left, search becomes icon */
       header {
         pointer-events: none;
+        /* Raise above #bottomBar (z:230) so fixed-position children
+           (eye + search icons) render above the fade mask. */
+        z-index: 260 !important;
       }
+      /* Top fade — soft gradient that dims projects scrolling up behind
+         the nav + Category / Relevance / Year row. Slightly longer + more
+         opaque (opaque band extended from 50% → 65%). */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 183px;
+        background: var(--bg);
+        -webkit-mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
+        pointer-events: none;
+        z-index: 90;
+      }
+      /* About page: suppress the bottom Open/eye/search buttons */
+      body.view-about #mobileOpenBtn,
+      body.view-about #themeToggle,
+      body.view-about #searchToggleMobile {
+        display: none !important;
+      }
+      /* Invisible click-catcher over the bottom button band so taps in the
+         vicinity of eye / Open / search don't fall through to project rows.
+         z-index sits BELOW the header stacking context (260) so the real
+         buttons, inside the header, stay tappable. Disabled when the
+         footer scrolls into view so footer links stay tappable. */
+      body::after {
+        content: '';
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 78px;
+        background: transparent;
+        pointer-events: auto;
+        z-index: 200;
+      }
+      body.footer-visible::after { pointer-events: none; }
       header nav, header #categoryBar, header button {
         pointer-events: auto;
       }
@@ -2342,21 +2391,72 @@
         z-index: 99;
       }
       nav {
-        padding: 10px var(--site-pad);
+        padding: 16px var(--site-pad);
       }
       nav::after {
         left: var(--site-pad);
         right: var(--site-pad);
+        height: 1.5px !important;
       }
-      .nav-left { gap: 30px; }
-      .nav-right { gap: 20px; }
-      .nav-link, .nav-btn {
-        font-size: clamp(14px, 4.2vw, 20px) !important;
-        font-weight: 500 !important;
+      /* Top nav — Projects / About / Archive evenly distributed across
+         the full width. Eye + search icons pinned to bottom corners. */
+      nav {
+        display: flex;
+        align-items: center;
+      }
+      .nav-left, .nav-right { display: contents; }
+      #navProjects { order: 1; flex: 0 0 auto; text-align: left; }
+      #navAbout { order: 2; flex: 0 0 auto; margin-left: 5vw; text-align: left; }
+      #rectGridBtn { order: 3; flex: 0 0 auto; margin-left: auto; text-align: right; }
+      /* Eye + search icons — sit in the top nav to the right of Archive,
+         tinted to match the Projects / About / Archive header colour. */
+      /* Eye + search — pinned to bottom corners, same colour as the
+         Category / Relevance / Year sort buttons. */
+      #themeToggle,
+      #searchToggleMobile {
+        position: fixed !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        top: auto !important;
+        bottom: 36px !important;
+        width: 18px !important;
+        height: 18px !important;
+        padding: 0 !important;
+        background: none !important;
+        border: none !important;
+        pointer-events: auto !important;
         color: var(--text-dim) !important;
-        padding: 6px 4px !important;
-        text-transform: none !important;
+        z-index: 600 !important;
       }
+      #themeToggle { left: 10vw !important; right: auto !important; }
+      #searchToggleMobile { right: 10vw !important; left: auto !important; }
+      #searchToggle { display: none !important; }
+      #themeToggle svg,
+      #themeToggle svg * {
+        width: 16px !important;
+        height: 16px !important;
+        color: var(--text-dim) !important;
+        stroke: var(--text-dim) !important;
+        stroke-width: 3.5 !important;
+      }
+      #searchToggleMobile svg {
+        width: 16.64px !important;
+        height: 16.64px !important;
+      }
+      #searchToggleMobile svg * {
+        stroke: var(--text-dim) !important;
+      }
+      .nav-link, .nav-btn {
+        font-size: clamp(15px, 4.2vw, 20px) !important;
+        font-weight: 500 !important;
+        color: #838383 !important;
+        padding: 7px 4px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+      }
+      /* Hide the Player link on mobile */
+      #navPlayer { display: none !important; }
       /* Search icon — match eyeball icon height */
       .search-icon-btn {
         background: none;
@@ -2372,15 +2472,15 @@
         width: auto;
       }
       .search-icon-btn {
-        color: var(--text-dim);
+        color: var(--text);
       }
       #themeToggle svg {
-        color: var(--text-dim) !important;
+        color: var(--text) !important;
       }
-      /* Match nav border color to text dim on mobile */
+      /* Nav underline — darker grey on mobile */
       nav::after {
         background: var(--text-dim) !important;
-        opacity: 0.5;
+        opacity: 1;
       }
       /* Hide text SEARCH on mobile */
       #searchToggle { display: none; }
@@ -2389,8 +2489,8 @@
         padding-top: 0 !important;
       }
       .projects-list {
-        padding-top: 140px;
-        padding-bottom: 100px;
+        padding-top: 165px;
+        padding-bottom: 130px;
       }
 
       /* Open-previews on mobile: tighten the breathing room around each
@@ -2402,17 +2502,51 @@
         margin: 8px auto 16px;
       }
       .project-row {
-        padding: 16px var(--site-pad);
+        padding: 17px var(--site-pad);
       }
+      /* Show ONLY the first category on mobile — darker grey, matched
+         font size. Title grows freely (no fixed width) so long titles
+         never truncate; categories sit in a fixed-width right-aligned
+         column so their right edges align vertically down the page. */
       .project-cat { display: none !important; }
+      .project-title {
+        flex: 1 1 auto !important;
+        padding-right: 6px !important;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .project-row .project-cat:nth-child(2) {
+        display: block !important;
+        color: #2a2a2a !important;
+        font-size: clamp(9px, 2.8vw, 13px);
+        flex: 0 0 auto;
+        width: 32vw;
+        text-align: left;
+        padding-right: 4vw;
+        margin-left: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      /* Light-mode: categories were near-black; soften to a subtle grey */
+      html.light-mode .project-row .project-cat:nth-child(2) {
+        color: #bfbfbf !important;
+      }
       /* Hide hover tooltip on mobile */
       .project-desc-tooltip { display: none !important; }
       .project-title {
         font-size: clamp(9px, 2.8vw, 13px);
+        color: #a8a8a8 !important;
       }
       .project-year {
         font-size: clamp(9px, 2.8vw, 13px);
+        color: #a8a8a8 !important;
       }
+      /* Light-mode titles match the light-mode homepage-SVG colour */
+      html.light-mode .project-title,
+      html.light-mode .project-year { color: #575757 !important; }
       .category-divider {
         font-size: clamp(9px, 2.8vw, 13px);
       }
@@ -2431,33 +2565,62 @@
       #gridBtn { display: none !important; }
 
       #organizeBtn, #relevanceBtn, #openAllBtn, #mobileOpenBtn {
-        font-size: clamp(11px, 3vw, 14px) !important;
         font-weight: 400 !important;
         position: fixed !important;
-        top: 68px !important;
         z-index: 210 !important;
       }
-      /* Even 4-slot distribution across the viewport width. Each button is
-         centered on 1/8, 3/8, 5/8, 7/8 of the viewport respectively. */
+      /* Sort buttons (Category / Relevance / Year) — greyed out */
+      #organizeBtn, #relevanceBtn, #openAllBtn {
+        font-size: clamp(10px, 3vw, 14px) !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+        color: var(--text-dim) !important;
+      }
+      /* OPEN — exact same colour as the Projects / About / Archive header */
+      #mobileOpenBtn { color: #9a9a9a !important; }
+      /* OPEN — same size as the top nav header, uppercase */
+      #mobileOpenBtn {
+        font-size: clamp(14px, 4vw, 19px) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        font-weight: 500 !important;
+      }
+      /* Top row — Organize (left), Relevance (center), Year (right, aligned
+         with project year column). */
+      #organizeBtn, #relevanceBtn, #openAllBtn {
+        top: 96px !important;
+      }
       #organizeBtn {
-        left: 12.5% !important;
+        left: var(--site-pad) !important;
         right: auto !important;
-        transform: translateX(-50%);
+        transform: none !important;
       }
       #relevanceBtn {
-        left: 37.5% !important;
+        left: 50% !important;
         right: auto !important;
-        transform: translateX(-50%);
+        transform: translateX(-50%) !important;
       }
       #openAllBtn {
-        left: 62.5% !important;
-        right: auto !important;
-        transform: translateX(-50%);
+        left: auto !important;
+        right: var(--site-pad) !important;
+        transform: none !important;
       }
+      /* Open — sticky float at bottom-center, aligned vertically with
+         the eye + search icons, all above the fade mask. */
       #mobileOpenBtn {
-        left: 87.5% !important;
+        top: auto !important;
+        bottom: 36px !important;
+        left: 50% !important;
         right: auto !important;
-        transform: translateX(-50%);
+        transform: translateX(-50%) !important;
+        background: transparent !important;
+        z-index: 600 !important;
+        height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        line-height: 1 !important;
       }
 
       /* Archive top/bottom fade gradients — makes back button easier to see */
@@ -2601,15 +2764,7 @@
         font-size: clamp(13px, 3.5vw, 18px);
       }
 
-      /* Bottom bar — waveform on top, transport+text row below */
-      #bottomBar {
-        padding: 8px var(--site-pad) 16px;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 6px;
-        border-top-color: var(--border);
-        align-items: center;
-      }
+      /* Bottom bar stays hidden on mobile (waveform + transport UI). */
       #bottomBar .bar-spacer { display: none; }
       /* Waveform takes full width on its own row */
       .music-btn {
@@ -2633,9 +2788,12 @@
       .now-playing { order: 4; flex: 1 1 auto; width: auto; max-width: none; overflow: hidden; }
       #audioForward { order: 5; flex: 0 0 auto; margin-left: auto; }
       #oscCanvas {
-        width: 100% !important;
-        height: 50px;
-        opacity: 0.35;
+        width: 70% !important;
+        max-width: 280px !important;
+        height: 38px !important;
+        opacity: 0.55 !important;
+        display: block !important;
+        margin: 0 auto !important;
       }
       .now-playing-inner,
       .now-playing-inner .np-track {
@@ -2893,9 +3051,9 @@
         <button class="nav-btn" id="rectGridBtn">Archive</button>
         <button class="nav-btn" id="searchToggle">SEARCH</button>
         <button class="search-icon-btn" id="searchToggleMobile" aria-label="Search" style="display:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 748.49 603.2">
-            <circle style="fill:none;stroke:currentColor;stroke-miterlimit:10;stroke-width:54.7px" cx="359.59" cy="281.94" r="101.92"/>
-            <line style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:72.93px" x1="444.98" y1="367.33" x2="490.82" y2="413.17"/>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="180 110 390 390">
+            <circle style="fill:none;stroke:currentColor;stroke-miterlimit:10;stroke-width:46px" cx="359.59" cy="281.94" r="101.92"/>
+            <line style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:62px" x1="444.98" y1="367.33" x2="500" y2="430"/>
           </svg>
         </button>
       </div>
@@ -4064,35 +4222,8 @@
     // (which caused flicker). Only reacts to actual `light-mode` class changes,
     // ignoring transient `theme-transitioning` mutations.
     function boostSvgStrokes(svg) {
-      if (svg.dataset.noStrokeBoost) return;
-      // Only boost SVGs we inlined from .svg files. Native inline SVG markup
-      // (header eye/search/arrow icons, fullscreen/mute buttons) is authored
-      // with its own intentional stroke-width and shouldn't be thickened.
-      if (!svg.classList.contains('svg-inlined')) return;
-      // One-time boost. Unified floor across light + dark means boost is
-      // theme-independent, so the theme observer's boostAllSvgs() call
-      // finds every SVG already marked and early-returns — no ~13K inline
-      // style writes on theme toggle.
-      if (svg.dataset.boosted) return;
-      svg.dataset.boosted = '1';
-      const floor = 0.35;
-      svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
-        // Prefer the original width captured at inline time. Reading
-        // getComputedStyle now would race with later-inlined SVGs whose
-        // <style> blocks leak into document scope and can briefly override
-        // any .cls-N rule to zero, skipping the element permanently.
-        let orig = parseFloat(el.dataset.origSw);
-        if (!orig) {
-          const sw = parseFloat(getComputedStyle(el).strokeWidth) || 0;
-          if (sw <= 0) return;
-          orig = sw;
-          el.dataset.origSw = sw;
-        }
-        if (!el.hasAttribute('vector-effect')) {
-          el.setAttribute('vector-effect', 'non-scaling-stroke');
-        }
-        el.style.strokeWidth = Math.max(floor, orig * 1.0 + 0.05) + 'px';
-      });
+      // Stroke thickening disabled — render SVGs as authored.
+      return;
     }
     // Run the boost on every <svg> on the page, not just externally-inlined ones.
     // Inline <svg> markup (audio icons, eye toggle, arrows, fullscreen) needs the
@@ -6236,6 +6367,8 @@
       const backBtn = document.getElementById('backToHome');
       const bottomBar = document.getElementById('bottomBar');
       const isMobileView = window.innerWidth <= 768;
+      // Clear per-view body flags; individual branches re-set as needed.
+      document.body.classList.remove('view-about');
 
       if (view === 'projects') {
         // Close any open accordion when returning to projects
@@ -6285,6 +6418,7 @@
         if (mobileOpenBtn) mobileOpenBtn.style.display = 'none';
         backBtn.style.display = 'none';
         bottomBar.style.display = '';
+        document.body.classList.add('view-about');
         stopBackBtnCycle();
         currentView = 'about';
       } else if (view === 'gallery') {
@@ -6337,39 +6471,47 @@
         if (!archiveBuilt) buildArchive();
         archiveReset();
 
-        // Show loader with dot animation first
+        // Show loader with dot animation first — skip on mobile
         const archiveLoaderEl = document.getElementById('archiveLoader');
-        archiveLoaderEl.classList.add('active');
-        archiveLoaderCleanup = startArchiveDotAnimation(
-          document.getElementById('archiveLoaderCanvas'),
-          {
-            loop: false,
-            transparent: false,
-            onComplete: () => {
-              archiveLoaderEl.style.transition = 'opacity 0.6s ease';
-              archiveLoaderEl.style.opacity = '0';
-              // Fade in the archive grid
-              rectGridView.style.transition = 'opacity 3s ease';
-              rectGridView.style.opacity = '1';
-              // Stagger fade in archive cells
-              const cells = document.querySelectorAll('.archive-cell');
-              cells.forEach((cell, i) => {
-                setTimeout(() => cell.classList.add('visible'), i * 30);
-              });
-              // Show intro text
-              showArchiveIntro();
-              setTimeout(() => {
-                archiveLoaderEl.classList.remove('active');
-                archiveLoaderEl.style.opacity = '';
-                archiveLoaderEl.style.transition = '';
-                rectGridView.style.transition = '';
-                if (archiveLoaderCleanup) { archiveLoaderCleanup(); archiveLoaderCleanup = null; }
-              }, 3000);
+        const skipLoaderDots = window.innerWidth <= 768;
+        if (skipLoaderDots) {
+          archiveLoaderEl.classList.remove('active');
+          rectGridView.style.opacity = '1';
+          const cells = document.querySelectorAll('.archive-cell');
+          cells.forEach((cell, i) => {
+            setTimeout(() => cell.classList.add('visible'), i * 30);
+          });
+          showArchiveIntro();
+        } else {
+          archiveLoaderEl.classList.add('active');
+          archiveLoaderCleanup = startArchiveDotAnimation(
+            document.getElementById('archiveLoaderCanvas'),
+            {
+              loop: false,
+              transparent: false,
+              onComplete: () => {
+                archiveLoaderEl.style.transition = 'opacity 0.6s ease';
+                archiveLoaderEl.style.opacity = '0';
+                rectGridView.style.transition = 'opacity 3s ease';
+                rectGridView.style.opacity = '1';
+                const cells = document.querySelectorAll('.archive-cell');
+                cells.forEach((cell, i) => {
+                  setTimeout(() => cell.classList.add('visible'), i * 30);
+                });
+                showArchiveIntro();
+                setTimeout(() => {
+                  archiveLoaderEl.classList.remove('active');
+                  archiveLoaderEl.style.opacity = '';
+                  archiveLoaderEl.style.transition = '';
+                  rectGridView.style.transition = '';
+                  if (archiveLoaderCleanup) { archiveLoaderCleanup(); archiveLoaderCleanup = null; }
+                }, 3000);
+              }
             }
-          }
-        );
+          );
+        }
 
-        rectGridView.style.opacity = '0';
+        rectGridView.style.opacity = skipLoaderDots ? '1' : '0';
         rectGridView.classList.add('active');
         // Start auto-drift after grid is visible
         if (window._archiveStartDrift) window._archiveStartDrift();
@@ -6587,11 +6729,22 @@
       });
     });
 
-    // ─── HIDE BOTTOM BAR WHEN FOOTER VISIBLE ────────────────────────────────────
+    // ─── HIDE BOTTOM BAR + OPEN + EYE + SEARCH WHEN FOOTER VISIBLE ──────────────
     const footerObs = new IntersectionObserver(([e]) => {
+      const fade = e.isIntersecting;
+      document.body.classList.toggle('footer-visible', fade);
       const bb = document.getElementById('bottomBar');
-      bb.style.opacity = e.isIntersecting ? '0' : '1';
-      bb.style.pointerEvents = e.isIntersecting ? 'none' : '';
+      if (bb) {
+        bb.style.opacity = fade ? '0' : '1';
+        bb.style.pointerEvents = fade ? 'none' : '';
+      }
+      ['mobileOpenBtn', 'themeToggle', 'searchToggleMobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.transition = 'opacity 0.4s ease';
+        el.style.opacity = fade ? '0' : '';
+        el.style.pointerEvents = fade ? 'none' : '';
+      });
     }, { threshold: 0 });
     footerObs.observe(document.getElementById('siteFooter'));
 
@@ -6880,23 +7033,50 @@
       bgMusic.currentTime = Math.min(bgMusic.duration || 0, bgMusic.currentTime + 10);
     });
 
-    // Draw a static flat line so the canvas is visible before audio plays
-    (function drawStaticLine() {
+    // Continuously-animated idle waveform. Runs until the real oscilloscope
+    // (audio analyser) takes over via initOscilloscope().
+    (function drawIdleWave() {
       const canvas = document.getElementById('oscCanvas');
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = 80 * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const W = rect.width;
-      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(0, 40);
-      ctx.lineTo(W, 40);
-      ctx.stroke();
+      const H = 80;
+      let W = 0;
+      function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.max(1, rect.width) * dpr;
+        canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        W = rect.width;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      const start = performance.now();
+      function tick(now) {
+        if (window._analyser) return; // hand off to analyser-driven draw
+        const t = (now - start) / 1000;
+        ctx.clearRect(0, 0, W, H);
+        const color = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        const numPts = 80;
+        const amp = 10;
+        for (let i = 0; i < numPts; i++) {
+          const x = (i / (numPts - 1)) * W;
+          const phase = i * 0.22;
+          const y = H / 2
+                  + Math.sin(phase + t * 1.3) * amp * 0.55
+                  + Math.sin(phase * 0.37 + t * 0.55) * amp * 0.35;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     })();
 
     function initOscilloscope() {
@@ -7413,7 +7593,11 @@
           if (document.body.classList.contains('grid-view')) {
             setGridView(false);
           }
+          const wasOpen = allOpenState;
           togglePreviews(mobileOpenBtnElLocal);
+          if (wasOpen) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         });
       }
     }
@@ -7468,7 +7652,9 @@
       });
     }
     function __hpFgColor() {
-      return document.documentElement.classList.contains('light-mode') ? '#000000' : '#ffffff';
+      // Match the mobile project-title colour so preview SVGs read at the
+      // same visual weight as the surrounding list rows.
+      return document.documentElement.classList.contains('light-mode') ? '#575757' : '#a8a8a8';
     }
     // Off-screen sandbox shared with inlineSVGs(). Illustrator-exported CAD
     // icons all reuse .cls-1 / .cls-2 (…) class names with file-specific
