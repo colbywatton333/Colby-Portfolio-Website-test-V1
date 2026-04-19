@@ -1,6 +1,150 @@
 {
   "projects": [
     {
+      "id": "glycerin-mask",
+      "categories": [
+        "Object"
+      ],
+      "title": "Glycerin Mask",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/GLYCERIN-MASK/GLYCERIN MASK.png"
+        ],
+        [
+          "IMAGES/GLYCERIN-MASK/IMG_4205.jpg",
+          "IMAGES/GLYCERIN-MASK/IMG_4350.jpeg"
+        ],
+        [
+          "IMAGES/GLYCERIN-MASK/IMG_4420.jpg"
+        ],
+        [
+          "IMAGES/GLYCERIN-MASK/ICON_-_SMOKE_GOGGLES.svg"
+        ]
+      ]
+    },
+    {
+      "id": "carbon-chair-one",
+      "categories": [],
+      "title": "Carbon Chair one",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/CARBON-CHAIR-ONE/CARBON_CHAIR_ONE.svg"
+        ],
+        [
+          "IMAGES/CARBON-CHAIR-ONE/ICON_-_CHAIR_ONE.svg"
+        ]
+      ]
+    },
+    {
+      "id": "motorized-camera-dolly",
+      "categories": [
+        "Mechanical",
+        "Object"
+      ],
+      "title": "Motorized Camera Dolly",
+      "year": 2025,
+      "description": "A low-profile motorized camera dolly built for controlled, repeatable linear motion on set. Emphasis on rigidity-to-weight ratio and silent operation.",
+      "materials": "Welded 6061 aluminium frame, NEMA 17 stepper motors, polyurethane track wheels, 3D printed ABS mounts",
+      "process": "CAD design, MIG welding, motor controller programming (Arduino), load testing",
+      "images": [
+        [
+          "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 232946.png",
+          "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 234941.png"
+        ],
+        [
+          "IMAGES/MOTORIZED-CAMERA-DOLLY/ICON_-_CAMERA_DOLLY.svg"
+        ]
+      ]
+    },
+    {
+      "id": "multi-tool",
+      "categories": [
+        "Object",
+        "Mechanical"
+      ],
+      "title": "Multi Tool Project",
+      "year": 2025,
+      "description": "A versatile multi-tool designed for everyday carry and professional field use. The form consolidates twelve functions into a single machined body without compromising the individual utility of any tool.",
+      "materials": "Titanium frame, D2 tool steel blades, carbon fiber inlays, stainless hardware",
+      "process": "CAD Design (Fusion 360), CNC machining, heat treatment, hand finishing, anodizing",
+      "images": [
+        [
+          "IMAGES/MULTITOOL-PROJECT/IMG_4525.PNG",
+          "IMAGES/MULTITOOL-PROJECT/IMG_4706.jpeg"
+        ],
+        [
+          "IMAGES/MULTI-TOOL/MULTITOOL_1.svg"
+        ],
+        [
+          "IMAGES/MULTI-TOOL/MULTITOOL_2.svg"
+        ],
+        [
+          "IMAGES/MULTI-TOOL/ICON_-_MULTI_TOOL.svg"
+        ]
+      ]
+    },
+    {
+      "id": "sarcophagus-hull",
+      "categories": [
+        "Object",
+        "Installation"
+      ],
+      "title": "Sarcophagus Hull",
+      "year": 2025,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1265.PNG",
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1335.PNG"
+        ],
+        [
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1336.PNG"
+        ],
+        [
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1498.jpeg",
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1500.jpeg"
+        ],
+        [
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1521.jpeg",
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1570.jpeg"
+        ],
+        [
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1691.jpeg",
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1697.jpeg"
+        ],
+        [
+          "IMAGES/SARCOPHAGUS-HULL/IMG_1699.jpeg"
+        ],
+        [
+          "IMAGES/SARCOPHAGUS-HULL/ICON_-_Sarcophagus_Hull.svg"
+        ]
+      ]
+    },
+    {
+      "id": "roto-cast-3d-printed-mold",
+      "categories": [],
+      "title": "Roto cast 3D printed Mold",
+      "year": 2026,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/ROTO-CAST-3D-PRINTED-MOLD/ICON_-DOME_LIGHT_3D_PRINTED_MOLD.svg"
+        ]
+      ]
+    },
+    {
       "id": "bass-speaker",
       "categories": [
         "Object",
@@ -32,6 +176,12 @@
         ],
         [
           "IMAGES/BASS-SPEAKER/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO.mov"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/IMG_1627.png"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/ICON_-_BASS_SPEAKER.svg"
         ]
       ]
     },
@@ -82,6 +232,21 @@
         ],
         [
           "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_360_SHOT_RENDER.mov"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN.svg"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN.svg"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN.svg"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_WATER_MISTING_SYSTEM.svg"
+        ],
+        [
+          "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN.svg"
         ]
       ]
     },
@@ -157,6 +322,9 @@
         ],
         [
           "IMAGES/HULL-CHAIR/fdjhfd.jpg"
+        ],
+        [
+          "IMAGES/HULL-CHAIR/ICON_-_HULL_CHAIR.svg"
         ]
       ]
     },
@@ -189,6 +357,9 @@
         [
           "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png",
           "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121249.png"
+        ],
+        [
+          "IMAGES/KANAMI-SOUND-BOY/ICON_-_KANAMI_SOUND_BOY.svg"
         ]
       ]
     },
@@ -225,42 +396,6 @@
       ]
     },
     {
-      "id": "sarcophagus-hull",
-      "categories": [
-        "Object",
-        "Installation"
-      ],
-      "title": "Sarcophagus Hull",
-      "year": 2025,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1265.PNG",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1335.PNG"
-        ],
-        [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1336.PNG"
-        ],
-        [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1498.jpeg",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1500.jpeg"
-        ],
-        [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1521.jpeg",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1570.jpeg"
-        ],
-        [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1691.jpeg",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1697.jpeg"
-        ],
-        [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1699.jpeg"
-        ]
-      ]
-    },
-    {
       "id": "poly-chair",
       "categories": [
         "Furniture",
@@ -282,29 +417,6 @@
       ]
     },
     {
-      "id": "glycerin-mask",
-      "categories": [
-        "Object"
-      ],
-      "title": "Glycerin Mask",
-      "year": 2025,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/GLYCERIN-MASK/GLYCERIN MASK.png"
-        ],
-        [
-          "IMAGES/GLYCERIN-MASK/IMG_4205.jpg",
-          "IMAGES/GLYCERIN-MASK/IMG_4350.jpeg"
-        ],
-        [
-          "IMAGES/GLYCERIN-MASK/IMG_4420.jpg"
-        ]
-      ]
-    },
-    {
       "id": "sound-table",
       "categories": [
         "Sound",
@@ -322,6 +434,9 @@
         [
           "IMAGES/SOUND-TABLE/Photo 2023-06-24, 2 46 50 AM.jpg",
           "IMAGES/SOUND-TABLE/Photo 2023-06-26, 2 55 12 PM.jpg"
+        ],
+        [
+          "IMAGES/SOUND-TABLE/ICON_-_SOUND_TABLE.svg"
         ]
       ]
     },
@@ -343,6 +458,9 @@
         ],
         [
           "IMAGES/T1-PLATES/322B9AF8-84B5-4270-BFB2-491BB14996C2.JPG"
+        ],
+        [
+          "IMAGES/T1-PLATES/ICON_-_t_plates.svg"
         ]
       ]
     },
@@ -378,6 +496,9 @@
         ],
         [
           "IMAGES/WATER-MISTING-SYSTEM/EXPOLDED_PAVILION_VIEW_copy_2.svg"
+        ],
+        [
+          "IMAGES/WATER-MISTING-SYSTEM/ICON_-_WATER_MISTING_SYSTEM.svg"
         ]
       ]
     },
@@ -395,6 +516,9 @@
         [
           "IMAGES/RAIL-LIGHT/IMG_6609.jpeg",
           "IMAGES/RAIL-LIGHT/IMG_7105.jpeg"
+        ],
+        [
+          "IMAGES/RAIL-LIGHT/ICON_-_RAIL_LIGHT.svg"
         ]
       ]
     },
@@ -415,48 +539,9 @@
         ],
         [
           "IMAGES/I-BEAM-BRACELET/unnamed.jpg"
-        ]
-      ]
-    },
-    {
-      "id": "motorized-camera-dolly",
-      "categories": [
-        "Mechanical",
-        "Object"
-      ],
-      "title": "Motorized Camera Dolly",
-      "year": 2025,
-      "description": "A low-profile motorized camera dolly built for controlled, repeatable linear motion on set. Emphasis on rigidity-to-weight ratio and silent operation.",
-      "materials": "Welded 6061 aluminium frame, NEMA 17 stepper motors, polyurethane track wheels, 3D printed ABS mounts",
-      "process": "CAD design, MIG welding, motor controller programming (Arduino), load testing",
-      "images": [
-        [
-          "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 232946.png",
-          "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 234941.png"
-        ]
-      ]
-    },
-    {
-      "id": "multi-tool",
-      "categories": [
-        "Object",
-        "Mechanical"
-      ],
-      "title": "Multi Tool Project",
-      "year": 2025,
-      "description": "A versatile multi-tool designed for everyday carry and professional field use. The form consolidates twelve functions into a single machined body without compromising the individual utility of any tool.",
-      "materials": "Titanium frame, D2 tool steel blades, carbon fiber inlays, stainless hardware",
-      "process": "CAD Design (Fusion 360), CNC machining, heat treatment, hand finishing, anodizing",
-      "images": [
-        [
-          "IMAGES/MULTITOOL-PROJECT/IMG_4525.PNG",
-          "IMAGES/MULTITOOL-PROJECT/IMG_4706.jpeg"
         ],
         [
-          "IMAGES/MULTI-TOOL/MULTITOOL_1.svg"
-        ],
-        [
-          "IMAGES/MULTI-TOOL/MULTITOOL_2.svg"
+          "IMAGES/I-BEAM-BRACELET/ICON_-_I_BEAM_BRACELET.svg"
         ]
       ]
     },
@@ -474,6 +559,9 @@
       "images": [
         [
           "IMAGES/WHISTLER-CHUCH-PEWS/Screenshot 2025-09-25 144014.PNG"
+        ],
+        [
+          "IMAGES/WHISTLER-CHURCH-PEWS/ICON_-_WHISTLER_CHURCH_PEWS.svg"
         ]
       ]
     },
@@ -521,7 +609,11 @@
       "description": "",
       "materials": "",
       "process": "",
-      "images": []
+      "images": [
+        [
+          "IMAGES/CHAIR-PRESS/ICON_-_MOLD_PRESS__copy.svg"
+        ]
+      ]
     },
     {
       "id": "kids-screwdriver-toy",
@@ -558,7 +650,11 @@
       "description": "",
       "materials": "",
       "process": "",
-      "images": []
+      "images": [
+        [
+          "IMAGES/TOOL-CART/ICON_-_STUDIO_TOOL_CART.svg"
+        ]
+      ]
     },
     {
       "id": "umbrella",
@@ -590,30 +686,30 @@
       ]
     },
     {
-      "id": "mdf-press",
+      "id": "hull-chair-fiberglass-mold",
       "categories": [],
-      "title": "MDF Press",
+      "title": "Hull Chair Fiberglass Mold",
+      "year": 2024,
+      "description": "",
+      "materials": "",
+      "process": "",
+      "images": [
+        [
+          "IMAGES/HULL-CHAIR-FIBERGLASS-MOLD/ICON_-_Hull_Chair_Fiberglass_Mold.svg"
+        ]
+      ]
+    },
+    {
+      "id": "axis-knife-study",
+      "categories": [],
+      "title": "Axis Knife Study",
       "year": 2026,
       "description": "",
       "materials": "",
       "process": "",
       "images": [
         [
-          "IMAGES/MDF-PRESS/MDF_PRESS.svg"
-        ]
-      ]
-    },
-    {
-      "id": "carbon-chair-one",
-      "categories": [],
-      "title": "Carbon Chair one",
-      "year": 2025,
-      "description": "",
-      "materials": "",
-      "process": "",
-      "images": [
-        [
-          "IMAGES/CARBON-CHAIR-ONE/CARBON_CHAIR_ONE.svg"
+          "IMAGES/AXIS-KNIFE-STUDY/ICON_-_AXIS_KNIFE_STUDY.svg"
         ]
       ]
     }

@@ -78,6 +78,34 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ── API: delete project ──
+  if (req.method === 'DELETE' && req.url.startsWith('/api/projects/')) {
+    const projId = decodeURIComponent(req.url.slice('/api/projects/'.length));
+    try {
+      const projPath = path.join(__dirname, 'content', 'projects.json');
+      const data = JSON.parse(fs.readFileSync(projPath, 'utf8'));
+      const idx = data.projects.findIndex(p => p.id === projId);
+      if (idx === -1) throw new Error('Project not found');
+      data.projects.splice(idx, 1);
+      fs.writeFileSync(projPath, JSON.stringify(data, null, 2));
+      // Remove from layouts.json if present
+      const layoutsPath = path.join(__dirname, 'content', 'layouts.json');
+      try {
+        const layouts = JSON.parse(fs.readFileSync(layoutsPath, 'utf8'));
+        if (layouts[projId]) {
+          delete layouts[projId];
+          fs.writeFileSync(layoutsPath, JSON.stringify(layouts, null, 2));
+        }
+      } catch {}
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
+    } catch (e) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // ── API: update project metadata ──
   if (req.method === 'PUT' && req.url.startsWith('/api/projects/')) {
     const projId = decodeURIComponent(req.url.slice('/api/projects/'.length));
