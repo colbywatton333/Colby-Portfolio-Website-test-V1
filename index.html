@@ -49,29 +49,31 @@
     @property --scrollbar-thumb { syntax: '<color>'; inherits: true; initial-value: #2a2a2a; }
 
     :root {
-      --bg: #0d0d0d;
-      --bg-fade: rgba(20, 20, 20, 0);
-      --card: #090909;
-      --text: #E4E4E4;
-      --text-dim: #555;
-      --text-mid: #888;
-      --border: #1f1f1f;
-      --nav-border: #5C5754;
-      --scrollbar-thumb: #2a2a2a;
+      /* Warm-tinted (~5% orange) colour tokens. Applied palette-wide so
+         the whole UI reads slightly warmer without touching photos. */
+      --bg: #191310;
+      --bg-fade: rgba(25, 19, 16, 0);
+      --card: #150f0c;
+      --text: #e5dfdc;
+      --text-dim: #5d5754;
+      --text-mid: #8e8684;
+      --border: #2a2421;
+      --nav-border: #645953;
+      --scrollbar-thumb: #342e2b;
       --font: Arial, sans-serif;
       --site-pad: 17vw;
     }
 
     html.light-mode {
-      --bg: #F1ECE5;
-      --bg-fade: rgba(241, 236, 229, 0);
-      --card: #FEFCF9;
-      --text: #1A1A1A;
-      --text-dim: #999;
-      --text-mid: #666;
-      --border: #D9D4CC;
-      --nav-border: #B8B2AA;
-      --scrollbar-thumb: #C5BFB7;
+      --bg: #f2e7d8;
+      --bg-fade: rgba(242, 231, 216, 0);
+      --card: #fef6f0;
+      --text: #251f1c;
+      --text-dim: #9e9694;
+      --text-mid: #6e6764;
+      --border: #dbd0c9;
+      --nav-border: #bcafa6;
+      --scrollbar-thumb: #c8bcb3;
     }
 
     /* SVGs with black graphics → invert to white in dark mode */
@@ -799,26 +801,26 @@
     .footer-logo {
       height: 32px;
       width: auto;
-      /* Tint to #a8a8a8 exactly — matches the project-title colour.
+      /* Tint to #aca6a3 exactly — matches the project-title colour.
          brightness(0) flattens any source colour to black, then invert(66%)
-         remaps black to rgb(168,168,168) ≈ #a8a8a8. */
+         remaps black to rgb(168,168,168) ≈ #aca6a3. */
       filter: brightness(0) invert(66%);
     }
     html.light-mode .footer-logo {
-      /* #575757 (34%) to match the light-mode project-title colour */
+      /* #615350 (34%) to match the light-mode project-title colour */
       filter: brightness(0) invert(34%);
     }
     .footer-link {
-      color: #a8a8a8;
+      color: #aca6a3;
       font-size: clamp(10px, 0.9vw, 15px);
       letter-spacing: 0.08em;
       text-decoration: none;
       cursor: pointer;
       transition: color 0.15s;
     }
-    .footer-link:hover { color: #a8a8a8; }
+    .footer-link:hover { color: #aca6a3; }
     html.light-mode .footer-link,
-    html.light-mode .footer-link:hover { color: #575757; }
+    html.light-mode .footer-link:hover { color: #615350; }
 
     /* ─── MAIN ───────────────────────────────────────── */
     main {
@@ -2450,7 +2452,7 @@
       .nav-link, .nav-btn {
         font-size: clamp(15px, 4.2vw, 20px) !important;
         font-weight: 500 !important;
-        color: #838383 !important;
+        color: #887e7b !important;
         padding: 7px 4px !important;
         text-transform: none !important;
         letter-spacing: 0 !important;
@@ -2519,7 +2521,7 @@
       }
       .project-row .project-cat:nth-child(2) {
         display: block !important;
-        color: #2a2a2a !important;
+        color: #342e2b !important;
         font-size: clamp(9px, 2.8vw, 13px);
         flex: 0 0 auto;
         width: 32vw;
@@ -2532,21 +2534,21 @@
       }
       /* Light-mode: categories were near-black; soften to a subtle grey */
       html.light-mode .project-row .project-cat:nth-child(2) {
-        color: #bfbfbf !important;
+        color: #c2b8b4 !important;
       }
       /* Hide hover tooltip on mobile */
       .project-desc-tooltip { display: none !important; }
       .project-title {
         font-size: clamp(9px, 2.8vw, 13px);
-        color: #a8a8a8 !important;
+        color: #aca6a3 !important;
       }
       .project-year {
         font-size: clamp(9px, 2.8vw, 13px);
-        color: #a8a8a8 !important;
+        color: #aca6a3 !important;
       }
       /* Light-mode titles match the light-mode homepage-SVG colour */
       html.light-mode .project-title,
-      html.light-mode .project-year { color: #575757 !important; }
+      html.light-mode .project-year { color: #615350 !important; }
       .category-divider {
         font-size: clamp(9px, 2.8vw, 13px);
       }
@@ -7654,7 +7656,7 @@
     function __hpFgColor() {
       // Match the mobile project-title colour so preview SVGs read at the
       // same visual weight as the surrounding list rows.
-      return document.documentElement.classList.contains('light-mode') ? '#575757' : '#a8a8a8';
+      return document.documentElement.classList.contains('light-mode') ? '#615350' : '#aca6a3';
     }
     // Off-screen sandbox shared with inlineSVGs(). Illustrator-exported CAD
     // icons all reuse .cls-1 / .cls-2 (…) class names with file-specific
