@@ -1620,6 +1620,15 @@
     body.view-about .about-item:first-child .about-row {
       padding-top: 0;
     }
+    /* Mobile: the fixed nav (~60px) overlaps the first row when its
+       padding-top is zero, clipping the "Biography" title. Restore enough
+       top padding to clear the nav stack (line + sort row removed for
+       about, but the nav itself still occupies the top band). */
+    @media (max-width: 768px) {
+      body.view-about .about-item:first-child .about-row {
+        padding-top: 96px;
+      }
+    }
     body.view-about .about-item:last-child .about-row {
       padding-bottom: 0;
     }
@@ -2603,7 +2612,11 @@
       }
       .projects-list {
         padding-top: 165px;
-        padding-bottom: 130px;
+        /* Trimmed from 130 → 24 → 18 (extra -25%). The floating bottom
+           buttons fade out via IntersectionObserver when the footer scrolls
+           in, so the last project doesn't need much breathing room above
+           the footer. */
+        padding-bottom: 18px;
       }
 
       /* Open-previews on mobile: tighten the breathing room around each
@@ -2611,8 +2624,8 @@
          min-width; on a 390-wide viewport that felt like dead space. Shrink
          the square so more of the next project row is visible on a tap. */
       .project-preview-svg {
-        width: 70vw;
-        margin: 8px auto 16px;
+        width: 63vw;
+        margin: 7px auto 14px;
       }
       .project-row {
         padding: 17px var(--site-pad);
