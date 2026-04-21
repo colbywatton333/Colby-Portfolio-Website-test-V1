@@ -49,31 +49,32 @@
     @property --scrollbar-thumb { syntax: '<color>'; inherits: true; initial-value: #2a2a2a; }
 
     :root {
-      /* Warm-tinted (~5% orange) colour tokens. Applied palette-wide so
-         the whole UI reads slightly warmer without touching photos. */
-      --bg: #191310;
-      --bg-fade: rgba(25, 19, 16, 0);
-      --card: #150f0c;
-      --text: #e5dfdc;
-      --text-dim: #5d5754;
-      --text-mid: #8e8684;
-      --border: #2a2421;
-      --nav-border: #645953;
-      --scrollbar-thumb: #342e2b;
+      /* Warm-tinted palette — ~2-3% warm hue shift (halved from the earlier
+         5% pass) and a few shades deeper so the tint reads as a subtle
+         undertone rather than a visible cast. */
+      --bg: #121110;
+      --bg-fade: rgba(18, 17, 16, 0);
+      --card: #0e0e0c;
+      --text: #e4e4e1;
+      --text-dim: #595853;
+      --text-mid: #898883;
+      --border: #232221;
+      --nav-border: #5c5850;
+      --scrollbar-thumb: #2e2d2a;
       --font: Arial, sans-serif;
       --site-pad: 17vw;
     }
 
     html.light-mode {
-      --bg: #f2e7d8;
-      --bg-fade: rgba(242, 231, 216, 0);
-      --card: #fef6f0;
-      --text: #251f1c;
-      --text-dim: #9e9694;
-      --text-mid: #6e6764;
-      --border: #dbd0c9;
-      --nav-border: #bcafa6;
-      --scrollbar-thumb: #c8bcb3;
+      --bg: #efeadf;
+      --bg-fade: rgba(239, 234, 223, 0);
+      --card: #fcfaf3;
+      --text: #252520;
+      --text-dim: #a09f9a;
+      --text-mid: #706f6a;
+      --border: #d8d2c8;
+      --nav-border: #b9b3a8;
+      --scrollbar-thumb: #c5bfb5;
     }
 
     /* SVGs with black graphics → invert to white in dark mode */
@@ -98,7 +99,7 @@
       opacity: 0;
     }
     /* CAD-exported technical icons use huge viewBoxes (e.g. 1584×720) with
-       thin strokes (~0.92 user units). When rendered at typical display widths
+       thin strokes (~0.4 user units). When rendered at typical display widths
        those strokes scale below 1 screen pixel and vanish. non-scaling-stroke
        forces stroke-width to be interpreted in screen pixels, not user units. */
     .svg-inlined path,
@@ -109,6 +110,29 @@
     .svg-inlined polyline,
     .svg-inlined polygon {
       vector-effect: non-scaling-stroke;
+    }
+    /* On high-DPR phones a non-scaling stroke of 0.4 CSS px renders at ~1.2
+       device px — noticeably heavier than the same stroke in Illustrator
+       (which samples at closer to 1x). Halve the effective stroke width so
+       lines read at the Illustrator weight. Inline <style> inside the SVG
+       (e.g. `.cls-1 { stroke-width: .4px; }`) wins by specificity, so the
+       override needs !important and matching class names. */
+    @media (max-width: 768px) {
+      .svg-inlined path,
+      .svg-inlined rect,
+      .svg-inlined circle,
+      .svg-inlined ellipse,
+      .svg-inlined line,
+      .svg-inlined polyline,
+      .svg-inlined polygon,
+      .svg-inlined .cls-1,
+      .svg-inlined .cls-2,
+      .svg-inlined .cls-3,
+      .svg-inlined .cls-4,
+      .svg-inlined .cls-5,
+      .svg-inlined .cls-6 {
+        stroke-width: 0.2px !important;
+      }
     }
 
     html {
@@ -658,8 +682,10 @@
 
     #bottomBar button:hover { opacity: 0.8; }
 
-    /* Fade gradient above bottom bar — ends above the buttons */
-    #bottomBar::before {
+    /* Fade gradient above bottom bar — ends above the buttons. Scoped to
+       the projects view only; on About / other static pages the fade just
+       dims the bottom of the copy instead of doing anything useful. */
+    body.view-projects #bottomBar::before {
       content: '';
       position: absolute;
       bottom: calc(100% - 1px);
@@ -801,26 +827,26 @@
     .footer-logo {
       height: 32px;
       width: auto;
-      /* Tint to #aca6a3 exactly — matches the project-title colour.
+      /* Tint to #acaca7 exactly — matches the project-title colour.
          brightness(0) flattens any source colour to black, then invert(66%)
-         remaps black to rgb(168,168,168) ≈ #aca6a3. */
+         remaps black to rgb(168,168,168) ≈ #acaca7. */
       filter: brightness(0) invert(66%);
     }
     html.light-mode .footer-logo {
-      /* #615350 (34%) to match the light-mode project-title colour */
+      /* #5f5f5a (34%) to match the light-mode project-title colour */
       filter: brightness(0) invert(34%);
     }
     .footer-link {
-      color: #aca6a3;
+      color: #acaca7;
       font-size: clamp(10px, 0.9vw, 15px);
       letter-spacing: 0.08em;
       text-decoration: none;
       cursor: pointer;
       transition: color 0.15s;
     }
-    .footer-link:hover { color: #aca6a3; }
+    .footer-link:hover { color: #acaca7; }
     html.light-mode .footer-link,
-    html.light-mode .footer-link:hover { color: #615350; }
+    html.light-mode .footer-link:hover { color: #5f5f5a; }
 
     /* ─── MAIN ───────────────────────────────────────── */
     main {
@@ -872,8 +898,37 @@
       margin: 72px auto 96px;
       padding: 0;
       box-sizing: border-box;
-      transform: scale(0.96);
-      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: scale(0.985);
+      /* Plotter-sweep reveal: a soft diagonal gradient mask slides across
+         so the drawing reads as if it were being printed by a plotter pen
+         instead of popping in. GPU-composited — cost is the same whether
+         the underlying SVG has 10 paths or 10,000. */
+      -webkit-mask-image: linear-gradient(
+        105deg,
+        transparent 0%,
+        black 22%,
+        black 78%,
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        105deg,
+        transparent 0%,
+        black 22%,
+        black 78%,
+        transparent 100%
+      );
+      -webkit-mask-size: 230% 100%;
+      mask-size: 230% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: 115% 0;
+      mask-position: 115% 0;
+      opacity: 0;
+      transition:
+        transform             0.9s  cubic-bezier(0.22, 1, 0.36, 1),
+        -webkit-mask-position 1.1s  cubic-bezier(0.3, 0.1, 0.2, 1),
+        mask-position         1.1s  cubic-bezier(0.3, 0.1, 0.2, 1),
+        opacity               0.7s  cubic-bezier(0.3, 0.1, 0.2, 1) 80ms;
       transition-delay: calc(var(--i, 0) * 32ms);
     }
     .project-preview-svg > svg { width: 100%; height: 100%; display: block; }
@@ -881,7 +936,22 @@
       grid-template-rows: 1fr;
       opacity: 1;
     }
-    body.previews-open .project-preview-svg { transform: none; }
+    body.previews-open .project-preview-svg {
+      transform: none;
+      -webkit-mask-position: 0% 0;
+      mask-position: 0% 0;
+      opacity: 1;
+    }
+    /* Close — faster, tighter stagger, less soft ease so the sweep finishes
+       well before grid-template-rows collapses (avoids a half-wipe hang). */
+    body:not(.previews-open) .project-preview-svg {
+      transition:
+        transform             0.55s cubic-bezier(0.4, 0, 0.6, 1),
+        -webkit-mask-position 0.55s cubic-bezier(0.4, 0, 0.6, 1),
+        mask-position         0.55s cubic-bezier(0.4, 0, 0.6, 1),
+        opacity               0.3s  ease;
+      transition-delay: calc(var(--i, 0) * 20ms);
+    }
 
     /* ─── GRID VIEW ───────────────────────────────────── */
     /* The list and the grid live in the same document and we crossfade
@@ -1534,6 +1604,46 @@
       line-height: 1.75;
       color: var(--text);
       font-weight: 500;
+    }
+
+    /* About page: strip vertical padding on the outermost rows so content
+       sits flush with the header and bottom button band. */
+    body.view-about .about-freeform {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+/* Belt-and-braces: fully hide the projects list on about view so nothing
+       can leak through stacking contexts. */
+    body.view-about #projectsView {
+      visibility: hidden;
+    }
+    body.view-about .about-item:first-child .about-row {
+      padding-top: 0;
+    }
+    body.view-about .about-item:last-child .about-row {
+      padding-bottom: 0;
+    }
+    body.view-about .about-item:last-child.open .about-content {
+      padding-bottom: 0 !important;
+    }
+    body.view-about .about-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* About text uses the same muted grey as the project-title / year columns
+       in both themes. !important is needed because the renderer applies an
+       inline `color` from about.json's textColor field. */
+    .about-section .about-title,
+    .about-section p,
+    .about-section .about-bio-text p,
+    .about-section .about-content-inner p {
+      color: #acaca7 !important;
+    }
+    html.light-mode .about-section .about-title,
+    html.light-mode .about-section p,
+    html.light-mode .about-section .about-bio-text p,
+    html.light-mode .about-section .about-content-inner p {
+      color: #5f5f5a !important;
     }
 
 
@@ -2336,9 +2446,10 @@
         z-index: 260 !important;
       }
       /* Top fade — soft gradient that dims projects scrolling up behind
-         the nav + Category / Relevance / Year row. Slightly longer + more
-         opaque (opaque band extended from 50% → 65%). */
-      body::before {
+         the nav + Category / Relevance / Year row. Scoped to the projects
+         view only; on About / other pages the content is static and the
+         fade just washes out the top of the copy, making it hard to read. */
+      body.view-projects::before {
         content: '';
         position: fixed;
         top: 0;
@@ -2377,10 +2488,10 @@
       header nav, header #categoryBar, header button {
         pointer-events: auto;
       }
-      /* Fade gradient below header — visible on mobile only.
-         Solid for first portion, then fades, so scrolling projects
-         don't bleed through under the sort-buttons row. */
-      #headerFade {
+      /* Fade gradient below header — visible on mobile only, projects view
+         only. Other pages have no scrolling project list to bleed through,
+         so the fade is unnecessary visual noise on them. */
+      body.view-projects #headerFade {
         display: block !important;
         position: fixed;
         left: 0;
@@ -2452,7 +2563,7 @@
       .nav-link, .nav-btn {
         font-size: clamp(15px, 4.2vw, 20px) !important;
         font-weight: 500 !important;
-        color: #887e7b !important;
+        color: #898884 !important;
         padding: 7px 4px !important;
         text-transform: none !important;
         letter-spacing: 0 !important;
@@ -2521,7 +2632,7 @@
       }
       .project-row .project-cat:nth-child(2) {
         display: block !important;
-        color: #342e2b !important;
+        color: #35342f !important;
         font-size: clamp(9px, 2.8vw, 13px);
         flex: 0 0 auto;
         width: 32vw;
@@ -2534,21 +2645,21 @@
       }
       /* Light-mode: categories were near-black; soften to a subtle grey */
       html.light-mode .project-row .project-cat:nth-child(2) {
-        color: #c2b8b4 !important;
+        color: #c2c1bd !important;
       }
       /* Hide hover tooltip on mobile */
       .project-desc-tooltip { display: none !important; }
       .project-title {
         font-size: clamp(9px, 2.8vw, 13px);
-        color: #aca6a3 !important;
+        color: #acaca7 !important;
       }
       .project-year {
         font-size: clamp(9px, 2.8vw, 13px);
-        color: #aca6a3 !important;
+        color: #acaca7 !important;
       }
       /* Light-mode titles match the light-mode homepage-SVG colour */
       html.light-mode .project-title,
-      html.light-mode .project-year { color: #615350 !important; }
+      html.light-mode .project-year { color: #5f5f5a !important; }
       .category-divider {
         font-size: clamp(9px, 2.8vw, 13px);
       }
@@ -2617,12 +2728,30 @@
         transform: translateX(-50%) !important;
         background: transparent !important;
         z-index: 600 !important;
-        height: 24px !important;
+        height: 18px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         padding: 0 !important;
-        line-height: 1 !important;
+        line-height: 18px !important;
+      }
+      /* Unify the bottom-row trio — eye, OPEN, and search share the same
+         bottom offset, box height and color so they read as one band.
+         Each element's own rules earlier in this stylesheet set different
+         heights / colors; these last-cascade overrides win. */
+      #themeToggle,
+      #searchToggleMobile,
+      #mobileOpenBtn {
+        bottom: 36px !important;
+        height: 18px !important;
+        color: #9a9a9a !important;
+      }
+      #themeToggle svg,
+      #themeToggle svg *,
+      #searchToggleMobile svg,
+      #searchToggleMobile svg * {
+        color: #9a9a9a !important;
+        stroke: #9a9a9a !important;
       }
 
       /* Archive top/bottom fade gradients — makes back button easier to see */
@@ -3010,7 +3139,7 @@
     }
   </style>
 </head>
-<body>
+<body class="view-projects">
 
   <!-- ENTRY SCREEN -->
   <div id="entryScreen">
@@ -5411,30 +5540,51 @@
     });
     const galleryCursor = document.getElementById('galleryCursor');
     let prevCursorX = 0, prevCursorY = 0;
-    // Under html { zoom: 0.8 }, clientX/Y are in visual pixels but style.left
-    // sets logical pixels that the browser then re-zooms. Divide the mouse
-    // coords by the zoom so the custom cursor tracks under the real pointer.
-    const getZoom = () =>
-      parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    // Under html { zoom: 0.8 } (≥900px), clientX/Y arrive in visual pixels
+    // but style positions get re-zoomed. Cache the zoom factor — it only
+    // changes when the min-width:900px media query flips, which matches a
+    // resize event. Reading getComputedStyle on every mousemove flushed
+    // layout and made the idle home page feel laggy on desktop.
+    let cachedZoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    window.addEventListener('resize', () => {
+      cachedZoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    });
+    // Coalesce mousemove writes into one rAF per frame so rapid pointer
+    // movement doesn't queue multiple style recalcs per tick.
+    let cursorPending = false;
+    let pendingCX = 0, pendingCY = 0, pendingSpeed = 0;
+    function flushCursor() {
+      cursorPending = false;
+      const z = cachedZoom;
+      const lx = pendingCX / z;
+      const ly = pendingCY / z;
+      const blur = Math.min(3, pendingSpeed * 0.08);
+      // Single transform write covers position + scale; browser can
+      // composite on the GPU without re-laying-out siblings.
+      if (!galleryCursor.classList.contains('rippling')) {
+        const scale = 1 + Math.min(0.15, pendingSpeed * 0.003);
+        galleryCursor.style.transform =
+          `translate(${lx}px, ${ly}px) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+      } else {
+        galleryCursor.style.transform =
+          `translate(${lx}px, ${ly}px) translate(-50%, -50%)`;
+      }
+      galleryCursor.style.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : '';
+    }
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      const z = getZoom();
-      galleryCursor.style.left = (e.clientX / z) + 'px';
-      galleryCursor.style.top  = (e.clientY / z) + 'px';
-
-      // Motion blur based on cursor speed
       const cdx = e.clientX - prevCursorX;
       const cdy = e.clientY - prevCursorY;
-      const speed = Math.sqrt(cdx * cdx + cdy * cdy);
-      const blur = Math.min(3, speed * 0.08);
-      galleryCursor.style.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : '';
-      if (!galleryCursor.classList.contains('rippling')) {
-        const scale = 1 + Math.min(0.15, speed * 0.003);
-        galleryCursor.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
-      }
+      pendingSpeed = Math.sqrt(cdx * cdx + cdy * cdy);
+      pendingCX = e.clientX;
+      pendingCY = e.clientY;
       prevCursorX = e.clientX;
       prevCursorY = e.clientY;
+      if (!cursorPending) {
+        cursorPending = true;
+        requestAnimationFrame(flushCursor);
+      }
       if (!dragActive) return;
       // Set target rotation — animateGallery lerps sphereRot toward it for fluid lag
       targetRotY = dragRotY + (e.clientX - dragStartX) * 0.08;
@@ -6371,8 +6521,10 @@
       const isMobileView = window.innerWidth <= 768;
       // Clear per-view body flags; individual branches re-set as needed.
       document.body.classList.remove('view-about');
+      document.body.classList.remove('view-projects');
 
       if (view === 'projects') {
+        document.body.classList.add('view-projects');
         // Close any open accordion when returning to projects
         if (activeAccordionItem) {
           const prev = activeAccordionItem.querySelector('.project-accordion');
@@ -6831,6 +6983,11 @@
     (function initRippleOverlay() {
       const cvs = document.getElementById('dotOverlay');
       if (!cvs) return;
+      // Returning visitors skip the entry screen (see the hasEntered branch
+      // earlier). The ripple overlay lives inside #entryScreen; if that's
+      // already hidden there's nothing for the loop to draw to — but without
+      // this guard it still fires rAF forever.
+      if (entryScreen.style.display === 'none') return;
       const ctx = cvs.getContext('2d');
       let w = 0, h = 0;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -7037,9 +7194,15 @@
 
     // Continuously-animated idle waveform. Runs until the real oscilloscope
     // (audio analyser) takes over via initOscilloscope().
+    // The bottomBar children are currently display:none (see the TEMPORARY
+    // rule on #bottomBar > *), so starting the loop burns a full 60fps worth
+    // of canvas draws + a getComputedStyle read every frame for something
+    // nobody can see. Bail at init if the canvas isn't actually rendered,
+    // and skip draws per-frame if it becomes hidden later.
     (function drawIdleWave() {
       const canvas = document.getElementById('oscCanvas');
       if (!canvas) return;
+      if (getComputedStyle(canvas).display === 'none') return;
       const ctx = canvas.getContext('2d');
       const H = 80;
       let W = 0;
@@ -7054,11 +7217,20 @@
       resize();
       window.addEventListener('resize', resize);
       const start = performance.now();
+      // Cache the stroke colour; re-read only on theme toggle.
+      let color = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
+      const refreshColor = () => {
+        color = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
+      };
+      document.addEventListener('themechange', refreshColor);
       function tick(now) {
         if (window._analyser) return; // hand off to analyser-driven draw
+        if (canvas.offsetWidth === 0) {
+          requestAnimationFrame(tick);
+          return;
+        }
         const t = (now - start) / 1000;
         ctx.clearRect(0, 0, W, H);
-        const color = getComputedStyle(document.documentElement).getPropertyValue('--text-mid').trim();
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
@@ -7656,7 +7828,7 @@
     function __hpFgColor() {
       // Match the mobile project-title colour so preview SVGs read at the
       // same visual weight as the surrounding list rows.
-      return document.documentElement.classList.contains('light-mode') ? '#615350' : '#aca6a3';
+      return document.documentElement.classList.contains('light-mode') ? '#5f5f5a' : '#acaca7';
     }
     // Off-screen sandbox shared with inlineSVGs(). Illustrator-exported CAD
     // icons all reuse .cls-1 / .cls-2 (…) class names with file-specific
