@@ -4302,7 +4302,7 @@
       if (projectId === 'page:about') {
         if (!aboutData && !aboutLoading) await loadAboutContent();
         state.breakpoints = DEFAULT_BREAKPOINTS();
-        state.breakpoints.forEach(bp => { bp.padPct = 21; });
+        state.breakpoints.forEach(bp => { bp.padPct = 10; });
         await seedAboutCanvas();
         try {
           const res = await fetch('content/layouts.json?t=' + Date.now());
@@ -4311,7 +4311,7 @@
           if (layout?.kind === 'canvas-v3' && Array.isArray(layout.breakpoints))
             mergeAboutPositions(layout.breakpoints);
         } catch {}
-        state.breakpoints.forEach(bp => { bp.padPct = 21; reflowPctItems(bp); });
+        state.breakpoints.forEach(bp => { bp.padPct = 10; reflowPctItems(bp); });
         localStorage.removeItem('canvas-draft:' + projectId);
         sortBreakpoints();
         state.activeBp = state.breakpoints[0]?.id;
@@ -7656,7 +7656,10 @@
         if (cmd && e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); redo(); return; }
         if (cmd && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undo(); return; }
       }
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      // Bail on text-editing targets so Delete/Backspace/C/etc. don't fire
+      // shortcuts while the user is typing in an input, textarea, select, or
+      // a canvas text item in contenteditable mode.
+      if (isEditing) return;
       if (e.key === 'Escape') {
         if (previewOverlay.classList.contains('open')) { closePreview(); return; }
         if (openPop) { closePop(); return; }

@@ -951,16 +951,16 @@
         "h": 2400,
         "bg": "#0d0d0d",
         "bgTransparent": false,
-        "padPct": 4.5,
+        "padPct": 10,
         "guides": {
           "x": [],
           "y": []
         },
         "items": [
           {
-            "id": "ipmxqsin",
+            "id": "i8k85yp5",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 53,
             "w": 691,
             "h": 47,
@@ -980,9 +980,9 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "i1ogj0de",
+            "id": "iwo8rd1c",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 117,
             "w": 734,
             "h": 112,
@@ -1002,9 +1002,9 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ig785hmb",
+            "id": "i0jkckgb",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 266,
             "w": 734,
             "h": 257,
@@ -1024,9 +1024,9 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "ia6fnwc3",
+            "id": "i72eunwy",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 523,
             "w": 734,
             "h": 175,
@@ -1046,9 +1046,9 @@
             "_aboutFieldIdx": 2
           },
           {
-            "id": "iw3x0myk",
+            "id": "io980ix4",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 713,
             "w": 734,
             "h": 99,
@@ -1068,10 +1068,10 @@
             "_aboutFieldIdx": 3
           },
           {
-            "id": "io8mu54d",
+            "id": "igngiudl",
             "type": "image",
             "src": "IMAGES/ABOUT/IMG_6273.JPG",
-            "x": 1004,
+            "x": 925,
             "y": 117,
             "w": 371,
             "h": 496,
@@ -1081,9 +1081,9 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "if9ngjtk",
+            "id": "iitfmhfi",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 861,
             "w": 691,
             "h": 47,
@@ -1103,17 +1103,17 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "i4odadvx",
+            "id": "ivv2x5us",
             "type": "text",
-            "x": 65,
+            "x": 144,
             "y": 917,
             "w": 691,
-            "h": 34,
+            "h": 150,
             "rot": 0,
             "z": 7,
             "wPct": 48,
             "padding": 0,
-            "text": "For contact please reach out to info@Colbyonline.com ",
+            "text": "\nStudio Colby - Vancouver, Canada\n\nFor work related inquiries please contact info@colbyonline.com\nAdditional work available on request.\n",
             "fontSize": 16,
             "fontWeight": 400,
             "color": "#E4E4E4",
@@ -1125,10 +1125,10 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "iae4x7cz",
+            "id": "ictod1y2",
             "type": "text",
-            "x": 65,
-            "y": 966,
+            "x": 144,
+            "y": 1173,
             "w": 691,
             "h": 34,
             "rot": 0,
@@ -1147,10 +1147,10 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "ietma9rd",
+            "id": "iiv6ne3o",
             "type": "text",
-            "x": 65,
-            "y": 1016,
+            "x": 144,
+            "y": 1082,
             "w": 691,
             "h": 34,
             "rot": 0,
@@ -1178,16 +1178,16 @@
         "h": 2500,
         "bg": "#0d0d0d",
         "bgTransparent": false,
-        "padPct": 2.5,
+        "padPct": 10,
         "guides": {
           "x": [],
           "y": []
         },
         "items": [
           {
-            "id": "ihfkyq6b",
+            "id": "i4c5l2la",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 137,
             "w": 922,
             "h": 33,
@@ -1207,11 +1207,11 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "im3hl2n2",
+            "id": "i003d0lb",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 193,
-            "w": 972,
+            "w": 973,
             "h": 106,
             "rot": 0,
             "z": 12,
@@ -1229,11 +1229,11 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "i4jd0l7x",
+            "id": "iqnnez3s",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 328,
-            "w": 972,
+            "w": 973,
             "h": 194,
             "rot": 0,
             "z": 14,
@@ -1251,11 +1251,11 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "ivy1kfci",
+            "id": "ig6v7jxr",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 560,
-            "w": 972,
+            "w": 973,
             "h": 125,
             "rot": 0,
             "z": 15,
@@ -1273,11 +1273,11 @@
             "_aboutFieldIdx": 2
           },
           {
-            "id": "ilaqlqp6",
+            "id": "im24b096",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 721,
-            "w": 972,
+            "w": 973,
             "h": 97,
             "rot": 0,
             "z": 16,
@@ -1295,10 +1295,10 @@
             "_aboutFieldIdx": 3
           },
           {
-            "id": "im2t7h5u",
+            "id": "i7lmqhh7",
             "type": "image",
             "src": "IMAGES/ABOUT/IMG_6273.JPG",
-            "x": 26,
+            "x": 215,
             "y": 898,
             "w": 922,
             "h": 1231,
@@ -1308,9 +1308,9 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ittn5lyy",
+            "id": "ixgo7is6",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 2257,
             "w": 492,
             "h": 33,
@@ -1330,9 +1330,9 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "iomxejhk",
+            "id": "i0baf254",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 2313,
             "w": 922,
             "h": 24,
@@ -1352,9 +1352,9 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "i3bzeu5x",
+            "id": "iqpq0nb4",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 2358,
             "w": 922,
             "h": 48,
@@ -1374,9 +1374,9 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "ix3sgdtm",
+            "id": "i2do7vfl",
             "type": "text",
-            "x": 26,
+            "x": 215,
             "y": 2426,
             "w": 492,
             "h": 24,
@@ -1405,16 +1405,16 @@
         "h": 1983,
         "bg": "#0d0d0d",
         "bgTransparent": false,
-        "padPct": 5,
+        "padPct": 10,
         "guides": {
           "x": [],
           "y": []
         },
         "items": [
           {
-            "id": "itnp938n",
+            "id": "i4op4noz",
             "type": "text",
-            "x": 29,
+            "x": 82,
             "y": 37,
             "w": 215,
             "h": 22,
@@ -1434,11 +1434,11 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "izf6e6hc",
+            "id": "irn19bvu",
             "type": "text",
-            "x": 24,
+            "x": 82,
             "y": 69,
-            "w": 346,
+            "w": 347,
             "h": 142,
             "rot": 0,
             "z": 2,
@@ -1456,12 +1456,12 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ir2r2axn",
+            "id": "ioj41oi1",
             "type": "text",
-            "x": 24,
+            "x": 82,
             "y": 239,
-            "w": 346,
-            "h": 251,
+            "w": 347,
+            "h": 252,
             "rot": 0,
             "z": 3,
             "wPct": 89,
@@ -1478,12 +1478,12 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "iltpsflj",
+            "id": "i8j1xhrr",
             "type": "text",
-            "x": 24,
+            "x": 82,
             "y": 517,
-            "w": 346,
-            "h": 191,
+            "w": 347,
+            "h": 192,
             "rot": 0,
             "z": 4,
             "wPct": 89,
@@ -1500,11 +1500,11 @@
             "_aboutFieldIdx": 2
           },
           {
-            "id": "i84m7lmz",
+            "id": "i32ik1u8",
             "type": "text",
-            "x": 24,
+            "x": 82,
             "y": 743,
-            "w": 346,
+            "w": 347,
             "h": 112,
             "rot": 0,
             "z": 5,
@@ -1522,10 +1522,10 @@
             "_aboutFieldIdx": 3
           },
           {
-            "id": "iko6rl9r",
+            "id": "idcvwmbw",
             "type": "image",
             "src": "IMAGES/ABOUT/IMG_6273.JPG",
-            "x": 20,
+            "x": 82,
             "y": 908,
             "w": 350,
             "h": 459,
@@ -1535,9 +1535,9 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "iob827cc",
+            "id": "iilqfz85",
             "type": "text",
-            "x": 24,
+            "x": 82,
             "y": 1429,
             "w": 215,
             "h": 32,
@@ -1557,11 +1557,11 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "i43837dj",
+            "id": "ifbodxpz",
             "type": "text",
-            "x": 24,
+            "x": 82,
             "y": 1480,
-            "w": 346,
+            "w": 347,
             "h": 43,
             "rot": 0,
             "z": 8,
@@ -1579,11 +1579,11 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ir52mpa1",
+            "id": "i24waf9f",
             "type": "text",
-            "x": 21,
+            "x": 82,
             "y": 1532,
-            "w": 349,
+            "w": 347,
             "h": 49,
             "rot": 0,
             "z": 9,
@@ -1601,9 +1601,9 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "i5mqr1vj",
+            "id": "iy00exo7",
             "type": "text",
-            "x": 0,
+            "x": 82,
             "y": 1626,
             "w": 390,
             "h": 55,

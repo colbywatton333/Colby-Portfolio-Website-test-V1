@@ -49,16 +49,16 @@
     @property --scrollbar-thumb { syntax: '<color>'; inherits: true; initial-value: #2a2a2a; }
 
     :root {
-      /* Warm-tinted palette — ~2-3% warm hue shift (halved from the earlier
-         5% pass) and a few shades deeper so the tint reads as a subtle
-         undertone rather than a visible cast. */
-      --bg: #121110;
-      --bg-fade: rgba(18, 17, 16, 0);
-      --card: #0e0e0c;
+      /* Warm-tinted palette — ~5% warm hue shift on the tokens the viewer
+         sees most (bg, card, border). Text/dim tokens keep their earlier
+         neutral values so contrast doesn't drift. */
+      --bg: #14130f;
+      --bg-fade: rgba(20, 19, 15, 0);
+      --card: #100f0c;
       --text: #e4e4e1;
       --text-dim: #595853;
       --text-mid: #898883;
-      --border: #232221;
+      --border: #252321;
       --nav-border: #5c5850;
       --scrollbar-thumb: #2e2d2a;
       --font: Arial, sans-serif;
