@@ -2526,14 +2526,28 @@
            With viewport-fit=cover on <meta viewport>, env() now reports the
            real safe-area value on iOS and the bar extends through the
            home-indicator / bottom URL-bar zone instead of leaving a gap. */
-        /* Hardcoded 120px URL-bar reserve — iOS Safari's bottom URL pill
-           maxes around ~90px; 120px guarantees coverage on every device
-           regardless of whether lvh/svh, safe-area, or visualViewport fire
-           correctly. --vv-bottom piggybacks via max() for any edge case. */
-        height: calc(78px + env(safe-area-inset-bottom, 0px) + max(var(--vv-bottom, 0px), 120px)) !important;
+        height: calc(78px + env(safe-area-inset-bottom, 0px) + var(--vv-bottom, 0px)) !important;
         padding: 0 !important;
         background: var(--bg) !important;
         border-top: none !important;
+      }
+      /* iOS URL-pill shield — a sibling block that dips 150px BELOW bottom:0
+         and extends 200px above. On iOS 15+ where position:fixed;bottom:0 pins
+         to visual-viewport bottom (above the URL pill), the regular #bottomBar
+         doesn't reach into the pill zone — rows scrolled into the padding
+         area show at full brightness under the pill. This shield covers that
+         zone with var(--bg) opaque backdrop. Z-index below the real bar so
+         it doesn't intercept buttons. */
+      body.view-projects #iosBottomShield {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: -150px;
+        height: 350px;
+        background: var(--bg);
+        pointer-events: none;
+        z-index: 225;
       }
       header nav, header #categoryBar, header button {
         pointer-events: auto;
@@ -2798,7 +2812,7 @@
       #themeToggle,
       #searchToggleMobile,
       #mobileOpenBtn {
-        bottom: calc(36px + env(safe-area-inset-bottom, 0px) + max(var(--vv-bottom, 0px), 120px)) !important;
+        bottom: calc(36px + env(safe-area-inset-bottom, 0px) + var(--vv-bottom, 0px)) !important;
         height: 18px !important;
         color: #9a9a9a !important;
       }
@@ -3382,6 +3396,9 @@
       </div>
     </div>
   </div>
+
+  <!-- iOS bottom URL-pill shield (CSS controls visibility) -->
+  <div id="iosBottomShield" aria-hidden="true" style="display:none;"></div>
 
   <!-- BOTTOM BAR -->
   <div id="bottomBar">
