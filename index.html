@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Portfolio — Industrial Design</title>
   <style>
     @font-face {
@@ -2503,9 +2503,12 @@
          extends through the home-indicator area. Fixed buttons at
          z-index:600 still render on top of this band. */
       body.view-projects #bottomBar {
-        height: auto !important;
-        min-height: 78px !important;
-        padding: 0 0 env(safe-area-inset-bottom, 0px) !important;
+        /* Full bar height = visible band + iPhone home-indicator safe-area.
+           With viewport-fit=cover on <meta viewport>, env() now reports the
+           real safe-area value on iOS and the bar extends through the
+           home-indicator / bottom URL-bar zone instead of leaving a gap. */
+        height: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+        padding: 0 !important;
         background: var(--bg) !important;
         border-top: none !important;
       }
@@ -2766,11 +2769,14 @@
       /* Unify the bottom-row trio — eye, OPEN, and search share the same
          bottom offset, box height and color so they read as one band.
          Each element's own rules earlier in this stylesheet set different
-         heights / colors; these last-cascade overrides win. */
+         heights / colors; these last-cascade overrides win. The bottom
+         offset adds env(safe-area-inset-bottom) so the row sits above the
+         iPhone home indicator instead of on top of it now that
+         viewport-fit=cover lets the page extend into the safe area. */
       #themeToggle,
       #searchToggleMobile,
       #mobileOpenBtn {
-        bottom: 36px !important;
+        bottom: calc(36px + env(safe-area-inset-bottom, 0px)) !important;
         height: 18px !important;
         color: #9a9a9a !important;
       }
