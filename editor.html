@@ -2241,6 +2241,37 @@
         <div class="snapshot-list" id="snapshotList"></div>
       </div>
 
+      <!-- Project metadata — fields here write to content/projects.json so
+           the live site's project accordion renders the new values without
+           hand-editing the file. Hidden when a Page (not project) is active. -->
+      <div class="insp-section" id="projectMetaSection" style="display:none;">
+        <div class="insp-title">
+          <span>Project Info</span>
+          <span class="count" id="projectMetaSavedDot" style="font-size:10px;font-weight:700;color:var(--text-dim);">●</span>
+        </div>
+        <div class="hp-hint" style="margin-top:0;margin-bottom:8px;">Edits save to projects.json on blur (~600 ms debounce).</div>
+        <div class="field-row">
+          <label>Year</label>
+          <input type="number" id="metaYear" min="1900" max="2100" step="1" style="flex:1;">
+        </div>
+        <div class="field-row">
+          <label>Tags</label>
+          <input type="text" id="metaCategories" placeholder="Object, Furniture, …" style="flex:1;" title="Comma-separated category list">
+        </div>
+        <div class="field-row" style="align-items:flex-start;">
+          <label style="padding-top:6px;">Desc</label>
+          <textarea id="metaDescription" rows="3" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
+        </div>
+        <div class="field-row" style="align-items:flex-start;">
+          <label style="padding-top:6px;">Materials</label>
+          <textarea id="metaMaterials" rows="2" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
+        </div>
+        <div class="field-row" style="align-items:flex-start;">
+          <label style="padding-top:6px;">Process</label>
+          <textarea id="metaProcess" rows="2" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
+        </div>
+      </div>
+
       <div class="insp-section">
         <div class="insp-title">
           <span>Selection</span>
@@ -2938,10 +2969,98 @@
         proj.title = data.project.title;
         rebuildProjectSelect();
         projectSelect.value = pid;
+        syncProjectMetaPanel();
         setStatus('Renamed to "' + proj.title + '"', 'ok');
       } catch (e) {
         setStatus('Rename failed: ' + e.message, 'err');
       }
+    }
+
+    // ── PROJECT METADATA EDITOR ──────────────────────────────
+    // Inspector panel that writes year / categories / description / materials
+    // / process to content/projects.json via the existing PUT endpoint.
+    // Visible only when a real project (not a Page) is selected.
+    const metaEls = {
+      section:    () => document.getElementById('projectMetaSection'),
+      dot:        () => document.getElementById('projectMetaSavedDot'),
+      year:       () => document.getElementById('metaYear'),
+      categories: () => document.getElementById('metaCategories'),
+      description:() => document.getElementById('metaDescription'),
+      materials:  () => document.getElementById('metaMaterials'),
+      process:    () => document.getElementById('metaProcess'),
+    };
+    let metaDebounceTimer = null;
+    const metaPending = {};   // field → value waiting to flush
+    function syncProjectMetaPanel() {
+      const sec = metaEls.section();
+      if (!sec) return;
+      const pid = state.projectId;
+      const isPage = !pid || pid.startsWith('page:');
+      const proj = !isPage && state.projects.find(p => p.id === pid);
+      if (!proj) {
+        sec.style.display = 'none';
+        return;
+      }
+      sec.style.display = '';
+      // Populate without firing the input handler.
+      metaEls.year().value = proj.year ?? '';
+      metaEls.categories().value = (proj.categories || []).join(', ');
+      metaEls.description().value = proj.description || '';
+      metaEls.materials().value = proj.materials || '';
+      metaEls.process().value = proj.process || '';
+      metaSetDot('saved');
+    }
+    function metaSetDot(state) {
+      const dot = metaEls.dot();
+      if (!dot) return;
+      if (state === 'dirty')   { dot.style.color = '#f5b25b'; dot.title = 'Unsaved changes'; }
+      else if (state === 'saving') { dot.style.color = '#5b9af5'; dot.title = 'Saving…'; }
+      else if (state === 'error')  { dot.style.color = '#ff6b6b'; dot.title = 'Save failed'; }
+      else                         { dot.style.color = 'var(--text-dim)'; dot.title = 'Saved'; }
+    }
+    async function flushMeta() {
+      const pid = state.projectId;
+      const proj = state.projects.find(p => p.id === pid);
+      if (!proj || !Object.keys(metaPending).length) return;
+      const updates = { ...metaPending };
+      Object.keys(metaPending).forEach(k => delete metaPending[k]);
+      metaSetDot('saving');
+      try {
+        const res = await fetch('/api/projects/' + encodeURIComponent(pid), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.project) throw new Error(data.error || 'Save failed');
+        Object.assign(proj, data.project);
+        metaSetDot('saved');
+        setStatus('Saved project info', 'ok');
+      } catch (e) {
+        metaSetDot('error');
+        setStatus('Save failed: ' + e.message, 'err');
+        // Roll back the UI to the last-known-good values.
+        syncProjectMetaPanel();
+      }
+    }
+    function queueMetaUpdate(field, value) {
+      metaPending[field] = value;
+      metaSetDot('dirty');
+      clearTimeout(metaDebounceTimer);
+      metaDebounceTimer = setTimeout(flushMeta, 600);
+    }
+    function wireMetaPanel() {
+      // Each field maps to a different parser → projects.json type.
+      const wire = (el, field, parse) => {
+        if (!el) return;
+        el.addEventListener('input', () => queueMetaUpdate(field, parse(el.value)));
+        el.addEventListener('blur',  () => { if (metaDebounceTimer) { clearTimeout(metaDebounceTimer); flushMeta(); } });
+      };
+      wire(metaEls.year(),        'year',        v => v ? parseInt(v, 10) : null);
+      wire(metaEls.categories(),  'categories',  v => v.split(',').map(s => s.trim()).filter(Boolean));
+      wire(metaEls.description(), 'description', v => v);
+      wire(metaEls.materials(),   'materials',   v => v);
+      wire(metaEls.process(),     'process',     v => v);
     }
 
     async function promptDeleteProject() {
@@ -3538,6 +3657,24 @@
         const textItems = bp.items.filter(it => it.type === 'text');
         const imageItems = bp.items.filter(it => it.type === 'image');
 
+        // Last-chance tagging: an image dragged onto the canvas before
+        // about.json was loaded (or via a code path that bypassed
+        // autoTagAboutItem) would otherwise be silently dropped here. Tag
+        // any orphans by Y-position so their drag positions persist.
+        const oldBp = state.activeBp;
+        state.activeBp = bp.id;
+        let untaggedCount = 0;
+        imageItems.forEach(it => {
+          if (it._aboutSectionIdx == null) {
+            untaggedCount++;
+            autoTagAboutItem(it);
+          }
+        });
+        state.activeBp = oldBp;
+        if (untaggedCount > 0) {
+          console.debug('[about-save] auto-tagged ' + untaggedCount + ' orphan image(s)');
+        }
+
         // Rebuild each section from tagged canvas items
         data.sections.forEach((sec, sIdx) => {
           // Sync title
@@ -3589,7 +3726,11 @@
                 aspectW: Math.round(it.w),
                 aspectH: Math.round(it.h),
               }));
-            sec.images = sectionImages;
+            // Preserve null placeholder slots the user added via the
+            // sidebar "+ Image" button. Without this, hitting Save wipes
+            // every empty slot from sec.images.
+            const nullPlaceholderCount = (sec.images || []).filter(x => x === null).length;
+            sec.images = sectionImages.concat(Array(nullPlaceholderCount).fill(null));
           } else {
             if (sectionTexts.length) sec.lines = sectionTexts;
             const bodyTexts = textItems.filter(it => it._aboutSectionIdx === sIdx && it._aboutFieldIdx >= 0);
@@ -4177,6 +4318,7 @@
         state.zCounter = state.breakpoints.flatMap(b => b.items).reduce((m, i) => Math.max(m, i.z || 0), 1);
         renderTabs(); fullRerender(); applyCanvasStyle(); updateBpFields();
         updateHistoryUI(); renderHomepagePanel(); renderSnapshotList(); renderTextStylesList();
+        syncProjectMetaPanel();
         return;
       }
 
@@ -4244,6 +4386,7 @@
       renderHomepagePanel();
       renderSnapshotList();
       renderTextStylesList();
+      syncProjectMetaPanel();
     }
 
     async function seedAboutCanvas() {
@@ -5002,7 +5145,52 @@
     }
 
     // ── FILE UPLOAD ───────────────────────────────────────
+    // Track Shift state globally so any drop / pick handler can decide to
+    // skip compression. Matches how the editor reads modifier keys for
+    // duplicate / nudge shortcuts.
+    let __uploadShiftHeld = false;
+    window.addEventListener('keydown', e => { if (e.key === 'Shift') __uploadShiftHeld = true; }, true);
+    window.addEventListener('keyup',   e => { if (e.key === 'Shift') __uploadShiftHeld = false; }, true);
+    window.addEventListener('blur',    () => { __uploadShiftHeld = false; });
+
+    // Client-side image compression. Uploads a 4 MB phone photo as
+    // ~400 KB WebP without the user having to think about it. Skips:
+    //   • non-images, SVGs, and small files (< 300 KB)
+    //   • when Shift is held during the drop / pick (escape hatch)
+    //   • environments without OffscreenCanvas / createImageBitmap
+    async function compressImage(file, { maxDim = 2000, quality = 0.82 } = {}) {
+      if (!file || !file.type || !file.type.startsWith('image/')) return file;
+      if (/svg/i.test(file.type)) return file;
+      if (file.size < 300 * 1024) return file;
+      if (__uploadShiftHeld) return file;
+      if (typeof createImageBitmap !== 'function' || typeof OffscreenCanvas !== 'function') return file;
+      try {
+        const bmp = await createImageBitmap(file);
+        const scale = Math.min(1, maxDim / Math.max(bmp.width, bmp.height));
+        const w = Math.max(1, Math.round(bmp.width * scale));
+        const h = Math.max(1, Math.round(bmp.height * scale));
+        const canvas = new OffscreenCanvas(w, h);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(bmp, 0, 0, w, h);
+        const blob = await canvas.convertToBlob({ type: 'image/webp', quality });
+        // Bail if we somehow made it bigger (rare — happens on tiny PNGs).
+        if (blob.size >= file.size) return file;
+        const newName = file.name.replace(/\.[^.]+$/, '') + '.webp';
+        return new File([blob], newName, { type: 'image/webp' });
+      } catch {
+        return file;
+      }
+    }
+
     async function uploadFile(file) {
+      const original = file;
+      const compressed = await compressImage(file);
+      if (compressed !== original) {
+        const before = (original.size / 1024 / 1024).toFixed(1);
+        const after  = (compressed.size / 1024).toFixed(0);
+        setStatus('Compressed ' + before + 'MB → ' + after + 'KB');
+      }
+      file = compressed;
       if (!state.projectId) {
         const src = await fileToDataUrl(file);
         return { src, type: fileType(file) };
@@ -7617,6 +7805,7 @@
       updateEmptyState();
       applyGridOverlay();
       updateBpFields();
+      wireMetaPanel();
       await loadProjects();
       const urlId = new URLSearchParams(location.search).get('id');
       if (urlId) {
