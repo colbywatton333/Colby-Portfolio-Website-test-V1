@@ -2526,7 +2526,12 @@
            With viewport-fit=cover on <meta viewport>, env() now reports the
            real safe-area value on iOS and the bar extends through the
            home-indicator / bottom URL-bar zone instead of leaving a gap. */
-        height: calc(78px + env(safe-area-inset-bottom, 0px) + var(--vv-bottom, 0px)) !important;
+        /* Static (100lvh - 100svh) = max iOS URL-bar height, always reserved
+           so the bar covers the pill zone regardless of expand/collapse state.
+           --vv-bottom (from JS visualViewport tracker) is layered on via max()
+           so any transient inset the static value doesn't catch is still
+           covered. */
+        height: calc(78px + env(safe-area-inset-bottom, 0px) + max(var(--vv-bottom, 0px), 100lvh - 100svh)) !important;
         padding: 0 !important;
         background: var(--bg) !important;
         border-top: none !important;
@@ -2649,11 +2654,12 @@
       }
       .projects-list {
         padding-top: 165px;
-        /* Trimmed from 130 → 24 → 18 (extra -25%). The floating bottom
-           buttons fade out via IntersectionObserver when the footer scrolls
-           in, so the last project doesn't need much breathing room above
-           the footer. */
-        padding-bottom: 18px;
+        /* Bottom padding = breathing room + URL-bar max zone so the last
+           row never scrolls into the iOS bottom URL-pill area.
+           (100lvh - 100svh) = max Safari URL-bar height. Previously 18px —
+           final rows slid under the pill when the URL bar collapsed mid-scroll,
+           showing at full brightness. */
+        padding-bottom: calc(18px + (100lvh - 100svh));
       }
 
       /* Open-previews on mobile: tighten the breathing room around each
@@ -2795,7 +2801,7 @@
       #themeToggle,
       #searchToggleMobile,
       #mobileOpenBtn {
-        bottom: calc(36px + env(safe-area-inset-bottom, 0px) + var(--vv-bottom, 0px)) !important;
+        bottom: calc(36px + env(safe-area-inset-bottom, 0px) + max(var(--vv-bottom, 0px), 100lvh - 100svh)) !important;
         height: 18px !important;
         color: #9a9a9a !important;
       }
