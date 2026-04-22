@@ -747,7 +747,16 @@
     }
     .item[data-kind="text"] { outline: 1px dashed rgba(220,220,220,0.18); }
     html[data-theme="light"] .item[data-kind="text"] { outline-color: rgba(0,0,0,0.15); }
-    .item[data-kind="text"].editing > .item-text { pointer-events: auto; cursor: text; outline: none; }
+    .item[data-kind="text"].editing > .item-text {
+      pointer-events: auto;
+      cursor: text;
+      outline: none;
+      /* .item sets user-select:none for drag UX. In edit mode restore native
+         text selection so Cmd+C / Cmd+V (and double-click word selection)
+         work on the text content. */
+      user-select: text;
+      -webkit-user-select: text;
+    }
     .item[data-kind="text"].editing { cursor: text; }
 
     /* Spacer items — visible only as a faint dashed box in the editor */
