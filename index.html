@@ -711,7 +711,7 @@
       bottom: calc(100% - 1px);
       left: 0;
       right: 0;
-      height: 294px;
+      height: 180px;
       background: var(--bg);
       -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 75%);
       mask-image: linear-gradient(to bottom, transparent 0%, black 75%);
@@ -2682,6 +2682,32 @@
       .project-preview-svg {
         width: 63vw;
         margin: 7px auto 14px;
+        /* Mobile: drop the diagonal mask-sweep + scale transform. Open/close
+           should feel like a simple opacity crossfade instead of the
+           "plotter-pen" wipe used on desktop. */
+        -webkit-mask-image: none !important;
+        mask-image: none !important;
+        transform: none !important;
+      }
+      /* Mobile crossfade: on open, grid-template-rows expands FIRST then the
+         content fades in; on close, content fades OUT first then the grid
+         collapses. No per-item stagger (--i) — all rows move together so
+         the close doesn't feel like items "flying down" one after another. */
+      .project-preview {
+        transition: opacity 0.30s ease, grid-template-rows 0.25s ease 0.30s !important;
+        transition-delay: 0ms !important;
+      }
+      body.previews-open .project-preview {
+        transition: grid-template-rows 0.25s ease, opacity 0.30s ease 0.25s !important;
+        transition-delay: 0ms !important;
+      }
+      body.previews-open .project-preview-svg {
+        transition: opacity 0.30s ease 0.25s !important;
+        transition-delay: 0.25s !important;
+      }
+      body:not(.previews-open) .project-preview-svg {
+        transition: opacity 0.25s ease !important;
+        transition-delay: 0ms !important;
       }
       .project-row {
         padding: 17px var(--site-pad);
