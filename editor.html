@@ -649,10 +649,11 @@
     /* ── RESPONSIVE RESIZE HANDLE ──────────────────────── */
     .responsive-handle {
       position: absolute;
-      top: 0;
-      right: -14px;
-      bottom: 0;
-      width: 28px;
+      top: 50%;
+      right: -18px;
+      transform: translateY(-50%);
+      height: 80px;
+      width: 36px;
       cursor: ew-resize;
       z-index: 20;
       display: flex;
@@ -4314,7 +4315,7 @@
       if (projectId === 'page:about') {
         if (!aboutData && !aboutLoading) await loadAboutContent();
         state.breakpoints = DEFAULT_BREAKPOINTS();
-        state.breakpoints.forEach(bp => { bp.padPct = 10; });
+        state.breakpoints.forEach(bp => { bp.padPct = 5; });
         await seedAboutCanvas();
         try {
           const res = await fetch('content/layouts.json?t=' + Date.now());
@@ -4323,7 +4324,7 @@
           if (layout?.kind === 'canvas-v3' && Array.isArray(layout.breakpoints))
             mergeAboutPositions(layout.breakpoints);
         } catch {}
-        state.breakpoints.forEach(bp => { bp.padPct = 10; reflowPctItems(bp); });
+        state.breakpoints.forEach(bp => { bp.padPct = 5; reflowPctItems(bp); });
         localStorage.removeItem('canvas-draft:' + projectId);
         sortBreakpoints();
         state.activeBp = state.breakpoints[0]?.id;
