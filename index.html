@@ -2552,12 +2552,11 @@
         position: fixed;
         left: 0;
         right: 0;
-        /* top uses dvh so the shield starts ABOVE the visual-viewport bottom,
-           then extends DOWN past it. Bottom-anchored with negative values is
-           clipped by iOS; top-anchored inside layout viewport renders. */
-        top: calc(100dvh - 220px);
-        height: 420px;
+        top: 0;
+        height: 100lvh;
         background: red !important;
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 70%, black 80%, black 100%);
+        mask-image: linear-gradient(to bottom, transparent 0%, transparent 70%, black 80%, black 100%);
         pointer-events: none;
         z-index: 229;
       }
