@@ -701,6 +701,10 @@
 
     #bottomBar button:hover { opacity: 0.8; }
 
+    /* iOS URL-pill shield — hidden by default, enabled only on mobile
+       projects view by the @media (max-width: 768px) rule below. */
+    #iosBottomShield { display: none; }
+
     /* Fade gradient above bottom bar — ends above the buttons. Scoped to
        the projects view only; on About / other static pages the fade just
        dims the bottom of the copy instead of doing anything useful. */
@@ -3398,7 +3402,7 @@
   </div>
 
   <!-- iOS bottom URL-pill shield (CSS controls visibility) -->
-  <div id="iosBottomShield" aria-hidden="true" style="display:none;"></div>
+  <div id="iosBottomShield" aria-hidden="true"></div>
 
   <!-- BOTTOM BAR -->
   <div id="bottomBar">
