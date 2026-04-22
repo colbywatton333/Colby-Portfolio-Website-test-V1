@@ -2536,10 +2536,12 @@
         padding: 0 !important;
         background: var(--bg) !important;
         border-top: none !important;
-        /* Open accordions / active detail view sit at z:240. Lift the bar
-           above that so its solid bg + fade gradient cover the OPEN button
-           zone even while content is expanded. Still below buttons at z:600. */
-        z-index: 250 !important;
+        /* Open accordions sit at z:240, and .project-preview creates its own
+           stacking context via will-change:opacity. Lift the bar well above
+           so its solid bg + fade gradient cover both the accordion content
+           AND the preview SVGs when they scroll into the OPEN button zone.
+           Buttons stay on top via their own z:600. */
+        z-index: 500 !important;
       }
       /* iOS URL-pill shield — a sibling block that dips 150px BELOW bottom:0
          and extends 200px above. On iOS 15+ where position:fixed;bottom:0 pins
