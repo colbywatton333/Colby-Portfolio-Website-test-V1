@@ -7797,6 +7797,10 @@
         const next = !aside.classList.contains('collapsed');
         applyPanelState(side, next);
         try { localStorage.setItem('editor-panel-' + side + '-collapsed', next ? '1' : '0'); } catch {}
+        // Auto-fit canvas to the newly available width. Next frame so the
+        // browser has applied the collapsed class and canvasWrap.clientWidth
+        // reflects the new size.
+        requestAnimationFrame(() => { try { $('fitBtn').click(); } catch {} });
       }
       leftToggle.addEventListener('click',  () => togglePanel('left'));
       rightToggle.addEventListener('click', () => togglePanel('right'));
