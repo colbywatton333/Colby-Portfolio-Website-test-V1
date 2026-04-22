@@ -7650,8 +7650,17 @@
       const cmd = e.ctrlKey || e.metaKey;
       // Ctrl+S works globally
       if (cmd && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveLayout(); return; }
-      // Ctrl+Z / Ctrl+Shift+Z — skip when editing text in inputs/textareas/contenteditable
-      const isEditing = tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable;
+      // Defensive isEditing check: target tag, target.isContentEditable (may be
+      // false for nested spans / text nodes inside a contentEditable ancestor),
+      // AND a .closest('[contenteditable]') walk on both target and
+      // activeElement. Previously relied on target.isContentEditable alone —
+      // when caret was on a nested span (e.g. emphasis) or a just-inserted
+      // text node, that property returned false and Delete/Backspace fell
+      // through to the global shortcut that nukes the whole text box.
+      const targetEl = e.target.nodeType === 1 ? e.target : e.target.parentElement;
+      const ce = (targetEl && targetEl.closest('[contenteditable]'))
+              || (document.activeElement && document.activeElement.closest && document.activeElement.closest('[contenteditable]'));
+      const isEditing = tag === 'input' || tag === 'textarea' || tag === 'select' || !!e.target.isContentEditable || !!ce;
       if (!isEditing) {
         if (cmd && e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); redo(); return; }
         if (cmd && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); undo(); return; }
