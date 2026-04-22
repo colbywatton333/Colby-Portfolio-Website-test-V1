@@ -4554,7 +4554,7 @@
     }
 
     function defaultPadPct(w) {
-      return 10;
+      return 5;
     }
 
     function normalizeBp(bp) {
@@ -7650,16 +7650,15 @@
       const cmd = e.ctrlKey || e.metaKey;
       // Ctrl+S works globally
       if (cmd && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveLayout(); return; }
-      // Defensive isEditing check: target tag, target.isContentEditable (may be
-      // false for nested spans / text nodes inside a contentEditable ancestor),
-      // AND a .closest('[contenteditable]') walk on both target and
-      // activeElement. Previously relied on target.isContentEditable alone —
-      // when caret was on a nested span (e.g. emphasis) or a just-inserted
-      // text node, that property returned false and Delete/Backspace fell
-      // through to the global shortcut that nukes the whole text box.
+      // Defensive isEditing check: walk up from target/activeElement looking
+      // for a TRULY editable ancestor. Using just [contenteditable] caught
+      // elements set to contenteditable="false" too (e.g. layer-name after
+      // blur), which made Cmd+Z/Shift+Z never fire because isEditing was
+      // always true.
+      const ceSelector = '[contenteditable=""], [contenteditable="true"], [contenteditable="plaintext-only"]';
       const targetEl = e.target.nodeType === 1 ? e.target : e.target.parentElement;
-      const ce = (targetEl && targetEl.closest('[contenteditable]'))
-              || (document.activeElement && document.activeElement.closest && document.activeElement.closest('[contenteditable]'));
+      const ce = (targetEl && targetEl.closest(ceSelector))
+              || (document.activeElement && document.activeElement.closest && document.activeElement.closest(ceSelector));
       const isEditing = tag === 'input' || tag === 'textarea' || tag === 'select' || !!e.target.isContentEditable || !!ce;
       if (!isEditing) {
         if (cmd && e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); redo(); return; }
