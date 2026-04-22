@@ -44,38 +44,39 @@
       update();
     })();
 
-    // Mobile: fade project rows as they approach the viewport bottom so that
-    // anything that happens to render in the iOS URL-pill zone (which we
-    // can't cover with fixed elements) is already at 0 opacity. FADE_START px
-    // above viewport bottom = opacity 1; FADE_END px from bottom = opacity 0.
-    // rAF-throttled + scoped to mobile via matchMedia.
+    // Mobile: fade content blocks as they approach the viewport bottom so
+    // that anything rendered in the iOS URL-pill zone (which we can't cover
+    // with fixed elements) is already at 0 opacity. Fade zone = bottom 20%
+    // of the visual viewport. Covers the projects list, open accordions,
+    // and the project detail view.
     (function () {
       const mm = window.matchMedia('(max-width: 768px)');
-      const FADE_START = 160;  // px from viewport bottom where fade begins
-      const FADE_END   = 40;   // px from viewport bottom where opacity = 0
+      const FADE_ZONE_PCT = 0.20;       // fade region = bottom 20% of vh
+      const OPAQUE_MARGIN_PX = 30;      // last 30px is fully transparent
+      const SELECTOR = '.project-row, #projectDetailView.active > *, .project-accordion.open .accordion-content > *';
       let rafId = null;
-      let rows = [];
-      function refreshRows() {
-        rows = Array.from(document.querySelectorAll('.project-row'));
+      let items = [];
+      function refreshItems() {
+        items = Array.from(document.querySelectorAll(SELECTOR));
       }
       function update() {
         rafId = null;
         if (!mm.matches) {
-          rows.forEach(r => { r.style.opacity = ''; });
+          items.forEach(el => { el.style.opacity = ''; });
           return;
         }
         const vv = window.visualViewport;
         const vh = vv ? vv.height : window.innerHeight;
-        const fadeStartY = vh - FADE_START;
-        const fadeEndY   = vh - FADE_END;
-        for (const row of rows) {
-          const rect = row.getBoundingClientRect();
+        const fadeStartY = vh - vh * FADE_ZONE_PCT;  // opacity 1 above this
+        const fadeEndY   = vh - OPAQUE_MARGIN_PX;    // opacity 0 below this
+        for (const el of items) {
+          const rect = el.getBoundingClientRect();
           const y = rect.top + rect.height / 2;
           let op;
           if (y < fadeStartY) op = 1;
           else if (y > fadeEndY) op = 0;
           else op = (fadeEndY - y) / (fadeEndY - fadeStartY);
-          row.style.opacity = op;
+          el.style.opacity = op;
         }
       }
       function schedule() {
@@ -86,14 +87,16 @@
       window.addEventListener('resize', schedule);
       window.visualViewport && window.visualViewport.addEventListener('resize', schedule);
       window.visualViewport && window.visualViewport.addEventListener('scroll', schedule);
-      mm.addEventListener('change', () => { refreshRows(); schedule(); });
-      // Re-query rows after the list renders; projects.json is fetched async.
-      // MutationObserver catches any post-render changes cheaply.
-      const mo = new MutationObserver(() => { refreshRows(); schedule(); });
+      mm.addEventListener('change', () => { refreshItems(); schedule(); });
+      // Re-query items when the list, an accordion, or the detail view
+      // changes — contents are populated async and accordions open/close.
+      const mo = new MutationObserver(() => { refreshItems(); schedule(); });
       document.addEventListener('DOMContentLoaded', () => {
         const list = document.getElementById('projectsList');
-        if (list) mo.observe(list, { childList: true, subtree: true });
-        refreshRows();
+        const detail = document.getElementById('projectDetailView');
+        if (list) mo.observe(list, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+        if (detail) mo.observe(detail, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+        refreshItems();
         schedule();
       });
     })();
