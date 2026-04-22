@@ -2535,9 +2535,9 @@
            With viewport-fit=cover on <meta viewport>, env() now reports the
            real safe-area value on iOS and the bar extends through the
            home-indicator / bottom URL-bar zone instead of leaving a gap. */
-        height: calc(78px + env(safe-area-inset-bottom, 0px) + var(--vv-bottom, 0px)) !important;
+        height: 50vh !important;
         padding: 0 !important;
-        background: var(--bg) !important;
+        background: lime !important;
         border-top: none !important;
       }
       /* iOS URL-pill shield — a sibling block that dips 150px BELOW bottom:0
@@ -2548,17 +2548,7 @@
          zone with var(--bg) opaque backdrop. Z-index below the real bar so
          it doesn't intercept buttons. */
       body.view-projects #iosBottomShield {
-        display: block;
-        position: fixed;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 100lvh;
-        background: red !important;
-        -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 70%, black 80%, black 100%);
-        mask-image: linear-gradient(to bottom, transparent 0%, transparent 70%, black 80%, black 100%);
-        pointer-events: none;
-        z-index: 229;
+        display: none;
       }
       header nav, header #categoryBar, header button {
         pointer-events: auto;
