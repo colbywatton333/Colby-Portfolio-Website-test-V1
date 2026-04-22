@@ -2552,7 +2552,10 @@
         position: fixed;
         left: 0;
         right: 0;
-        bottom: -200px;
+        /* top uses dvh so the shield starts ABOVE the visual-viewport bottom,
+           then extends DOWN past it. Bottom-anchored with negative values is
+           clipped by iOS; top-anchored inside layout viewport renders. */
+        top: calc(100dvh - 220px);
         height: 420px;
         background: red !important;
         pointer-events: none;
