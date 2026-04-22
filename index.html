@@ -2494,10 +2494,15 @@
         pointer-events: none;
         z-index: 90;
       }
-      /* About page: suppress the bottom Open/eye/search buttons */
+      /* About page: suppress the bottom Open/eye/search buttons and the
+         top Category / Relevance / Year sort row — they only belong to the
+         Projects list. */
       body.view-about #mobileOpenBtn,
       body.view-about #themeToggle,
-      body.view-about #searchToggleMobile {
+      body.view-about #searchToggleMobile,
+      body.view-about #organizeBtn,
+      body.view-about #relevanceBtn,
+      body.view-about #openAllBtn {
         display: none !important;
       }
       /* Invisible click-catcher over the bottom button band so taps in the
