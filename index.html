@@ -44,62 +44,6 @@
       update();
     })();
 
-    // Mobile: fade content blocks as they approach the viewport bottom so
-    // that anything rendered in the iOS URL-pill zone (which we can't cover
-    // with fixed elements) is already at 0 opacity. Fade zone = bottom 20%
-    // of the visual viewport. Covers the projects list, open accordions,
-    // and the project detail view.
-    (function () {
-      const mm = window.matchMedia('(max-width: 768px)');
-      const FADE_ZONE_PCT = 0.20;       // fade region = bottom 20% of vh
-      const OPAQUE_MARGIN_PX = 30;      // last 30px is fully transparent
-      const SELECTOR = '.project-row, #projectDetailView.active > *, .project-accordion.open .accordion-content > *';
-      let rafId = null;
-      let items = [];
-      function refreshItems() {
-        items = Array.from(document.querySelectorAll(SELECTOR));
-      }
-      function update() {
-        rafId = null;
-        if (!mm.matches) {
-          items.forEach(el => { el.style.opacity = ''; });
-          return;
-        }
-        const vv = window.visualViewport;
-        const vh = vv ? vv.height : window.innerHeight;
-        const fadeStartY = vh - vh * FADE_ZONE_PCT;  // opacity 1 above this
-        const fadeEndY   = vh - OPAQUE_MARGIN_PX;    // opacity 0 below this
-        for (const el of items) {
-          const rect = el.getBoundingClientRect();
-          const y = rect.top + rect.height / 2;
-          let op;
-          if (y < fadeStartY) op = 1;
-          else if (y > fadeEndY) op = 0;
-          else op = (fadeEndY - y) / (fadeEndY - fadeStartY);
-          el.style.opacity = op;
-        }
-      }
-      function schedule() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(update);
-      }
-      window.addEventListener('scroll', schedule, { passive: true });
-      window.addEventListener('resize', schedule);
-      window.visualViewport && window.visualViewport.addEventListener('resize', schedule);
-      window.visualViewport && window.visualViewport.addEventListener('scroll', schedule);
-      mm.addEventListener('change', () => { refreshItems(); schedule(); });
-      // Re-query items when the list, an accordion, or the detail view
-      // changes — contents are populated async and accordions open/close.
-      const mo = new MutationObserver(() => { refreshItems(); schedule(); });
-      document.addEventListener('DOMContentLoaded', () => {
-        const list = document.getElementById('projectsList');
-        const detail = document.getElementById('projectDetailView');
-        if (list) mo.observe(list, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-        if (detail) mo.observe(detail, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-        refreshItems();
-        schedule();
-      });
-    })();
   </script>
   <style>
     *, *::before, *::after {
@@ -2592,6 +2536,10 @@
         padding: 0 !important;
         background: var(--bg) !important;
         border-top: none !important;
+        /* Open accordions / active detail view sit at z:240. Lift the bar
+           above that so its solid bg + fade gradient cover the OPEN button
+           zone even while content is expanded. Still below buttons at z:600. */
+        z-index: 250 !important;
       }
       /* iOS URL-pill shield — a sibling block that dips 150px BELOW bottom:0
          and extends 200px above. On iOS 15+ where position:fixed;bottom:0 pins
