@@ -5,28 +5,27 @@
       "title": "Biography",
       "type": "bio",
       "text": [
-        "My name is Colby I am a Vancouver-based industrial designer with a multidisciplinary background in art, fabrication, and prototyping. I graduated from Emily Carr University in 2024 with a Bachelor of Fine Arts, and since then I have worked with private clients while continuing to develop independent projects and entrepreneurial ventures.",
-        "My practice is centered on the design and development of functional objects, with a particular interest in material processes, mechanical systems, and iterative prototyping. I approach design as both a creative and technical discipline, combining conceptual thinking with a strong understanding of how products are manufactured, tested, and refined. My interests evolved from artistic exploration in painting and sculpture toward designing functional objects. Through experimentation with materials, prototyping, and hands-on making, I developed a strong interest in industrial design and the process of bringing ideas into physical form.",
-        "Over years of hands-on project development, I have built experience across a range of fabrication methods, including CNC machining, 3D printing, woodworking, and welding. This broad technical foundation allows me to move fluidly between idea generation, prototyping, and production-minded problem solving. My work is driven by a commitment to creating objects that are clear in purpose, refined in form, and grounded in functionality.",
-        "An independent design practice working across product, furniture, and spatial objects. Studio Colby Design operates at the boundary between craft and manufacturing — building things that are made well, last long, and carry a clear point of view."
+        "Colby (B.2001) is a Vancouver-based industrial designer with a multidisciplinary background in art, fabrication, and prototyping. He graduated from Emily Carr University in 2024 with a Bachelor of Fine Arts, and since then has worked with private clients while continuing to develop independent projects and entrepreneurial ventures.",
+        "His practice is centered on the design and development of functional objects, with a particular interest in material processes, mechanical systems, and iterative prototyping. He approaches design as both a creative and technical discipline, combining conceptual thinking with a strong understanding of how products are manufactured, tested, and refined. His interests evolved from artistic exploration in painting and sculpture toward designing functional objects. Through experimentation with materials, prototyping, and hands-on making, he developed a strong interest in industrial design and the process of bringing ideas into physical form.",
+        "Over years of hands-on project development, Colby has built experience across a range of fabrication methods, including CNC machining, 3D printing, woodworking, and welding. This broad technical foundation allows him to move fluidly between idea generation, prototyping, and production-minded problem solving. His work is driven by a commitment to creating objects that are clear in purpose, refined in form, and grounded in functionality. He is especially interested in designing products and systems that balance usability, material intelligence, and visual restraint."
       ],
       "images": [
         {
           "src": "IMAGES/ABOUT/IMG_6273.JPG",
-          "x": 72,
+          "x": 71,
           "y": 0,
-          "w": 28,
+          "w": 29,
           "h": 496,
           "aspectW": 371,
           "aspectH": 496
         }
       ],
-      "textWidthPct": 56,
-      "titleFontSize": 14,
+      "textWidthPct": 57,
+      "titleFontSize": 17,
       "titleFontWeight": 500,
       "titleTransform": "none",
       "titleLetterSpacing": 0,
-      "textFontSize": 16,
+      "textFontSize": 19,
       "textFontWeight": 400,
       "textLineHeight": 1.6,
       "textColor": "#E4E4E4"
@@ -36,16 +35,32 @@
       "title": "Contact",
       "type": "contact",
       "lines": [
-        "For contact please reach out to info@Colbyonline.com ",
-        "For more a comprehensive Portfolio please email to receive a PDF",
-        ""
+        "Studio Colby - Vancouver, Canada \n",
+        "For work related inquiries please contact info@colbyonline.com\nAdditional work available on request."
       ],
       "textWidthPct": 53,
-      "titleFontSize": 14,
+      "titleFontSize": 17,
       "titleFontWeight": 500,
       "titleTransform": "none",
       "titleLetterSpacing": 0,
-      "textFontSize": 16,
+      "textFontSize": 17,
+      "textFontWeight": 400,
+      "textLineHeight": 1.5,
+      "textColor": "#E4E4E4"
+    },
+    {
+      "id": "info",
+      "title": "Info",
+      "type": "contact",
+      "lines": [
+        "Website Design and Development: Colby Watton"
+      ],
+      "textWidthPct": 53,
+      "titleFontSize": 17,
+      "titleFontWeight": 500,
+      "titleTransform": "none",
+      "titleLetterSpacing": 0,
+      "textFontSize": 17,
       "textFontWeight": 400,
       "textLineHeight": 1.5,
       "textColor": "#E4E4E4"
