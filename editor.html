@@ -2521,6 +2521,9 @@
       projectFlagsDirty: false,
       aboutCollapsed: {},   // sectionIdx -> true/false
     };
+    // In-editor clipboard for Ctrl+C / Ctrl+V. Array of shallow-cloned item
+    // snapshots. Session-only (not persisted, not part of undo history).
+    let editorClipboard = [];
 
     // ── DOM ───────────────────────────────────────────────
     const $ = (id) => document.getElementById(id);
@@ -6283,6 +6286,44 @@
       function move(ev) {
         const dx = (ev.clientX - startX) / scale;
         const dy = (ev.clientY - startY) / scale;
+        // Alt (Illustrator-style): scale evenly from the item's center. Both
+        // opposite edges move symmetrically. Corner drag ⇒ proportional.
+        // Bypasses the anchor-edge / snap logic for clarity.
+        if (ev.altKey) {
+          const c2 = currentBp();
+          const cx = origX + origW / 2;
+          const cy = origY + origH / 2;
+          // Signed drag projection outward from center along each axis.
+          const dxOut = leftFixed ? dx : -dx;
+          const dyOut = topFixed  ? dy : -dy;
+          let nw2 = origW, nh2 = origH;
+          if (axis === 'x') {
+            nw2 = Math.max(10, origW + 2 * dxOut);
+          } else if (axis === 'y') {
+            nh2 = Math.max(10, origH + 2 * dyOut);
+          } else {
+            // Corner: drive proportional scale by the larger outward projection.
+            const viaX = 2 * dxOut;
+            const viaY = 2 * dyOut * (origW / (origH || 1));
+            const deltaW = Math.abs(viaX) > Math.abs(viaY) ? viaX : viaY;
+            nw2 = Math.max(10, origW + deltaW);
+            nh2 = nw2 * ratio;
+          }
+          let nx2 = cx - nw2 / 2;
+          let ny2 = cy - nh2 / 2;
+          // Keep inside canvas: if either side goes out of bounds, shrink.
+          if (nx2 < 0)              { nw2 = 2 * cx;          nx2 = 0; if (axis === 'xy') { nh2 = nw2 * ratio; ny2 = cy - nh2/2; } }
+          if (ny2 < 0)              { nh2 = 2 * cy;          ny2 = 0; if (axis === 'xy') { nw2 = nh2 / ratio; nx2 = cx - nw2/2; } }
+          if (nx2 + nw2 > c2.w)     { nw2 = 2 * (c2.w - cx); nx2 = cx - nw2/2; if (axis === 'xy') { nh2 = nw2 * ratio; ny2 = cy - nh2/2; } }
+          if (ny2 + nh2 > c2.h)     { nh2 = 2 * (c2.h - cy); ny2 = cy - nh2/2; if (axis === 'xy') { nw2 = nh2 / ratio; nx2 = cx - nw2/2; } }
+          item.x = Math.round(nx2); item.y = Math.round(ny2);
+          item.w = Math.round(nw2); item.h = Math.round(nh2);
+          if (item.wPct != null) item.wPct = Math.round(item.w / c2.w * 100);
+          clampItem(item, c2);
+          drawSizeMatchIndicators([]);
+          renderItem(item); updateInspector();
+          return;
+        }
         // Ratio-lock default applies to any corner (xy) drag. Shift inverts:
         // corner → free, edge → locked ratio. This is the "diagonal snap"
         // behavior — the dragged corner stays on the line from the anchor
@@ -7675,6 +7716,32 @@
       }
       else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSelected(); }
       else if (cmd && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); duplicateSelected(); }
+      else if (cmd && (e.key === 'c' || e.key === 'C') && state.selection.size) {
+        // Copy selected items to the in-editor clipboard. Shallow-cloned
+        // snapshots only — primitive fields on items — so later edits to
+        // the originals don't mutate the clipboard.
+        e.preventDefault();
+        editorClipboard = Array.from(state.selection)
+          .map(id => findItem(id))
+          .filter(Boolean)
+          .map(it => ({ ...it }));
+      }
+      else if (cmd && (e.key === 'v' || e.key === 'V') && editorClipboard.length) {
+        // Paste the clipboard as new items: fresh ids, +20/+20 offset, top z.
+        e.preventDefault();
+        pushHistory();
+        const newIds = [];
+        editorClipboard.forEach(orig => {
+          const copy = { ...orig, id: uid(), x: orig.x + 20, y: orig.y + 20, z: ++state.zCounter };
+          currentItems().push(copy);
+          renderItem(copy);
+          newIds.push(copy.id);
+        });
+        state.selection = new Set(newIds);
+        refreshSelectionUI();
+        renderTabs();
+        setDirty(true);
+      }
       else if (cmd && (e.key === 'a' || e.key === 'A')) {
         e.preventDefault();
         state.selection = new Set(currentItems().map(i => i.id));
