@@ -12,7 +12,7 @@
       "images": [
         {
           "src": "IMAGES/ABOUT/IMG_6273.JPG",
-          "x": 71,
+          "x": 66,
           "y": 0,
           "w": 29,
           "h": 496,
@@ -21,7 +21,7 @@
         }
       ],
       "textWidthPct": 57,
-      "titleFontSize": 17,
+      "titleFontSize": 14,
       "titleFontWeight": 500,
       "titleTransform": "none",
       "titleLetterSpacing": 0,
@@ -36,10 +36,10 @@
       "type": "contact",
       "lines": [
         "Studio Colby - Vancouver, Canada \n",
-        "For work related inquiries please contact info@colbyonline.com\nAdditional work available on request."
+        "For work related inquiries please contact info@colbyonline.com\n\nAdditional work available on request."
       ],
       "textWidthPct": 53,
-      "titleFontSize": 17,
+      "titleFontSize": 14,
       "titleFontWeight": 500,
       "titleTransform": "none",
       "titleLetterSpacing": 0,
@@ -56,7 +56,7 @@
         "Website Design and Development: Colby Watton"
       ],
       "textWidthPct": 53,
-      "titleFontSize": 17,
+      "titleFontSize": 14,
       "titleFontWeight": 500,
       "titleTransform": "none",
       "titleLetterSpacing": 0,
