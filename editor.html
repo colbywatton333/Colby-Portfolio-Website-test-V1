@@ -3670,14 +3670,14 @@
         const textItems = bp.items.filter(it => it.type === 'text');
         const imageItems = bp.items.filter(it => it.type === 'image');
 
-        // Last-chance tagging: an image dragged onto the canvas before
-        // about.json was loaded (or via a code path that bypassed
-        // autoTagAboutItem) would otherwise be silently dropped here. Tag
-        // any orphans by Y-position so their drag positions persist.
+        // Last-chance tagging: any untagged canvas item (image OR text) added
+        // in the editor before it was bound to a section is tagged here by
+        // Y-position. Previously only images were tagged, so a freshly-added
+        // text box never synced back to about.json and never appeared live.
         const oldBp = state.activeBp;
         state.activeBp = bp.id;
         let untaggedCount = 0;
-        imageItems.forEach(it => {
+        [...imageItems, ...textItems].forEach(it => {
           if (it._aboutSectionIdx == null) {
             untaggedCount++;
             autoTagAboutItem(it);
@@ -3685,7 +3685,7 @@
         });
         state.activeBp = oldBp;
         if (untaggedCount > 0) {
-          console.debug('[about-save] auto-tagged ' + untaggedCount + ' orphan image(s)');
+          console.debug('[about-save] auto-tagged ' + untaggedCount + ' orphan item(s)');
         }
 
         // Rebuild each section from tagged canvas items
