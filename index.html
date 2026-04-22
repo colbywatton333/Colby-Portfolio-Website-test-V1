@@ -701,10 +701,6 @@
 
     #bottomBar button:hover { opacity: 0.8; }
 
-    /* iOS URL-pill shield — hidden by default, enabled only on mobile
-       projects view by the @media (max-width: 768px) rule below. */
-    #iosBottomShield { display: none; }
-
     /* Fade gradient above bottom bar — ends above the buttons. Scoped to
        the projects view only; on About / other static pages the fade just
        dims the bottom of the copy instead of doing anything useful. */
@@ -2535,11 +2531,10 @@
            With viewport-fit=cover on <meta viewport>, env() now reports the
            real safe-area value on iOS and the bar extends through the
            home-indicator / bottom URL-bar zone instead of leaving a gap. */
-        height: 50vh !important;
+        height: calc(78px + env(safe-area-inset-bottom, 0px) + var(--vv-bottom, 0px)) !important;
         padding: 0 !important;
-        background: lime !important;
+        background: var(--bg) !important;
         border-top: none !important;
-        transform: translateY(120px) !important;
       }
       /* iOS URL-pill shield — a sibling block that dips 150px BELOW bottom:0
          and extends 200px above. On iOS 15+ where position:fixed;bottom:0 pins
@@ -2548,9 +2543,6 @@
          area show at full brightness under the pill. This shield covers that
          zone with var(--bg) opaque backdrop. Z-index below the real bar so
          it doesn't intercept buttons. */
-      body.view-projects #iosBottomShield {
-        display: none;
-      }
       header nav, header #categoryBar, header button {
         pointer-events: auto;
       }
@@ -3398,9 +3390,6 @@
       </div>
     </div>
   </div>
-
-  <!-- iOS bottom URL-pill shield (CSS controls visibility) -->
-  <div id="iosBottomShield" aria-hidden="true"></div>
 
   <!-- BOTTOM BAR -->
   <div id="bottomBar">
