@@ -2470,9 +2470,10 @@
       /* Nav — move ARCHIVE next to ABOUT on left, search becomes icon */
       header {
         pointer-events: none;
-        /* Raise above #bottomBar (z:230) so fixed-position children
-           (eye + search icons) render above the fade mask. */
-        z-index: 260 !important;
+        /* Raise above #bottomBar (now z:500 on mobile) so fixed-position
+           children (eye + search icons, at their own z:600) render above
+           the solid bar band. */
+        z-index: 700 !important;
       }
       /* Top fade — soft gradient that dims projects scrolling up behind
          the nav + Category / Relevance / Year row. Scoped to the projects
