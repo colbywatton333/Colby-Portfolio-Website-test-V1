@@ -1692,6 +1692,8 @@
 
     #galleryCursor {
       position: fixed;
+      left: var(--cursor-x, -100px);
+      top: var(--cursor-y, -100px);
       width: 68px;
       height: 68px;
       background-color: transparent;
@@ -5654,18 +5656,18 @@
     function flushCursor() {
       cursorPending = false;
       const z = cachedZoom;
-      const lx = pendingCX / z;
-      const ly = pendingCY / z;
+      // Position via CSS custom props on left/top — avoids zoom/rect issues
+      // that came with translate-based positioning under html{zoom:0.8}.
+      // clientX/Y are viewport pixels; divide by zoom to land in CSS pixel
+      // space that fixed-positioning consumes.
+      galleryCursor.style.setProperty('--cursor-x', (pendingCX / z) + 'px');
+      galleryCursor.style.setProperty('--cursor-y', (pendingCY / z) + 'px');
       const blur = Math.min(3, pendingSpeed * 0.08);
-      // Single transform write covers position + scale; browser can
-      // composite on the GPU without re-laying-out siblings.
       if (!galleryCursor.classList.contains('rippling')) {
         const scale = 1 + Math.min(0.15, pendingSpeed * 0.003);
-        galleryCursor.style.transform =
-          `translate(${lx}px, ${ly}px) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+        galleryCursor.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
       } else {
-        galleryCursor.style.transform =
-          `translate(${lx}px, ${ly}px) translate(-50%, -50%)`;
+        galleryCursor.style.transform = 'translate(-50%, -50%)';
       }
       galleryCursor.style.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : '';
     }
