@@ -21,11 +21,18 @@ temporary screenshots/
 shot-*.mjs
 test-*.mjs
 test-*.js
+probe-*.mjs
+check-*.mjs
 inject-archive-dots.mjs
 get-dims.ps1
 crop-*.ps1
 screenshot.mjs
 serve.mjs.bak
+
+# Source frames for the vinyl animation (140 MB of PNGs — not needed at
+# runtime; MUSIC-ASSETS/vinyl-frames/ is re-encoded from these by
+# build-vinyl-frames.mjs)
+VINYL RECORD 1/
 
 # Large reference / capture artifacts
 Products _ Bjarke Ingels Group*.mp4

@@ -1672,7 +1672,7 @@
             "type": "image",
             "src": "IMAGES/GLYCERIN-MASK/IMG_4205.jpg",
             "x": 470,
-            "y": 62,
+            "y": 565,
             "w": 500,
             "h": 470,
             "rot": 0,
@@ -1684,7 +1684,7 @@
             "type": "image",
             "src": "IMAGES/GLYCERIN-MASK/IMG_4420.jpg",
             "x": 470,
-            "y": 532,
+            "y": 1035,
             "w": 500,
             "h": 881,
             "rot": 0,
@@ -1696,46 +1696,18 @@
               "b": 0,
               "l": 0
             }
-          }
-        ]
-      },
-      {
-        "id": "bp-tablet",
-        "label": "Tablet",
-        "minWidth": 640,
-        "w": 1024,
-        "h": 2623,
-        "bg": "#0d0d0d",
-        "bgTransparent": false,
-        "padPct": 4,
-        "guides": {
-          "x": [],
-          "y": []
-        },
-        "items": [
-          {
-            "id": "is6yf84c",
-            "type": "image",
-            "src": "IMAGES/GLYCERIN-MASK/IMG_4205.jpg",
-            "x": 41,
-            "y": 41,
-            "w": 942,
-            "h": 886,
-            "rot": 0,
-            "z": 3,
-            "wPct": 100
           },
           {
-            "id": "ijgw9sh4",
+            "id": "i1n9noss",
             "type": "image",
-            "src": "IMAGES/GLYCERIN-MASK/IMG_4420.jpg",
-            "x": 41,
-            "y": 943,
-            "w": 942,
-            "h": 1660,
+            "src": "IMAGES/GLYCERIN-MASK/ICON_-_SMOKE_GOGGLES.svg",
+            "x": 296,
+            "y": 73,
+            "w": 848,
+            "h": 432,
             "rot": 0,
-            "z": 6,
-            "wPct": 100
+            "z": 8,
+            "wPct": 59
           }
         ]
       },
@@ -1758,7 +1730,7 @@
             "type": "image",
             "src": "IMAGES/GLYCERIN-MASK/IMG_4205.jpg",
             "x": 20,
-            "y": 20,
+            "y": 316,
             "w": 350,
             "h": 329,
             "rot": 0,
@@ -1770,11 +1742,23 @@
             "type": "image",
             "src": "IMAGES/GLYCERIN-MASK/IMG_4420.jpg",
             "x": 20,
-            "y": 365,
+            "y": 737,
             "w": 350,
             "h": 617,
             "rot": 0,
             "z": 7,
+            "wPct": 100
+          },
+          {
+            "id": "iaz0lbv2",
+            "type": "image",
+            "src": "IMAGES/GLYCERIN-MASK/ICON_-_SMOKE_GOGGLES.svg",
+            "x": 20,
+            "y": 68,
+            "w": 350,
+            "h": 159,
+            "rot": 0,
+            "z": 10,
             "wPct": 100
           }
         ]
@@ -2692,5 +2676,803 @@
         "items": []
       }
     ]
-  }
+  },
+  "__snapshots__:zzz-test-deleteme-1776878404405": [
+    {
+      "name": "TEST-1776878413855",
+      "ts": 1776878413896,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "TestLabel",
+            "minWidth": 1024,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "i7w16tf5",
+                "type": "spacer",
+                "x": 455,
+                "y": 770,
+                "w": 400,
+                "h": 60,
+                "rot": 0,
+                "z": 3
+              },
+              {
+                "id": "i47riljb",
+                "type": "spacer",
+                "x": 455,
+                "y": 790,
+                "w": 400,
+                "h": 60,
+                "rot": 0,
+                "z": 4
+              },
+              {
+                "id": "iue1qfh2",
+                "type": "text",
+                "x": 460,
+                "y": 740,
+                "w": 324,
+                "h": 75,
+                "rot": 0,
+                "z": 6,
+                "text": "Text",
+                "fontSize": 20,
+                "fontWeight": 500,
+                "align": "left",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0,
+                "transform": "none",
+                "color": "#ffffff",
+                "wPct": 36
+              },
+              {
+                "id": "i9fu5j6m",
+                "type": "text",
+                "x": 460,
+                "y": 740,
+                "w": 324,
+                "h": 75,
+                "rot": 0,
+                "z": 7,
+                "text": "Text",
+                "fontSize": 20,
+                "fontWeight": 500,
+                "align": "left",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0,
+                "transform": "none",
+                "color": "#ffffff",
+                "wPct": 36
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776878590714": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776878590714",
+      "ts": 1776878613904,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "TestLabel",
+            "minWidth": 1024,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "ifttre98",
+                "type": "text",
+                "x": 460,
+                "y": 740,
+                "w": 324,
+                "h": 75,
+                "rot": 0,
+                "z": 3,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 36
+              },
+              {
+                "id": "icuqkfbg",
+                "type": "spacer",
+                "x": 455,
+                "y": 770,
+                "w": 400,
+                "h": 60,
+                "rot": 0,
+                "z": 4
+              },
+              {
+                "id": "i0j2ke8k",
+                "type": "spacer",
+                "x": 455,
+                "y": 810,
+                "w": 400,
+                "h": 60,
+                "rot": 0,
+                "z": 6
+              },
+              {
+                "id": "itc0pu1m",
+                "type": "text",
+                "x": 460,
+                "y": 740,
+                "w": 324,
+                "h": 75,
+                "rot": 0,
+                "z": 7,
+                "text": "Text",
+                "fontSize": 20,
+                "fontWeight": 500,
+                "align": "left",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0,
+                "transform": "none",
+                "color": "#ffffff",
+                "wPct": 36
+              },
+              {
+                "id": "iwbh7gi0",
+                "type": "text",
+                "x": 45,
+                "y": 234,
+                "w": 900,
+                "h": 125,
+                "rot": 15,
+                "z": 8,
+                "text": "Text",
+                "fontSize": 20,
+                "fontWeight": 500,
+                "align": "left",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0,
+                "transform": "none",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776878807988": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776878807988",
+      "ts": 1776878835264,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "Desktop",
+            "minWidth": 1024,
+            "w": 1440,
+            "h": 2400,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "i9jxhflp",
+                "type": "text",
+                "x": 0,
+                "y": 234,
+                "w": 1440,
+                "h": 200,
+                "rot": 15,
+                "z": 10,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-f7j33c",
+            "label": "TestLabel",
+            "minWidth": 0,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776878933881": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776878933881",
+      "ts": 1776878958887,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "Desktop",
+            "minWidth": 1024,
+            "w": 1440,
+            "h": 2400,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "i7yvovnl",
+                "type": "text",
+                "x": 0,
+                "y": 234,
+                "w": 1440,
+                "h": 200,
+                "rot": 15,
+                "z": 10,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-h4qafa",
+            "label": "TestLabel",
+            "minWidth": 0,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776879061533": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776879061533",
+      "ts": 1776879086666,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "Desktop",
+            "minWidth": 1024,
+            "w": 1440,
+            "h": 2400,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "i1al5243",
+                "type": "text",
+                "x": 0,
+                "y": 234,
+                "w": 1440,
+                "h": 835,
+                "rot": 15,
+                "z": 10,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-f6ugad",
+            "label": "TestLabel",
+            "minWidth": 0,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776879152138": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776879152138",
+      "ts": 1776879177306,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "Desktop",
+            "minWidth": 1024,
+            "w": 1440,
+            "h": 2400,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "i7eqltqw",
+                "type": "text",
+                "x": 0,
+                "y": 234,
+                "w": 1440,
+                "h": 835,
+                "rot": 15,
+                "z": 10,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-8pd7rd",
+            "label": "TestLabel",
+            "minWidth": 0,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776879245985": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776879245985",
+      "ts": 1776879271239,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "Desktop",
+            "minWidth": 1024,
+            "w": 1440,
+            "h": 2400,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "iqt4q7wi",
+                "type": "text",
+                "x": 0,
+                "y": 234,
+                "w": 1440,
+                "h": 835,
+                "rot": 15,
+                "z": 10,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-a1euc0",
+            "label": "TestLabel",
+            "minWidth": 0,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ],
+  "__snapshots__:zzz-test-deleteme-1776879322063": [
+    {
+      "name": "ZZZ-TEST-DELETEME-1776879322063",
+      "ts": 1776879347416,
+      "layout": {
+        "kind": "canvas-v3",
+        "version": 3,
+        "breakpoints": [
+          {
+            "id": "bp-desktop",
+            "label": "Desktop",
+            "minWidth": 1024,
+            "w": 1440,
+            "h": 2400,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": [
+              {
+                "id": "ifa3sjsn",
+                "type": "text",
+                "x": 0,
+                "y": 234,
+                "w": 1440,
+                "h": 835,
+                "rot": 15,
+                "z": 10,
+                "text": "TOOLS PROBE",
+                "fontSize": 42,
+                "fontWeight": 700,
+                "align": "center",
+                "padding": 0,
+                "lineHeight": 1.4,
+                "letterSpacing": 0.05,
+                "transform": "uppercase",
+                "color": "#ffffff",
+                "wPct": 100
+              }
+            ]
+          },
+          {
+            "id": "bp-tablet",
+            "label": "Tablet",
+            "minWidth": 640,
+            "w": 1024,
+            "h": 2000,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-mobile",
+            "label": "Mobile",
+            "minWidth": 0,
+            "w": 390,
+            "h": 1800,
+            "bg": "#0d0d0d",
+            "bgTransparent": false,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          },
+          {
+            "id": "bp-dme0nd",
+            "label": "TestLabel",
+            "minWidth": 0,
+            "w": 900,
+            "h": 700,
+            "bg": "#ffeeaa",
+            "bgTransparent": false,
+            "padPct": 5,
+            "guides": {
+              "x": [],
+              "y": []
+            },
+            "items": []
+          }
+        ]
+      }
+    }
+  ]
 }
