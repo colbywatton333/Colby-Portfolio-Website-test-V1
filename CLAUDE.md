@@ -3,6 +3,15 @@
 ## Always Do First
 - **Invoke the `frontend-design` skill** before writing any frontend code, every session, no exceptions.
 
+## Context Budget (avoid "prompt too long")
+- `index.html` is ~1.3 MB. **Never read it in full.** Use `Grep` to locate what you need, then `Read` with `offset`/`limit` to pull only that range.
+- Do not read these unless the user explicitly asks:
+  - `ARCHIVE INTRO ANIMATION.html`, `FOR INTRO DOT ANIMATION.html`, `record_player_animation_instant.html.html`, `editor.old.html` (large legacy HTML)
+  - `MUSIC-ASSETS/**` (56 MB of Lottie/JSON)
+  - `STAGE ONE VINYL ANIMATION/**`, `STAGE ONE VINYL ANIMATION SVG/**`, `STAGE TWO VINYL ANIMATION/**`
+  - `temporary screenshots/**` (only read a specific PNG when doing a comparison pass)
+- Prefer `Grep` over `Read` for discovery. Only `Read` a file once you know roughly which lines you need.
+
 ## Reference Images
 - If a reference image is provided: match layout, spacing, typography, and color exactly. Swap in placeholder content (images via `https://placehold.co/`, generic copy). Do not improve or add to the design.
 - If no reference image: design from scratch with high craft (see guardrails below).

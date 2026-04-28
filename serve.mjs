@@ -118,7 +118,7 @@ const server = http.createServer((req, res) => {
         const data = JSON.parse(fs.readFileSync(projPath, 'utf8'));
         const proj = data.projects.find(p => p.id === projId);
         if (!proj) throw new Error('Project not found');
-        ['title', 'year', 'categories', 'description', 'materials', 'process'].forEach(k => {
+        ['title', 'year', 'categories', 'client', 'sector', 'description', 'materials', 'process'].forEach(k => {
           if (updates[k] !== undefined) proj[k] = updates[k];
         });
         fs.writeFileSync(projPath, JSON.stringify(data, null, 2));

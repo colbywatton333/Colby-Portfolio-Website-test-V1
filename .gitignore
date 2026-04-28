@@ -23,11 +23,33 @@ test-*.mjs
 test-*.js
 probe-*.mjs
 check-*.mjs
+debug-*.mjs
+debug-*.html
+tmp-*.mjs
+pairgrid.mjs
+interpolate-frame.mjs
+screenshot-player.mjs
+screenshot-svg.mjs
+project-info-block.html
 inject-archive-dots.mjs
 get-dims.ps1
 crop-*.ps1
 screenshot.mjs
 serve.mjs.bak
+
+# Working notes / backups
+VINYL-STAGE1-ANCHOR.md
+*.bak-*
+PROJECT PAGE INFO FORMAT.png
+PROJECT PAGE INFO FORMAT.svg
+
+# Vinyl animation source assets (large; build inputs, not deployed)
+STAGE ONE VINYL ANIMATION/
+STAGE ONE VINYL ANIMATION SVG/
+STAGE TWO VINYL ANIMATION/
+
+# Stray downloads
+73036.jpg
 
 # Source frames for the vinyl animation (140 MB of PNGs — not needed at
 # runtime; MUSIC-ASSETS/vinyl-frames/ is re-encoded from these by

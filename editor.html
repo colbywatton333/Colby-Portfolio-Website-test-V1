@@ -12,21 +12,6 @@
     } catch {}
   </script>
   <style>
-    @font-face {
-      font-family: 'Schroffer Mono';
-      src: url('fonts/WOFF2/SchrofferMono-Regular.woff2') format('woff2'),
-           url('fonts/WOFF/SchrofferMono-Regular.woff') format('woff');
-      font-weight: 600;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Schroffer Mono';
-      src: url('fonts/WOFF2/SchrofferMono-Bold.woff2') format('woff2'),
-           url('fonts/WOFF/SchrofferMono-Bold.woff') format('woff');
-      font-weight: 700;
-      font-display: swap;
-    }
-
     *, *::before, *::after {
       margin: 0;
       padding: 0;
@@ -104,7 +89,7 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 0; }
 
-    .mono { font-family: 'Schroffer Mono', ui-monospace, Menlo, Consolas, monospace; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
 
     /* ── THEME TOGGLE (eye SVG, matches site) ─────────── */
     #themeBtn { padding: 0 8px; }
@@ -127,7 +112,12 @@
       height: 68px;
       flex-shrink: 0;
       z-index: 5;
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex-wrap: nowrap;
     }
+    #topbar::-webkit-scrollbar { height: 6px; }
+    #topbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     .logo {
       font-weight: 700;
       font-size: 14px;
@@ -421,32 +411,45 @@
     .asset-list {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 12px 20px;
+      padding: 16px 16px 24px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 18px;
       align-content: start;
     }
     .asset-thumb {
       position: relative;
-      aspect-ratio: 1;
       background: transparent;
       border: 1px solid var(--thumb-border);
       border-radius: 0;
       overflow: hidden;
       cursor: grab;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       transition: border-color 0.15s, opacity 0.15s;
+    }
+    .asset-thumb::before {
+      content: '';
+      display: block;
+      padding-top: 100%;
     }
     .asset-thumb:hover { border-color: var(--text-mid); }
     .asset-thumb:active { cursor: grabbing; opacity: 0.75; }
     .asset-thumb img,
     .asset-thumb video {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      pointer-events: none;
+    }
+    .asset-thumb > svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      color: var(--text);
       pointer-events: none;
     }
     .asset-thumb .badge {
@@ -674,6 +677,34 @@
       background: var(--text);
       width: 3px;
     }
+    /* Bottom-edge handle: drag to extend canvas height */
+    .height-handle {
+      position: absolute;
+      left: 50%;
+      bottom: -18px;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 36px;
+      cursor: ns-resize;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .height-handle::before {
+      content: '';
+      height: 2px;
+      width: 60px;
+      max-width: 20vw;
+      background: var(--border);
+      border-radius: 0;
+      transition: background 0.15s, height 0.15s;
+    }
+    .height-handle:hover::before,
+    .height-handle.dragging::before {
+      background: var(--text);
+      height: 3px;
+    }
     .responsive-readout {
       position: fixed;
       background: var(--bg);
@@ -745,6 +776,10 @@
       word-break: break-word;
       overflow: hidden;
       pointer-events: none;
+      /* Site-wide font is Arial — keep canvas text the same so the editor
+         matches the published page. (Arial has no real Medium, so a 500
+         request renders as Regular; that's intentional.) */
+      font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
     }
     .item[data-kind="text"] { outline: 1px dashed rgba(220,220,220,0.18); }
     html[data-theme="light"] .item[data-kind="text"] { outline-color: rgba(0,0,0,0.15); }
@@ -759,6 +794,315 @@
       -webkit-user-select: text;
     }
     .item[data-kind="text"].editing { cursor: text; }
+
+    /* ── IMAGE GRID ──────────────────────────────────────
+       A container that lays out cells in an R×C grid. Each cell centers
+       its image at `scale` of the cell size (scale=1 fills, scale<1 adds
+       symmetric padding). `object-fit: contain` preserves varied aspect
+       ratios. Empty cells show a dashed placeholder that accepts drops. */
+    .item[data-kind="imagegrid"] { outline: 1px dashed rgba(220,220,220,0.14); }
+    html[data-theme="light"] .item[data-kind="imagegrid"] { outline-color: rgba(0,0,0,0.12); }
+    .imgrid {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .imgrid__cell {
+      position: absolute;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .imgrid__inner {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* Crop is stored on cell.crop = { x, y, w, h } as fractions (0–1) of the
+       source image. We render by sizing the image so the crop window equals
+       the inner box, then translating so the crop's top-left aligns with
+       the inner's top-left. CSS variables --cx/--cy/--cw/--ch are set
+       inline per cell. */
+    .imgrid__inner.is-cropped {
+      align-items: stretch;
+      justify-content: stretch;
+    }
+    .imgrid__inner.is-cropped img,
+    .imgrid__inner.is-cropped video {
+      position: absolute;
+      width: calc(100% / var(--cw, 1));
+      height: calc(100% / var(--ch, 1));
+      left: calc(-100% * var(--cx, 0) / var(--cw, 1));
+      top: calc(-100% * var(--cy, 0) / var(--ch, 1));
+      max-width: none;
+      max-height: none;
+      object-fit: cover;
+    }
+    /* Crop button — small badge in the top-right of any cell with media.
+       Always visible at low opacity so it's discoverable; opens a modal
+       crop editor on click. */
+    .imgrid__cropbtn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      z-index: 4;
+      background: rgba(0,0,0,0.72);
+      color: #fff;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      cursor: pointer;
+      opacity: 0.55;
+      transition: opacity 120ms ease, background 120ms ease;
+      user-select: none;
+    }
+    .imgrid__cell:hover .imgrid__cropbtn { opacity: 1; }
+    .imgrid__cropbtn:hover { background: rgba(0,0,0,0.95); opacity: 1; }
+
+    /* Modal crop editor — a fullscreen overlay that gives the image room
+       to be edited at a usable size. */
+    .crop-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      background: rgba(0,0,0,0.86);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    .crop-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .crop-modal__actions { display: flex; gap: 6px; }
+    .crop-modal__actions button {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .crop-modal__actions button:hover { background: rgba(255,255,255,0.16); }
+    .crop-modal__actions button.primary { background: #4ea1ff; border-color: #4ea1ff; color: #000; }
+    .crop-modal__actions button.primary:hover { background: #6cb4ff; }
+    .crop-modal__stage {
+      flex: 1 1 auto;
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    .crop-modal__img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      max-width: calc(100% - 64px);
+      max-height: calc(100% - 64px);
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+    .crop-modal__mask {
+      position: absolute;
+      pointer-events: none;
+      box-shadow: 0 0 0 99999px rgba(0,0,0,0.55);
+    }
+    .crop-modal__rect {
+      position: absolute;
+      border: 1px solid #fff;
+      box-sizing: border-box;
+      cursor: move;
+    }
+    .crop-modal__handle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border: 1px solid #000;
+      box-sizing: border-box;
+    }
+    .crop-modal__handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+    .crop-modal__handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+    .crop-modal__handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .crop-modal__handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+    /* Caption below each cell's media. Empty captions collapse to zero
+       height in the project view but always show a hint placeholder in the
+       editor so users know they can click to type. */
+    .imgrid__caption {
+      flex: 0 0 auto;
+      width: var(--cap-w, 100%);
+      margin-left: var(--cap-x, 0);
+      font-size: 17px;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: var(--text, #E4E4E4);
+      padding: 6px 2px 0;
+      outline: none;
+      cursor: text;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 20px;
+    }
+    .imgrid__divider {
+      position: absolute;
+      width: 10px;
+      transform: translateX(-50%);
+      cursor: ew-resize;
+      z-index: 5;
+      background: transparent;
+      transition: background 120ms ease;
+    }
+    .imgrid__divider::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      transform: translateX(-50%);
+      background: rgba(120, 180, 255, 0);
+      transition: background 120ms ease;
+    }
+    .imgrid__divider:hover::before,
+    .imgrid__divider.is-dragging::before {
+      background: rgba(120, 180, 255, 0.85);
+    }
+    .imgrid__divider:hover,
+    .imgrid__divider.is-dragging { background: rgba(120, 180, 255, 0.18); }
+    .imgrid__caption:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-mid, #888);
+      opacity: 0.35;
+    }
+    .imgrid__caption:focus { color: var(--text, #E4E4E4); }
+    /* Editable caption attached to any single image/video/SVG item.
+       Sits absolutely below the item's box (top:100%) so it doesn't
+       shrink the media. Padded so text never touches the image edge or
+       neighbouring items. Mirrored in project.html as .c-item-caption. */
+    .item-caption {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 10px;
+      padding: 8px 10px;
+      font-size: 17px;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: var(--text, #E4E4E4);
+      outline: none;
+      cursor: text;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 20px;
+      box-sizing: border-box;
+    }
+    .item-caption:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-mid, #888);
+      opacity: 0.35;
+    }
+    .item-caption:focus { color: var(--text, #E4E4E4); }
+    .imgrid__inner img,
+    .imgrid__inner video,
+    .imgrid__inner svg {
+      max-width: 100%;
+      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .imgrid__placeholder {
+      width: 100%;
+      height: 100%;
+      border: 1px dashed rgba(220,220,220,0.25);
+      box-sizing: border-box;
+    }
+    html[data-theme="light"] .imgrid__placeholder { border-color: rgba(0,0,0,0.18); }
+    .imgrid__cell.dragover .imgrid__placeholder,
+    .imgrid__cell.dragover { outline: 2px solid var(--accent, #4ea1ff); outline-offset: -2px; }
+
+    /* ── INFO BLOCK (project-detail component) ─────────────
+       Mirrored in project.html. Each field is absolutely positioned in
+       percentages of the item's width/height so users can drag them
+       independently. A "Reset Layout" button restores defaults. */
+    .item[data-kind="infoblock"] { outline: 1px dashed rgba(220,220,220,0.18); }
+    html[data-theme="light"] .item[data-kind="infoblock"] { outline-color: rgba(0,0,0,0.15); }
+    .ib {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      font-family: inherit;
+      color: var(--text, #E4E4E4);
+    }
+    .ib__field { position: absolute; box-sizing: border-box; cursor: move; }
+    .ib__label,
+    .ib__field--title .ib__value,
+    .ib__field--year .ib__value {
+      font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    }
+    .ib__label {
+      color: var(--text-mid, #888);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      margin-right: 14px;
+      cursor: move;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .ib__value { color: var(--text, #E4E4E4); font-size: 13px; line-height: 1.55; }
+    .ib__field--title .ib__value { font-size: 22px; letter-spacing: 0.01em; font-weight: 500; }
+    .ib__field--year .ib__value { font-size: 14px; display: block; text-align: right; font-weight: 500; }
+    .ib__field--description .ib__value { display: block; line-height: 1.7; font-size: 12.5px; }
+    .ib__field--description .ib__value p { margin: 0 0 12px; }
+    .ib__field--description .ib__value p:last-child { margin-bottom: 0; }
+
+    /* Editable fields: native text cursor + selection inside otherwise
+       drag-locked canvas items. Focus outline keeps the caret area
+       discoverable without a permanent border. */
+    .item[data-kind="infoblock"] [contenteditable="true"] {
+      cursor: text;
+      user-select: text;
+      -webkit-user-select: text;
+      outline: none;
+      min-width: 1ch;
+    }
+    .item[data-kind="infoblock"] [contenteditable="true"]:focus {
+      outline: 1px solid rgba(255,255,255,0.25);
+      outline-offset: 2px;
+    }
+    html[data-theme="light"] .item[data-kind="infoblock"] [contenteditable="true"]:focus {
+      outline-color: rgba(0,0,0,0.25);
+    }
+    .ib__field.ib-dragging { opacity: 0.85; }
 
     /* Spacer items — visible only as a faint dashed box in the editor */
     .item[data-kind="spacer"] {
@@ -1120,6 +1464,86 @@
       align-items: center;
     }
     .insp-title .count { color: var(--text-mid); font-weight: 600; }
+
+    /* Collapsible inspector sections — title acts as the toggle. Body is
+       every direct child except the title. State persists in localStorage. */
+    .insp-section.collapsible > .insp-title {
+      cursor: pointer;
+      user-select: none;
+      margin-bottom: 0;
+    }
+    .insp-section.collapsible:not(.collapsed) > .insp-title { margin-bottom: 14px; }
+    .insp-section.collapsible > .insp-title::after {
+      content: '⌃';
+      margin-left: 8px;
+      font-size: 11px;
+      color: var(--text-mid);
+      transition: transform 0.18s ease;
+    }
+    .insp-section.collapsible.collapsed > .insp-title::after {
+      transform: rotate(180deg);
+    }
+    .insp-section.collapsible.collapsed > *:not(.insp-title) { display: none !important; }
+
+    /* Generic centered modal — shared by Shortcuts popover. */
+    .ed-modal-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center; justify-content: center;
+    }
+    .ed-modal-backdrop.open { display: flex; }
+    .ed-modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      max-width: 460px;
+      width: 92vw;
+      max-height: 80vh;
+      overflow: auto;
+      padding: 18px 22px 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .ed-modal-title {
+      font-size: 13px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-dim);
+      margin-bottom: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ed-modal-close {
+      background: transparent; border: 0; color: var(--text-mid);
+      font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px;
+    }
+    .ed-modal-close:hover { color: var(--text); }
+
+    /* Add-item palette popover anchored under the topbar `+` button. */
+    .add-palette {
+      position: absolute;
+      z-index: 150;
+      min-width: 240px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+      padding: 6px;
+      display: none;
+    }
+    .add-palette.open { display: block; }
+    .add-palette button {
+      width: 100%;
+      display: flex; align-items: center; gap: 10px;
+      background: transparent; border: 0; color: var(--text);
+      padding: 10px 12px; border-radius: 4px;
+      cursor: pointer; text-align: left;
+      font-size: 13px;
+    }
+    .add-palette button:hover { background: var(--panel-2, rgba(255,255,255,0.06)); }
+    .add-palette button .ap-name { font-weight: 600; }
+    .add-palette button .ap-desc { color: var(--text-mid); font-size: 11px; margin-top: 2px; display: block; }
+    .add-palette button .ap-key {
+      margin-left: auto; color: var(--text-mid);
+      font-family: ui-monospace, monospace; font-size: 11px;
+    }
     .field-row {
       display: flex;
       align-items: center;
@@ -1618,6 +2042,24 @@
     .about-drop {
       border-bottom: 1px solid var(--border);
     }
+    .ib-sec-row {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 8px;
+      background: var(--panel-2, rgba(255,255,255,0.03));
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .ib-sec-row .ib-sec-label { flex: 1; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ib-sec-row .ib-sec-btn {
+      width: 22px; height: 22px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid var(--border); color: var(--text-mid);
+      border-radius: 3px; cursor: pointer; font-size: 13px; line-height: 1;
+      padding: 0;
+    }
+    .ib-sec-row .ib-sec-btn:hover { color: var(--text); border-color: var(--text-mid); }
+    .ib-sec-row .ib-sec-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ib-sec-row .ib-sec-btn.danger:hover { color: var(--danger, #ff6b6b); border-color: var(--danger, #ff6b6b); }
     .about-drop-row {
       width: 100%;
       display: flex;
@@ -2016,7 +2458,8 @@
       justify-content: center;
       overflow: hidden;
     }
-    .hp-asset-thumb svg { max-width: 86%; max-height: 86%; }
+    .hp-asset-thumb { color: var(--text); }
+    .hp-asset-thumb svg { max-width: 86%; max-height: 86%; color: inherit; }
     .hp-asset-name {
       flex: 1;
       overflow: hidden;
@@ -2060,13 +2503,29 @@
 
     <div class="divider"></div>
 
-    <button class="btn" id="addMediaBtn">+ Media</button>
-    <button class="btn ghost" id="addTextBtn" title="Add a text box">+ Text</button>
-    <button class="btn ghost" id="addSpacerBtn" title="Add a spacer (empty padding block)">+ Spacer</button>
+    <div style="position:relative;">
+      <button class="btn" id="addPaletteBtn" title="Add an item to the canvas">+ Add</button>
+      <div class="add-palette" id="addPalette" role="menu">
+        <button type="button" data-add="media"><span><span class="ap-name">Media</span><span class="ap-desc">Image, video or SVG from your assets</span></span><span class="ap-key">M</span></button>
+        <button type="button" data-add="info"><span><span class="ap-name">Info Block</span><span class="ap-desc">Title / Year / Client / Materials / Sector / Description</span></span><span class="ap-key">I</span></button>
+        <button type="button" data-add="grid"><span><span class="ap-name">Image Grid</span><span class="ap-desc">R×C grid of image cells with adjustable scale</span></span><span class="ap-key">G</span></button>
+        <button type="button" data-add="text"><span><span class="ap-name">Text Box</span><span class="ap-desc">Editable text item with full styling</span></span><span class="ap-key">T</span></button>
+        <button type="button" data-add="spacer"><span><span class="ap-name">Spacer</span><span class="ap-desc">Invisible padding block</span></span></button>
+      </div>
+    </div>
+    <!-- Hidden legacy add buttons kept so existing event handlers (which
+         reference these IDs) still bind. The +Add palette above forwards
+         clicks to them via .click(). -->
+    <button id="addMediaBtn" style="display:none;"></button>
+    <button id="addInfoBlockBtn" style="display:none;"></button>
+    <button id="addImageGridBtn" style="display:none;"></button>
+    <button id="addTextBtn" style="display:none;"></button>
+    <button id="addSpacerBtn" style="display:none;"></button>
     <button class="btn ghost" id="duplicateBtn" title="Duplicate (Ctrl+D)">Duplicate</button>
     <button class="btn ghost" id="deleteBtn" title="Delete (Del)">Delete</button>
     <button class="btn ghost" id="bringFrontBtn" title="Bring to front">Front</button>
     <button class="btn ghost" id="sendBackBtn" title="Send to back">Back</button>
+    <button class="btn ghost" id="centerAllBtn" title="Snap every visible item to the canvas centerline (each item independently; vertical positions are preserved)">Center All</button>
 
     <div class="divider"></div>
 
@@ -2079,6 +2538,7 @@
     <button class="btn ghost" id="importBtn" title="Import JSON">Import</button>
     <button class="btn ghost" id="saveAsBtn" title="Save a named version">Save as…</button>
     <button class="btn primary" id="saveBtn" title="Save (Ctrl+S)">Save</button>
+    <button class="btn ghost icon" id="shortcutsBtn" title="Keyboard shortcuts" style="margin-left:6px;">?</button>
   </div>
 
   <div id="tabbar">
@@ -2104,20 +2564,14 @@
                     color:var(--text);padding:5px 8px;font-size:14px;font-weight:700;
                     border-radius:4px;font-family:ui-monospace,monospace;">
       <span class="sep">|</span>
-      <label class="toggle" id="padToggle">
-        <input type="checkbox">
-        <span class="toggle-box"></span>
-        <span>Pad</span>
-      </label>
-      <button class="btn ghost" id="padMinus" title="Decrease padding" style="padding:0 6px;">−</button>
-      <input type="number" id="padValue" min="0" max="50" step="0.5" title="Side padding %"
-             style="width:64px;background:var(--panel-2);border:1px solid var(--border);
-                    color:var(--text);padding:4px 8px;font-size:13px;font-weight:700;
-                    text-align:center;">
-      <button class="btn ghost" id="padPlus" title="Increase padding" style="padding:0 6px;">+</button>
-      <span id="padPxLabel" style="color:var(--text-dim);font-size:11px;font-weight:600;min-width:40px;"></span>
-      <span class="sep">|</span>
       <span id="autosaveIndicator">Autosave: —</span>
+      <!-- Hidden legacy pad controls (their event handlers still bind by id).
+           Side-padding now lives only in the Canvas inspector section. -->
+      <label id="padToggle" style="display:none;"><input type="checkbox"></label>
+      <input type="number" id="padValue" min="0" max="50" step="0.5" style="display:none;">
+      <button id="padMinus" style="display:none;"></button>
+      <button id="padPlus" style="display:none;"></button>
+      <span id="padPxLabel" style="display:none;"></span>
     </div>
   </div>
 
@@ -2127,6 +2581,7 @@
         <div class="panel-tabs">
           <button class="panel-tab active" data-tab="assets" id="tabAssets">Assets <span class="count" id="assetCount">0</span></button>
           <button class="panel-tab" data-tab="layers" id="tabLayers">Layers <span class="count" id="layersCount">0</span></button>
+          <button class="panel-tab" data-tab="grid" id="tabGrid">Grid</button>
         </div>
       </div>
       <div id="assetsPane" class="panel-pane active">
@@ -2139,6 +2594,37 @@
       <div id="layersPane" class="panel-pane">
         <div class="layers-list" id="layersList"></div>
       </div>
+      <div id="gridPane" class="panel-pane" style="padding:12px 14px;">
+        <div style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">New Image Grid</div>
+        <div class="field-row" style="margin-bottom:8px;">
+          <label>Rows</label>
+          <input type="number" id="gridPresetRows" min="1" max="20" step="1" value="3" style="width:60px;">
+        </div>
+        <div class="field-row" style="margin-bottom:8px;">
+          <label>Cols</label>
+          <input type="number" id="gridPresetCols" min="1" max="20" step="1" value="3" style="width:60px;">
+        </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <label>Scale</label>
+          <input type="range" id="gridPresetScale" min="0.1" max="1" step="0.01" value="0.9" style="flex:1;">
+          <span id="gridPresetScaleOut" style="min-width:42px;text-align:right;color:var(--text-mid);font-size:13px;">90%</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn ghost" id="gridPresetAddBtn" style="flex:1;justify-content:center;">Add to Canvas</button>
+        </div>
+        <div class="hp-hint" style="margin-top:12px;">
+          Set rows × cols and image scale, then "Add to Canvas". Once on the canvas, drag assets from the Assets tab onto any cell. All settings remain editable in the right-side Image Grid panel.
+        </div>
+        <div style="margin-top:18px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">Quick Presets</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button class="btn ghost gridPreset" data-r="2" data-c="2">2×2</button>
+          <button class="btn ghost gridPreset" data-r="3" data-c="3">3×3</button>
+          <button class="btn ghost gridPreset" data-r="3" data-c="4">3×4</button>
+          <button class="btn ghost gridPreset" data-r="4" data-c="4">4×4</button>
+          <button class="btn ghost gridPreset" data-r="5" data-c="5">5×5</button>
+          <button class="btn ghost gridPreset" data-r="5" data-c="8">5×8</button>
+        </div>
+      </div>
     </aside>
     <div class="panel-splitter" id="splitterLeft"></div>
 
@@ -2150,6 +2636,7 @@
         <div class="canvas-grid-overlay" id="gridOverlay"></div>
         <div class="canvas-empty" id="canvasEmpty">Drop media or drag from assets panel</div>
         <div class="responsive-handle" id="responsiveHandle" title="Drag to preview responsive width"></div>
+        <div class="height-handle" id="heightHandle" title="Drag to extend canvas height"></div>
         <div class="ruler ruler-h" id="rulerH"></div>
         <div class="ruler ruler-v" id="rulerV"></div>
       </div>
@@ -2157,132 +2644,7 @@
     <div class="panel-splitter" id="splitterRight"></div>
 
     <aside id="inspector">
-      <div class="insp-section" id="homepageSection" style="display:none;">
-        <div class="insp-title">Homepage Image</div>
-        <div class="hp-preview" id="hpPreview">
-          <div class="hp-empty" id="hpEmpty">No homepage image</div>
-        </div>
-        <div class="field-row" style="margin-bottom:6px;">
-          <button class="btn ghost" id="hpPickBtn" style="flex:1;justify-content:center;">Pick from assets…</button>
-        </div>
-        <div class="field-row" style="margin-bottom:6px;">
-          <button class="btn ghost" id="hpUploadBtn" style="flex:1;justify-content:center;">Upload SVG</button>
-          <button class="btn ghost" id="hpClearBtn" title="Remove homepage image" style="flex:0 0 auto;">Clear</button>
-        </div>
-        <div class="hp-asset-list" id="hpAssetList"></div>
-        <div class="hp-hint">Only .svg files. Shown on index.html when Open is pressed.</div>
-        <input type="file" id="hpFileInput" accept=".svg,image/svg+xml">
-      </div>
-      <div class="insp-section" id="visibilitySection" style="display:none;">
-        <div class="insp-title">Homepage Visibility</div>
-        <div class="field-row" style="margin-bottom:6px;">
-          <button class="btn ghost" id="visIconOnlyBtn" style="flex:1;justify-content:center;" title="Disable project link but keep SVG visible">Icon Only</button>
-        </div>
-        <div class="field-row" style="margin-bottom:6px;">
-          <button class="btn ghost" id="visHideBtn" style="flex:1;justify-content:center;" title="Disable link and hide SVG; name will be greyed out">Grey Out</button>
-        </div>
-        <div class="field-row" style="margin-bottom:6px;">
-          <button class="btn ghost" id="visRemoveBtn" style="flex:1;justify-content:center;" title="Completely hide this project from the homepage">Hide from Homepage</button>
-        </div>
-        <div class="field-row" style="margin-bottom:0;">
-          <button class="btn ghost" id="visResetBtn" style="flex:1;justify-content:center;" title="Restore default: clickable with SVG">Reset (Active)</button>
-        </div>
-        <div class="hp-hint" id="visHint">Default: project is clickable with SVG.</div>
-      </div>
-      <div class="insp-section" id="aboutContentSection" style="display:none;">
-        <div class="insp-title">
-          <span>About Sections</span>
-          <button class="btn primary" id="aboutSaveBtn" style="height:26px;padding:0 12px;" disabled>Save</button>
-        </div>
-        <div class="hp-hint" id="aboutHint">Edits the About page accordion. Click a section header to expand.</div>
-        <div class="about-accordion" id="aboutAccordion"></div>
-        <button class="btn ghost" id="aboutAddSectionBtn" style="width:100%;justify-content:center;margin-top:8px;">+ Add Section</button>
-        <input type="file" id="aboutImageFileInput" accept="image/*" style="display:none;">
-      </div>
-      <div class="insp-section">
-        <div class="insp-title">
-          <span id="canvasLabel">Breakpoint</span>
-          <span id="bpMinWidth" style="color:var(--text-mid);font-weight:700;"></span>
-        </div>
-        <div class="field-row">
-          <label>Label</label>
-          <input type="text" id="bpLabel" placeholder="Desktop">
-        </div>
-        <div class="field-row">
-          <label>Min W</label>
-          <input type="number" id="bpMinW" min="0" step="10">
-        </div>
-        <div class="field-row">
-          <label>Width</label>
-          <input type="number" id="canvasW" value="1440" min="200" step="10">
-        </div>
-        <div class="field-row">
-          <label>Height</label>
-          <input type="number" id="canvasH" value="2400" min="200" step="10">
-        </div>
-        <div class="field-row">
-          <label>Side pad</label>
-          <input type="number" id="canvasPad" value="10" min="0" max="50" step="0.5" title="Percentage of breakpoint width reserved as left/right padding.">
-          <span style="color:var(--text-dim);font-size:11px;font-weight:700;">%</span>
-        </div>
-        <div class="field-row">
-          <label>BG</label>
-          <input type="color" id="canvasBg" value="#0d0d0d">
-          <input type="text" id="canvasBgHex" value="#0d0d0d">
-        </div>
-        <div class="field-row">
-          <label></label>
-          <label class="toggle" id="bgTransparent" style="flex:1;padding:4px 8px;">
-            <input type="checkbox">
-            <span class="toggle-box"></span>
-            <span>No background (use page theme)</span>
-          </label>
-        </div>
-        <div class="field-row">
-          <label>Zoom</label>
-          <input type="number" id="zoomInput" value="100" min="10" max="200" step="5">
-          <button class="btn ghost icon" id="fitBtn" title="Fit to screen">⛶</button>
-        </div>
-      </div>
-
-      <div class="insp-section" id="historySection" style="display:none;">
-        <div class="insp-title">Version History</div>
-        <div class="hp-hint" style="margin-top:0;margin-bottom:8px;">Save named versions and restore previous states.</div>
-        <div class="snapshot-list" id="snapshotList"></div>
-      </div>
-
-      <!-- Project metadata — fields here write to content/projects.json so
-           the live site's project accordion renders the new values without
-           hand-editing the file. Hidden when a Page (not project) is active. -->
-      <div class="insp-section" id="projectMetaSection" style="display:none;">
-        <div class="insp-title">
-          <span>Project Info</span>
-          <span class="count" id="projectMetaSavedDot" style="font-size:10px;font-weight:700;color:var(--text-dim);">●</span>
-        </div>
-        <div class="hp-hint" style="margin-top:0;margin-bottom:8px;">Edits save to projects.json on blur (~600 ms debounce).</div>
-        <div class="field-row">
-          <label>Year</label>
-          <input type="number" id="metaYear" min="1900" max="2100" step="1" style="flex:1;">
-        </div>
-        <div class="field-row">
-          <label>Tags</label>
-          <input type="text" id="metaCategories" placeholder="Object, Furniture, …" style="flex:1;" title="Comma-separated category list">
-        </div>
-        <div class="field-row" style="align-items:flex-start;">
-          <label style="padding-top:6px;">Desc</label>
-          <textarea id="metaDescription" rows="3" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
-        </div>
-        <div class="field-row" style="align-items:flex-start;">
-          <label style="padding-top:6px;">Materials</label>
-          <textarea id="metaMaterials" rows="2" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
-        </div>
-        <div class="field-row" style="align-items:flex-start;">
-          <label style="padding-top:6px;">Process</label>
-          <textarea id="metaProcess" rows="2" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
-        </div>
-      </div>
-
-      <div class="insp-section">
+      <div class="insp-section" id="selectionSection">
         <div class="insp-title">
           <span>Selection</span>
           <span class="count" id="selCount"></span>
@@ -2406,7 +2768,53 @@
         </div>
       </div>
 
-      <div class="insp-section">
+      <!-- Type-specific panels — show right under Selection so they're
+           reachable the moment the user clicks an item of that type. -->
+      <div class="insp-section" id="infoBlockSection" style="display:none;padding-top:8px;padding-bottom:8px;">
+        <div id="infoBlockSectionList" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <input type="text" id="infoBlockNewSectionLabel" placeholder="New section label (e.g. Process)" style="flex:1;background:transparent;border:0;border-bottom:1px solid var(--border);padding:5px 0;font-size:13px;color:var(--text);">
+        </div>
+        <div class="field-row" style="margin-bottom:6px;gap:6px;">
+          <button class="btn ghost" id="infoBlockAddSectionBtn" style="flex:1;justify-content:center;" title="Add a new label + value row at the bottom of this info block">+ Add Section</button>
+        </div>
+        <div class="field-row" style="margin-bottom:0;gap:6px;">
+          <button class="btn ghost" id="infoBlockSyncBtn" style="flex:1;justify-content:center;" title="Re-pull title, year, client, sector, materials, description from this project's saved metadata">Sync from Project</button>
+          <button class="btn ghost" id="infoBlockResetBtn" style="flex:1;justify-content:center;" title="Snap every info-block field back to its default position relative to the Title">Reset Layout</button>
+        </div>
+      </div>
+
+      <div class="insp-section" id="imageGridSection" style="display:none;">
+        <div class="insp-title">Image Grid</div>
+        <div class="field-row">
+          <label class="field-label">Rows</label>
+          <input type="number" id="gridRows" min="1" max="20" step="1" style="width:60px;">
+          <label class="field-label" style="margin-left:8px;">Cols</label>
+          <input type="number" id="gridCols" min="1" max="20" step="1" style="width:60px;">
+        </div>
+        <div class="field-row">
+          <label class="field-label">Scale</label>
+          <input type="range" id="gridScale" min="0.1" max="1" step="0.01" style="flex:1;">
+          <span id="gridScaleReadout" style="min-width:42px;text-align:right;color:var(--text-mid);">90%</span>
+        </div>
+        <div class="field-row">
+          <label class="field-label">Caption</label>
+          <input type="range" id="gridCaptionSize" min="8" max="48" step="1" style="flex:1;" title="Caption text size (px)">
+          <span id="gridCaptionSizeReadout" style="min-width:42px;text-align:right;color:var(--text-mid);">17px</span>
+        </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="gridClearBtn" style="flex:1;justify-content:center;" title="Remove all images from every cell">Clear Images</button>
+        </div>
+        <div class="hp-hint">Drag assets from the Assets panel onto any cell. Scale adds symmetric padding — different aspect ratios are preserved (images fit within their cell). Click below an image to add a caption. Drag the vertical handle between cells to resize images within a row.</div>
+      </div>
+
+      <div class="insp-section" id="textStylesSection" style="display:none;">
+        <div class="insp-title">Text styles</div>
+        <div class="style-list" id="styleList"></div>
+        <div class="hp-hint" style="margin-top:4px;">Pick a text item, then "Save as style…" below to reuse.</div>
+      </div>
+
+      <div class="insp-section collapsible collapsed" data-collapse-key="align">
         <div class="insp-title">Align</div>
         <div class="align-grid">
           <button class="btn ghost" data-align="left"   title="Align left edges">Left</button>
@@ -2428,31 +2836,163 @@
         </div>
       </div>
 
-      <div class="insp-section" id="textStylesSection" style="display:none;">
-        <div class="insp-title">Text styles</div>
-        <div class="style-list" id="styleList"></div>
-        <div class="hp-hint" style="margin-top:4px;">Pick a text item, then "Save as style…" below to reuse.</div>
+      <!-- About-page editor (only visible when editing a Page named about). -->
+      <div class="insp-section" id="aboutContentSection" style="display:none;">
+        <div class="insp-title">
+          <span>About Sections</span>
+          <button class="btn primary" id="aboutSaveBtn" style="height:26px;padding:0 12px;" disabled>Save</button>
+        </div>
+        <div class="hp-hint" id="aboutHint">Edits the About page accordion. Click a section header to expand.</div>
+        <div class="about-accordion" id="aboutAccordion"></div>
+        <button class="btn ghost" id="aboutAddSectionBtn" style="width:100%;justify-content:center;margin-top:8px;">+ Add Section</button>
+        <input type="file" id="aboutImageFileInput" accept="image/*" style="display:none;">
       </div>
 
-      <div class="insp-section">
-        <div class="insp-title">Shortcuts</div>
-        <div class="hint">
-          Drag file → place on canvas<br>
-          Click asset: add to canvas<br>
-          <kbd>Shift</kbd>+click: multi-select<br>
-          <kbd>Alt</kbd>+drag: duplicate<br>
-          <kbd>Shift</kbd>+drag: axis-lock<br>
-          <kbd>Del</kbd>: remove<br>
-          <kbd>C</kbd>: center on canvas<br>
-          <kbd>Ctrl</kbd>+<kbd>D</kbd>: duplicate<br>
-          <kbd>Ctrl</kbd>+<kbd>Z</kbd>: undo &nbsp;
-          <kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>Z</kbd>: redo<br>
-          <kbd>Ctrl</kbd>+<kbd>S</kbd>: save<br>
-          Arrows: nudge (<kbd>Shift</kbd>=10px)
+      <!-- Project metadata — fields here write to content/projects.json so
+           the live site's project accordion renders the new values without
+           hand-editing the file. Hidden when a Page (not project) is active. -->
+      <div class="insp-section collapsible" id="projectMetaSection" data-collapse-key="projectMeta" style="display:none;">
+        <div class="insp-title">
+          <span>Project Info</span>
+          <span class="count" id="projectMetaSavedDot" style="font-size:10px;font-weight:700;color:var(--text-dim);">●</span>
+        </div>
+        <div class="hp-hint" style="margin-top:0;margin-bottom:8px;">Edits save to projects.json on blur (~600 ms debounce).</div>
+        <div class="field-row">
+          <label>Year</label>
+          <input type="number" id="metaYear" min="1900" max="2100" step="1" style="flex:1;">
+        </div>
+        <div class="field-row">
+          <label>Tags</label>
+          <input type="text" id="metaCategories" placeholder="Object, Furniture, …" style="flex:1;" title="Comma-separated category list">
+        </div>
+        <div class="field-row">
+          <label>Client</label>
+          <input type="text" id="metaClient" style="flex:1;">
+        </div>
+        <div class="field-row">
+          <label>Sector</label>
+          <input type="text" id="metaSector" style="flex:1;">
+        </div>
+        <div class="field-row" style="align-items:flex-start;">
+          <label style="padding-top:6px;">Desc</label>
+          <textarea id="metaDescription" rows="3" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
+        </div>
+        <div class="field-row" style="align-items:flex-start;">
+          <label style="padding-top:6px;">Materials</label>
+          <textarea id="metaMaterials" rows="2" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
+        </div>
+        <div class="field-row" style="align-items:flex-start;">
+          <label style="padding-top:6px;">Process</label>
+          <textarea id="metaProcess" rows="2" style="flex:1;resize:vertical;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:6px 8px;font-size:13px;font-weight:400;border-radius:4px;font-family:var(--font);line-height:1.4;"></textarea>
         </div>
       </div>
 
-      <div class="insp-section" id="dangerZoneSection">
+      <!-- Homepage SVG icon for this project. -->
+      <div class="insp-section collapsible" id="homepageSection" data-collapse-key="homepage" style="display:none;">
+        <div class="insp-title">Homepage Image</div>
+        <div class="hp-preview" id="hpPreview">
+          <div class="hp-empty" id="hpEmpty">No homepage image</div>
+        </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="hpPickBtn" style="flex:1;justify-content:center;">Pick from assets…</button>
+        </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="hpUploadBtn" style="flex:1;justify-content:center;">Upload SVG</button>
+          <button class="btn ghost" id="hpClearBtn" title="Remove homepage image" style="flex:0 0 auto;">Clear</button>
+        </div>
+        <div class="hp-asset-list" id="hpAssetList"></div>
+        <div class="hp-hint">Only .svg files. Shown on index.html when Open is pressed.</div>
+        <input type="file" id="hpFileInput" accept=".svg,image/svg+xml">
+      </div>
+
+      <div class="insp-section collapsible" id="visibilitySection" data-collapse-key="visibility" style="display:none;">
+        <div class="insp-title">Homepage Visibility</div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="visIconOnlyBtn" style="flex:1;justify-content:center;" title="Disable project link but keep SVG visible">Icon Only</button>
+        </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="visHideBtn" style="flex:1;justify-content:center;" title="Disable link and hide SVG; name will be greyed out">Grey Out</button>
+        </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="visRemoveBtn" style="flex:1;justify-content:center;" title="Completely hide this project from the homepage">Hide from Homepage</button>
+        </div>
+        <div class="field-row" style="margin-bottom:0;">
+          <button class="btn ghost" id="visResetBtn" style="flex:1;justify-content:center;" title="Restore default: clickable with SVG">Reset (Active)</button>
+        </div>
+        <div class="hp-hint" id="visHint">Default: project is clickable with SVG.</div>
+      </div>
+
+      <!-- Global Homepage Layout — always visible. Stored in
+           layouts.json under __homepageSettings__ and applied at boot
+           via the --grid-label-scale CSS variable on index.html. -->
+      <div class="insp-section collapsible" data-collapse-key="hpLayout">
+        <div class="insp-title">Homepage Layout</div>
+        <div class="field-row">
+          <label class="field-label">Grid label size</label>
+          <div style="display:flex;align-items:center;gap:4px;flex:1;justify-content:flex-end;">
+            <button type="button" class="btn icon" id="gridLabelScaleDec" title="Decrease (5%)">&minus;</button>
+            <span id="gridLabelScaleReadout" title="Double-click to reset to 100%" style="min-width:52px;text-align:center;color:var(--text-mid);font-feature-settings:'tnum';cursor:pointer;">100%</span>
+            <button type="button" class="btn icon" id="gridLabelScaleInc" title="Increase (5%)">+</button>
+          </div>
+        </div>
+        <div class="hp-hint">Scales the title, year, and category text on every grid tile. Double-click the readout to reset.</div>
+      </div>
+
+      <!-- Canvas (formerly "Breakpoint") — always present but collapsed
+           by default since you only edit dimensions occasionally. -->
+      <div class="insp-section collapsible collapsed" data-collapse-key="canvas">
+        <div class="insp-title">
+          <span id="canvasLabel">Canvas</span>
+          <span id="bpMinWidth" style="color:var(--text-mid);font-weight:700;"></span>
+        </div>
+        <div class="field-row">
+          <label>Label</label>
+          <input type="text" id="bpLabel" placeholder="Desktop">
+        </div>
+        <div class="field-row">
+          <label>Min W</label>
+          <input type="number" id="bpMinW" min="0" step="10">
+        </div>
+        <div class="field-row">
+          <label>Width</label>
+          <input type="number" id="canvasW" value="1440" min="200" step="10">
+        </div>
+        <div class="field-row">
+          <label>Height</label>
+          <input type="number" id="canvasH" value="2400" min="200" step="10">
+        </div>
+        <div class="field-row">
+          <label>Side pad</label>
+          <input type="number" id="canvasPad" value="10" min="0" max="50" step="0.5" title="Percentage of breakpoint width reserved as left/right padding.">
+          <span style="color:var(--text-dim);font-size:11px;font-weight:700;">%</span>
+        </div>
+        <div class="field-row">
+          <label>BG</label>
+          <input type="color" id="canvasBg" value="#0d0d0d">
+          <input type="text" id="canvasBgHex" value="#0d0d0d">
+        </div>
+        <div class="field-row">
+          <label></label>
+          <label class="toggle" id="bgTransparent" style="flex:1;padding:4px 8px;">
+            <input type="checkbox">
+            <span class="toggle-box"></span>
+            <span>No background (use page theme)</span>
+          </label>
+        </div>
+        <div class="field-row">
+          <label>Zoom</label>
+          <input type="number" id="zoomInput" value="100" min="10" max="200" step="5">
+          <button class="btn ghost icon" id="fitBtn" title="Fit to screen">⛶</button>
+        </div>
+      </div>
+
+      <div class="insp-section collapsible collapsed" id="historySection" data-collapse-key="history" style="display:none;">
+        <div class="insp-title">Version History</div>
+        <div class="hp-hint" style="margin-top:0;margin-bottom:8px;">Save named versions and restore previous states.</div>
+        <div class="snapshot-list" id="snapshotList"></div>
+      </div>
+
+      <div class="insp-section collapsible collapsed" id="dangerZoneSection" data-collapse-key="danger">
         <div class="insp-title">Danger Zone</div>
         <div class="hint" style="margin-bottom:8px;">Permanently removes the current project from <code>projects.json</code> and its layout from <code>layouts.json</code>. Image files on disk are preserved.</div>
         <button class="btn ghost danger" id="deleteProjectBtn" style="width:100%;justify-content:center;" title="Delete the current project">Delete Project</button>
@@ -2490,6 +3030,31 @@
 
   <input type="file" id="fileInput" accept="image/*,video/*,.svg" multiple>
   <input type="file" id="jsonInput" accept="application/json,.json">
+
+  <!-- Shortcuts reference modal (was an inspector section, moved here so
+       it doesn't eat vertical space when not in use). -->
+  <div class="ed-modal-backdrop" id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsModalTitle">
+    <div class="ed-modal">
+      <div class="ed-modal-title">
+        <span id="shortcutsModalTitle">Keyboard Shortcuts</span>
+        <button class="ed-modal-close" data-close-modal="shortcutsModal" aria-label="Close">×</button>
+      </div>
+      <div class="hint" style="line-height:1.85;">
+        Drag file → place on canvas<br>
+        Click asset: add to canvas<br>
+        <kbd>Shift</kbd>+click: multi-select<br>
+        <kbd>Alt</kbd>+drag: duplicate<br>
+        <kbd>Shift</kbd>+drag: axis-lock<br>
+        <kbd>Del</kbd>: remove<br>
+        <kbd>C</kbd>: center on canvas<br>
+        <kbd>Ctrl</kbd>+<kbd>D</kbd>: duplicate<br>
+        <kbd>Ctrl</kbd>+<kbd>Z</kbd>: undo &nbsp;
+        <kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>Z</kbd>: redo<br>
+        <kbd>Ctrl</kbd>+<kbd>S</kbd>: save<br>
+        Arrows: nudge (<kbd>Shift</kbd>=10px)
+      </div>
+    </div>
+  </div>
 
   <script>
   (function () {
@@ -2529,7 +3094,14 @@
       textStyles: {},       // projectId -> { styleId: { name, fontSize, ... } }
       projectFlags: {},     // projectId -> { visibility: 'active' | 'icon-only' | 'hidden' }
       projectFlagsDirty: false,
+      homepageSettings: { gridLabelScale: 1 }, // Global homepage layout knobs
+      homepageSettingsDirty: false,
       aboutCollapsed: {},   // sectionIdx -> true/false
+      enteredGroupId: null, // double-clicked into this group; single clicks
+                            // pick individual members until cleared.
+      primaryId: null,      // last item clicked; drives the inspector's
+                            // content textarea even when the whole group
+                            // is selected.
     };
     // In-editor clipboard for Ctrl+C / Ctrl+V. Array of shallow-cloned item
     // snapshots. Session-only (not persisted, not part of undo history).
@@ -2620,23 +3192,39 @@
         if (__isDarkColor(s) || __isLightColor(s)) el.setAttribute('stroke', color);
         const f = el.getAttribute('fill');
         if (__isDarkColor(f) || __isLightColor(f)) el.setAttribute('fill', color);
-        // Default SVG fill is black; text/tspan without explicit fill need it
+        // Default SVG fill is black; text/tspan without explicit fill need it.
+        // Force the SAME color + regular weight via inline style (beats any
+        // <style> block) so SVG labels never render brighter or bolder than
+        // the surrounding stroked geometry.
         const tag = (el.tagName || el.nodeName || '').toLowerCase();
-        if ((tag === 'text' || tag === 'tspan') && !f) {
+        if (tag === 'text' || tag === 'tspan') {
           el.setAttribute('fill', color);
+          if (el.style) {
+            el.style.fill = color;
+            el.style.stroke = 'none';
+            el.style.fontWeight = '400';
+          }
+          el.setAttribute('font-weight', '400');
         }
+      });
+      root.querySelectorAll('style').forEach(st => {
+        if (st.__origText == null) st.__origText = st.textContent;
+        st.textContent = st.__origText
+          .replace(/(font-weight\s*:\s*)(bold|[6-9]00|1000)/gi, '$1400');
       });
     }
     function __fgColorForCanvas() {
-      // Editor mimics what project.html will actually show. When canvas has a
-      // transparent bg, the editor theme wins. Otherwise the bp's bg dictates.
+      // Editor mimics what project.html will actually show. Match the same
+      // off-white / off-black tokens project.html uses for body text so a
+      // CAD line and adjacent text read as the same color, not pure
+      // #fff vs #E4E4E4.
       const bp = currentBp();
-      if (!bp) return '#ffffff';
+      if (!bp) return '#E4E4E4';
       if (bp.bgTransparent) {
         const t = document.documentElement.getAttribute('data-theme') || 'dark';
-        return t === 'dark' ? '#ffffff' : '#000000';
+        return t === 'dark' ? '#E4E4E4' : '#1A1A1A';
       }
-      return isDarkHex(bp.bg) ? '#ffffff' : '#000000';
+      return isDarkHex(bp.bg) ? '#E4E4E4' : '#1A1A1A';
     }
     // Off-screen sandbox for resolving an SVG's embedded <style> rules into
     // per-element attributes before the SVG enters the live DOM. Multiple
@@ -2858,6 +3446,10 @@
         state.homepage = (layouts && typeof layouts.__homepage__ === 'object' && layouts.__homepage__) || {};
         state.textStyles = (layouts && typeof layouts.__textStyles__ === 'object' && layouts.__textStyles__) || {};
         state.projectFlags = (layouts && typeof layouts.__projectFlags__ === 'object' && layouts.__projectFlags__) || {};
+        const hpSettings = (layouts && typeof layouts.__homepageSettings__ === 'object' && layouts.__homepageSettings__) || {};
+        state.homepageSettings = {
+          gridLabelScale: Number(hpSettings.gridLabelScale) > 0 ? Number(hpSettings.gridLabelScale) : 1,
+        };
         // Collect all snapshot keys
         state.snapshots = {};
         Object.keys(layouts || {}).forEach(k => {
@@ -2871,8 +3463,10 @@
         state.snapshots = {};
         state.textStyles = {};
         state.projectFlags = {};
+        state.homepageSettings = { gridLabelScale: 1 };
       }
       rebuildProjectSelect();
+      syncHomepageSettingsUI();
     }
 
     function rebuildProjectSelect() {
@@ -2888,16 +3482,28 @@
       aboutOpt.textContent = 'About';
       projectSelect.appendChild(aboutOpt);
 
-      const gProjects = document.createElement('optgroup');
-      gProjects.label = 'Projects';
-      state.projects.forEach(p => {
-        const o = document.createElement('option');
-        // Keep project id unprefixed so existing layouts.json keys still match
-        o.value = p.id;
-        o.textContent = p.title;
-        gProjects.appendChild(o);
+      // Group projects by their homepage visibility flag so it's easy to
+      // see at a glance which projects are live, SVG-only, hidden, or removed.
+      const visGroups = [
+        { key: 'active',    label: 'Projects — Active' },
+        { key: 'icon-only', label: 'Projects — SVG Only' },
+        { key: 'hidden',    label: 'Projects — Hidden' },
+        { key: 'removed',   label: 'Projects — Removed' },
+      ];
+      visGroups.forEach(g => {
+        const items = state.projects.filter(p => getProjectVisibility(p.id) === g.key);
+        if (!items.length) return;
+        const og = document.createElement('optgroup');
+        og.label = g.label;
+        items.forEach(p => {
+          const o = document.createElement('option');
+          // Keep project id unprefixed so existing layouts.json keys still match
+          o.value = p.id;
+          o.textContent = p.title;
+          og.appendChild(o);
+        });
+        projectSelect.appendChild(og);
       });
-      projectSelect.appendChild(gProjects);
 
       const gPages = document.createElement('optgroup');
       gPages.label = 'Pages';
@@ -2998,6 +3604,8 @@
       dot:        () => document.getElementById('projectMetaSavedDot'),
       year:       () => document.getElementById('metaYear'),
       categories: () => document.getElementById('metaCategories'),
+      client:     () => document.getElementById('metaClient'),
+      sector:     () => document.getElementById('metaSector'),
       description:() => document.getElementById('metaDescription'),
       materials:  () => document.getElementById('metaMaterials'),
       process:    () => document.getElementById('metaProcess'),
@@ -3018,6 +3626,8 @@
       // Populate without firing the input handler.
       metaEls.year().value = proj.year ?? '';
       metaEls.categories().value = (proj.categories || []).join(', ');
+      metaEls.client().value = proj.client || '';
+      metaEls.sector().value = proj.sector || '';
       metaEls.description().value = proj.description || '';
       metaEls.materials().value = proj.materials || '';
       metaEls.process().value = proj.process || '';
@@ -3071,6 +3681,8 @@
       };
       wire(metaEls.year(),        'year',        v => v ? parseInt(v, 10) : null);
       wire(metaEls.categories(),  'categories',  v => v.split(',').map(s => s.trim()).filter(Boolean));
+      wire(metaEls.client(),      'client',      v => v);
+      wire(metaEls.sector(),      'sector',      v => v);
       wire(metaEls.description(), 'description', v => v);
       wire(metaEls.materials(),   'materials',   v => v);
       wire(metaEls.process(),     'process',     v => v);
@@ -3146,6 +3758,29 @@
       } catch {}
     }
 
+    let __hpSettingsSaveTimer = null;
+    async function persistHomepageSettings() {
+      try {
+        await fetch('/api/layouts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: '__homepageSettings__', layout: state.homepageSettings }),
+        });
+        state.homepageSettingsDirty = false;
+      } catch {}
+    }
+    function scheduleHomepageSettingsSave() {
+      state.homepageSettingsDirty = true;
+      if (__hpSettingsSaveTimer) clearTimeout(__hpSettingsSaveTimer);
+      __hpSettingsSaveTimer = setTimeout(persistHomepageSettings, 250);
+    }
+    function syncHomepageSettingsUI() {
+      const readout = document.getElementById('gridLabelScaleReadout');
+      if (!readout) return;
+      const scale = Number(state.homepageSettings.gridLabelScale) || 1;
+      readout.textContent = Math.round(scale * 100) + '%';
+    }
+
     function getProjectVisibility(pid) {
       const f = state.projectFlags[pid];
       return (f && f.visibility) || 'active';
@@ -3158,6 +3793,11 @@
       }
       state.projectFlagsDirty = true;
       refreshVisibilityUI();
+      // Rebuild the project dropdown so the project moves into its
+      // new visibility optgroup; preserve the current selection.
+      const keep = projectSelect.value;
+      rebuildProjectSelect();
+      projectSelect.value = keep;
       persistProjectFlags();
     }
     function refreshVisibilityUI() {
@@ -4070,7 +4710,14 @@
         if (a.src === current) row.classList.add('current');
         const thumb = document.createElement('div');
         thumb.className = 'hp-asset-thumb';
-        __inlineSvgInto(thumb, a.src).catch(() => {});
+        // Use currentColor so the popup thumbs follow the editor theme,
+        // not the canvas bg (which would render dark-on-dark in dark mode).
+        __getSvgTemplate(a.src).then(tpl => {
+          if (!tpl || !thumb.isConnected) return;
+          const svg = tpl.cloneNode(true);
+          __recolorSvg(svg, 'currentColor');
+          thumb.appendChild(svg);
+        });
         const name = document.createElement('div');
         name.className = 'hp-asset-name';
         name.textContent = (a.src.split('/').pop() || a.src);
@@ -4616,7 +5263,24 @@
         };
         if (clean.t || clean.r || clean.b || clean.l) o.crop = clean;
       }
+      if (it.imgPan && typeof it.imgPan === 'object') {
+        const p = it.imgPan;
+        const sx = +p.sx, sy = +p.sy, ox = +p.ox, oy = +p.oy;
+        if (!isNaN(sx) && !isNaN(sy) && !isNaN(ox) && !isNaN(oy)
+            && (sx !== 1 || sy !== 1 || ox !== 0 || oy !== 0)) {
+          o.imgPan = { sx, sy, ox, oy };
+        }
+      }
       if (it.padding != null) o.padding = +it.padding;
+      // Per-item caption (image/video/SVG only — added in renderItem). Stored
+      // here so it round-trips through layouts.json regardless of item type.
+      if (it.caption != null && typeof it.caption === 'string') {
+        const c = it.caption.trim();
+        if (c) o.caption = c;
+      }
+      if (it.captionSize != null && !isNaN(+it.captionSize)) {
+        o.captionSize = Math.max(8, Math.min(48, +it.captionSize));
+      }
       // Text-specific fields
       if (it.type === 'text') {
         if (it.text != null) o.text = it.text;
@@ -4629,6 +5293,51 @@
         if (it.transform) o.transform = it.transform;
         if (it.fontFamily) o.fontFamily = it.fontFamily;
         if (it.styleId) o.styleId = it.styleId;
+      }
+      // Image-grid fields
+      if (it.type === 'imagegrid') {
+        o.rows = Math.max(1, Math.min(20, parseInt(it.rows, 10) || 3));
+        o.cols = Math.max(1, Math.min(20, parseInt(it.cols, 10) || 3));
+        const s = parseFloat(it.scale);
+        o.scale = isNaN(s) ? 0.9 : Math.max(0.05, Math.min(1, s));
+        const n = o.rows * o.cols;
+        const src = Array.isArray(it.cells) ? it.cells : [];
+        o.cells = Array.from({ length: n }, (_, i) => {
+          const c = src[i] || {};
+          return {
+            src: c.src ? String(c.src) : null,
+            type: c.type ? String(c.type) : null,
+          };
+        });
+      }
+      // Info-block fields
+      if (it.type === 'infoblock') {
+        ['title','year','client','materials','sector'].forEach(k => {
+          if (it[k] != null) o[k] = String(it[k]);
+        });
+        if (Array.isArray(it.description)) o.description = it.description.map(String);
+        else if (typeof it.description === 'string') o.description = [it.description];
+        if (it.layout && typeof it.layout === 'object') {
+          const clean = {};
+          Object.keys(it.layout).forEach(k => {
+            const v = it.layout[k];
+            if (!v || typeof v !== 'object') return;
+            const entry = {};
+            if (v.x != null && !isNaN(+v.x)) entry.x = +v.x;
+            if (v.y != null && !isNaN(+v.y)) entry.y = +v.y;
+            if (v.w != null && !isNaN(+v.w)) entry.w = +v.w;
+            if (Object.keys(entry).length) clean[k] = entry;
+          });
+          if (Object.keys(clean).length) o.layout = clean;
+        }
+      }
+      // Info-block group metadata — stored on regular text items.
+      if (it.groupId && typeof it.groupId === 'string' && /^ib_/.test(it.groupId)) {
+        o.groupId = it.groupId;
+        if (it.groupKey) o.groupKey = String(it.groupKey);
+        if (it.groupOffsetX != null && !isNaN(+it.groupOffsetX)) o.groupOffsetX = +it.groupOffsetX;
+        if (it.groupOffsetY != null && !isNaN(+it.groupOffsetY)) o.groupOffsetY = +it.groupOffsetY;
+        if (it.ibStyleVersion != null && !isNaN(+it.ibStyleVersion)) o.ibStyleVersion = +it.ibStyleVersion;
       }
       if (it.name) o.name = String(it.name);
       if (it.hidden) o.hidden = true;
@@ -5129,6 +5838,15 @@
           const b = document.createElement('div');
           b.className = 'badge'; b.textContent = 'SVG';
           el.appendChild(b);
+          // Inline the SVG so it picks up the editor theme color via
+          // currentColor — raw <img> can't be recolored to match dark/light.
+          __getSvgTemplate(a.src).then(tpl => {
+            if (!tpl || !el.isConnected) return;
+            const svg = tpl.cloneNode(true);
+            __recolorSvg(svg, 'currentColor');
+            img.remove();
+            el.insertBefore(svg, el.firstChild);
+          });
         }
       }
 
@@ -5377,8 +6095,8 @@
     function beginCrop(id) {
       const item = findItem(id);
       if (!item) return;
-      // Only raster images can be cropped — skip svg, video, text, spacer.
-      if (item.type !== 'image' || isSvg(item.src)) return;
+      // Crop applies to images and inlined SVGs — skip video, text, spacer.
+      if (item.type !== 'image') return;
       if (state.croppingId && state.croppingId !== id) exitCrop();
       state.croppingId = id;
       pushHistory();
@@ -5417,9 +6135,43 @@
       if (id) {
         const item = findItem(id);
         if (item) {
-          // If all zeros, strip the field entirely.
+          // Destructive crop: when commit has a non-zero crop, shrink the
+          // item's bounding box to the visible region and bake the prior
+          // image position into an imgPan transform. Re-cropping composes
+          // on top of the existing imgPan.
           const c = item.crop;
-          if (c && !c.t && !c.r && !c.b && !c.l) delete item.crop;
+          const hasCrop = c && (c.t || c.r || c.b || c.l);
+          if (hasCrop) {
+            const lFrac = (c.l || 0) / 100;
+            const tFrac = (c.t || 0) / 100;
+            const rFrac = (c.r || 0) / 100;
+            const bFrac = (c.b || 0) / 100;
+            const newWFrac = 1 - lFrac - rFrac;
+            const newHFrac = 1 - tFrac - bFrac;
+            if (newWFrac > 0 && newHFrac > 0) {
+              const oldW = item.w, oldH = item.h;
+              const newW = Math.max(4, Math.round(oldW * newWFrac));
+              const newH = Math.max(4, Math.round(oldH * newHFrac));
+              item.x = Math.round(item.x + oldW * lFrac);
+              item.y = Math.round(item.y + oldH * tFrac);
+              item.w = newW;
+              item.h = newH;
+              // Compose with existing pan: previous (sx, sy, ox, oy)
+              // expressed in fractions of OLD container; transform to new.
+              const prev = item.imgPan || { sx: 1, sy: 1, ox: 0, oy: 0 };
+              const pan = {
+                sx: prev.sx / newWFrac,
+                sy: prev.sy / newHFrac,
+                ox: (prev.ox + lFrac) / newWFrac,
+                oy: (prev.oy + tFrac) / newHFrac,
+              };
+              // Round to 4 decimals to keep saved JSON tidy
+              const r4 = (n) => Math.round(n * 10000) / 10000;
+              item.imgPan = { sx: r4(pan.sx), sy: r4(pan.sy), ox: r4(pan.ox), oy: r4(pan.oy) };
+              if (item.wPct != null) item.wPct = Math.round(newW / currentBp().w * 100);
+            }
+          }
+          delete item.crop;
           renderItem(item);
           setDirty(true);
         }
@@ -5512,6 +6264,16 @@
       sel.removeAllRanges();
       sel.addRange(range);
       pushHistory();
+      function syncToInspector() {
+        // Keep the right-panel content textarea (and item.text) live while
+        // the user types inline on the canvas — otherwise the inspector
+        // shows stale text until blur.
+        const txt = document.getElementById('txtContent');
+        item.text = t.textContent;
+        if (txt && state.selection.size === 1 && state.selection.has(id)) {
+          txt.value = t.textContent;
+        }
+      }
       function commit() {
         item.text = t.textContent;
         t.removeAttribute('contenteditable');
@@ -5519,6 +6281,7 @@
         el.classList.remove('editing');
         t.removeEventListener('blur', commit);
         t.removeEventListener('keydown', onKey);
+        t.removeEventListener('input', syncToInspector);
         setDirty(true);
         updateInspector();
         syncCanvasTextToAbout(item);
@@ -5528,6 +6291,1149 @@
       }
       t.addEventListener('blur', commit);
       t.addEventListener('keydown', onKey);
+      t.addEventListener('input', syncToInspector);
+    }
+
+    // Spawn an "info block" as a GROUP of regular text items. Each field is
+    // a first-class text item and inherits all canvas features: snap, distance
+    // guides, arrow-nudge, duplicate, style dropdown. They share a groupId so
+    // the Reset Layout button can snap them back into formation.
+    //
+    // Default layout is relative to an anchor (the "title" item). Reset uses
+    // the anchor's current position as the origin, so moving the whole group
+    // and hitting Reset just cleans up internal drift.
+    const IB_GROUP_SPEC = [
+      { key: 'title',            text: 'Project Title',          dx:   0, dy:   0, w: 380, h:  36, fontSize: 18, fontWeight: 500, role: 'title' },
+      { key: 'year',             text: String(new Date().getFullYear()), dx: 530, dy:   0, w: 120, h:  36, fontSize: 18, fontWeight: 500, role: 'title', align: 'right' },
+      { key: 'clientLabel',      text: 'Client:',                dx:   0, dy:  80, w: 130, h:  28, fontSize: 18, fontWeight: 500, role: 'title' },
+      { key: 'client',           text: 'Client name',            dx: 150, dy:  80, w: 500, h:  28, fontSize: 18, fontWeight: 400, role: 'body' },
+      { key: 'materialsLabel',   text: 'Materials:',             dx:   0, dy: 160, w: 130, h:  28, fontSize: 18, fontWeight: 500, role: 'title' },
+      { key: 'materials',        text: 'Materials used',         dx: 150, dy: 160, w: 500, h:  28, fontSize: 18, fontWeight: 400, role: 'body' },
+      { key: 'sectorLabel',      text: 'Sector:',                dx:   0, dy: 240, w: 130, h:  28, fontSize: 18, fontWeight: 500, role: 'title' },
+      { key: 'sector',           text: 'Sector name',            dx: 150, dy: 240, w: 500, h:  28, fontSize: 18, fontWeight: 400, role: 'body' },
+      { key: 'description',      text: 'Description paragraph.', dx:   0, dy: 340, w: 650, h: 200, fontSize: 18, fontWeight: 400, lineHeight: 1.6, role: 'body' },
+    ];
+
+    function addInfoBlockGroupAt(cx, cy) {
+      pushHistory();
+      const bp = currentBp();
+      // Origin is the top-left of the default bounding box centered around (cx, cy).
+      const maxDx = Math.max(...IB_GROUP_SPEC.map(s => s.dx + s.w));
+      const maxDy = Math.max(...IB_GROUP_SPEC.map(s => s.dy + s.h));
+      const originX = Math.round(cx - maxDx / 2);
+      const originY = Math.round(cy - maxDy / 2);
+      const gid = 'ib_' + uid();
+      const isDark = (bp.bgTransparent)
+        ? (document.documentElement.getAttribute('data-theme') !== 'light')
+        : isDarkHex(bp.bg);
+      // Two-tone: title bright, body text a softer grey.
+      const titleColor = isDark ? '#ffffff' : '#111111';
+      const bodyColor  = isDark ? '#BFBFBF' : '#555555';
+      const fg = titleColor;          // back-compat alias
+      const labelColor = bodyColor;   // legacy role mapping
+
+      // Pre-fill from the current project's saved metadata where available,
+      // so the spawn doesn't start with placeholder text.
+      const proj = (state.projectId && !state.projectId.startsWith('page:'))
+        ? state.projects.find(p => p.id === state.projectId)
+        : null;
+      const projDefault = (key, fallback) => {
+        if (!proj) return fallback;
+        if (key === 'title' && proj.title) return proj.title;
+        if (key === 'year' && (proj.year || proj.year === 0)) return String(proj.year);
+        if (key === 'client' && proj.client) return proj.client;
+        if (key === 'sector' && proj.sector) return proj.sector;
+        if (key === 'materials' && proj.materials) return proj.materials;
+        if (key === 'description' && proj.description) return proj.description;
+        return fallback;
+      };
+
+      const created = [];
+      IB_GROUP_SPEC.forEach(spec => {
+        const item = {
+          id: uid(),
+          type: 'text',
+          x: originX + spec.dx,
+          y: originY + spec.dy,
+          w: spec.w,
+          h: spec.h,
+          rot: 0,
+          z: ++state.zCounter,
+          text: projDefault(spec.key, spec.text),
+          fontSize: spec.fontSize,
+          fontWeight: spec.fontWeight || 500,
+          align: spec.align || 'left',
+          padding: 0,
+          lineHeight: spec.lineHeight || 1.4,
+          letterSpacing: spec.letterSpacing || 0,
+          transform: spec.transform || 'none',
+          color: spec.role === 'title' ? titleColor
+               : spec.role === 'body'  ? bodyColor
+               : spec.role === 'label' ? labelColor
+               : titleColor,
+          wPct: Math.round((spec.w / bp.w) * 100),
+          // Group metadata — drives the Reset Layout button in the inspector.
+          groupId: gid,
+          groupKey: spec.key,
+          groupOffsetX: spec.dx,
+          groupOffsetY: spec.dy,
+          ibStyleVersion: IB_STYLE_VERSION,
+        };
+        clampItem(item, bp);
+        currentItems().push(item);
+        renderItem(item);
+        created.push(item);
+      });
+      // Select all spawned items so the user can immediately drag the group
+      state.selection = new Set(created.map(i => i.id));
+      created.forEach(i => {
+        const el = canvasInner.querySelector('.item[data-id="' + i.id + '"]');
+        if (el) el.classList.add('selected');
+      });
+      setDirty(true);
+      updateEmptyState();
+      renderTabs();
+      updateInspector();
+    }
+
+    // Default per-field layout, in percentages of the info-block wrapper.
+    // Order matches render order. `label: null` = no label rendered (title, year).
+    const IB_FIELD_KEYS = ['title','year','client','materials','sector','description'];
+    const IB_DEFAULTS = {
+      title:       { x: 6,  y: 6,  w: 60, label: null },
+      year:        { x: 80, y: 10, w: 14, label: null },
+      client:      { x: 6,  y: 22, w: 88, label: 'Client' },
+      materials:   { x: 6,  y: 32, w: 88, label: 'Materials' },
+      sector:      { x: 6,  y: 42, w: 88, label: 'Sector' },
+      description: { x: 6,  y: 54, w: 88, label: 'Description' },
+    };
+    function ibLayoutFor(item, key) {
+      const d = IB_DEFAULTS[key];
+      const o = (item.layout && item.layout[key]) || {};
+      return {
+        x: (o.x != null ? +o.x : d.x),
+        y: (o.y != null ? +o.y : d.y),
+        w: (o.w != null ? +o.w : d.w),
+      };
+    }
+
+    // Build the info-block DOM inside the given host element. Idempotent —
+    // wipes prior content. Fields are absolute-positioned (percent-based)
+    // so each can be dragged independently. Text is contenteditable;
+    // labels and padding act as drag handles.
+    function buildInfoBlockInto(host, item) {
+      Array.from(host.children).forEach(c => { if (!c.classList.contains('handle')) c.remove(); });
+      const escHtml = (s) => {
+        const d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+      };
+      const wrap = document.createElement('div');
+      wrap.className = 'ib';
+
+      IB_FIELD_KEYS.forEach(key => {
+        const def = IB_DEFAULTS[key];
+        const pos = ibLayoutFor(item, key);
+        const field = document.createElement('div');
+        field.className = 'ib__field ib__field--' + key;
+        field.dataset.field = key;
+        field.style.left = pos.x + '%';
+        field.style.top = pos.y + '%';
+        field.style.width = pos.w + '%';
+
+        if (def.label) {
+          const lab = document.createElement('span');
+          lab.className = 'ib__label';
+          lab.textContent = def.label;
+          field.appendChild(lab);
+        }
+
+        const val = document.createElement('span');
+        val.className = 'ib__value';
+        val.contentEditable = 'true';
+        val.spellcheck = false;
+        val.dataset.fieldText = key;
+
+        if (key === 'description') {
+          const paras = Array.isArray(item.description)
+            ? item.description
+            : (item.description ? [item.description] : ['']);
+          val.innerHTML = (paras.length ? paras : ['']).map(p => `<p>${escHtml(p)}</p>`).join('');
+        } else {
+          val.textContent = String(item[key] == null ? '' : item[key]);
+        }
+        field.appendChild(val);
+
+        // Wire field-level interactions
+        wireInfoBlockField(host, item, field, val, key);
+        wrap.appendChild(field);
+      });
+
+      host.insertBefore(wrap, host.firstChild);
+    }
+
+    function wireInfoBlockField(host, item, field, val, key) {
+      // Stop item-drag when typing in the value
+      val.addEventListener('pointerdown', e => e.stopPropagation());
+      val.addEventListener('focus', () => host.classList.add('editing'));
+      val.addEventListener('blur', () => {
+        host.classList.remove('editing');
+        commitInfoBlockEdit(item, val, key);
+      });
+      val.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && key !== 'description') {
+          e.preventDefault();
+          val.blur();
+        }
+      });
+
+      // Drag the field itself to reposition within the block
+      field.addEventListener('pointerdown', (e) => {
+        // Ignore clicks inside the editable value
+        if (e.target === val || val.contains(e.target)) return;
+        // Let Alt/meta through so the usual canvas gestures still work
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        e.preventDefault();
+        beginInfoBlockFieldDrag(host, item, field, key, e);
+      });
+    }
+
+    function beginInfoBlockFieldDrag(host, item, field, key, evt) {
+      const hostRect = host.getBoundingClientRect();
+      // Current layout in % of host
+      const start = ibLayoutFor(item, key);
+      const startClientX = evt.clientX;
+      const startClientY = evt.clientY;
+      let moved = false;
+      field.classList.add('ib-dragging');
+
+      function onMove(ev) {
+        const dxPct = ((ev.clientX - startClientX) / hostRect.width) * 100;
+        const dyPct = ((ev.clientY - startClientY) / hostRect.height) * 100;
+        if (!moved && (Math.abs(dxPct) + Math.abs(dyPct)) < 0.3) return;
+        moved = true;
+        const nx = Math.max(0, Math.min(100 - start.w, start.x + dxPct));
+        const ny = Math.max(0, Math.min(98, start.y + dyPct));
+        field.style.left = nx + '%';
+        field.style.top = ny + '%';
+      }
+      function onUp() {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        field.classList.remove('ib-dragging');
+        if (!moved) return;
+        // Parse back into percentages and commit
+        const nx = parseFloat(field.style.left);
+        const ny = parseFloat(field.style.top);
+        pushHistory();
+        item.layout = item.layout || {};
+        item.layout[key] = Object.assign({}, item.layout[key] || {}, { x: round2(nx), y: round2(ny) });
+        setDirty(true);
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    }
+    function round2(n) { return Math.round(n * 100) / 100; }
+
+    // Reset: re-anchor every member of the selected group to its default
+    // offset from the title anchor's current position. If the title was
+    // deleted, fall back to any group member's current position as origin.
+    function resetInfoBlockLayout() {
+      if (!state.selection.size) return;
+      const sel = Array.from(state.selection).map(findItem).filter(Boolean);
+      const seed = sel.find(it => it.groupId && /^ib_/.test(it.groupId));
+      if (!seed) return;
+      const gid = seed.groupId;
+      const group = currentItems().filter(it => it.groupId === gid);
+      if (!group.length) return;
+      // Pick an anchor: prefer title, else first spawned
+      const anchor = group.find(it => it.groupKey === 'title') || group[0];
+      const originX = anchor.x - (anchor.groupOffsetX || 0);
+      const originY = anchor.y - (anchor.groupOffsetY || 0);
+      pushHistory();
+      group.forEach(it => {
+        if (it.groupOffsetX != null) it.x = Math.round(originX + it.groupOffsetX);
+        if (it.groupOffsetY != null) it.y = Math.round(originY + it.groupOffsetY);
+        renderItem(it);
+      });
+      updateSelectionFrame();
+      setDirty(true);
+    }
+
+    // Helpers shared by the inspector panel — derive the selected info-block
+    // group, the anchor (title), and the bp-aware color tokens.
+    function selectedInfoBlockGroup() {
+      if (!state.selection.size) return null;
+      const sel = Array.from(state.selection).map(findItem).filter(Boolean);
+      const seed = sel.find(it => it.groupId && /^ib_/.test(it.groupId));
+      if (!seed) return null;
+      const gid = seed.groupId;
+      const group = currentItems().filter(it => it.groupId === gid);
+      if (!group.length) return null;
+      const anchor = group.find(it => it.groupKey === 'title') || group[0];
+      const originX = anchor.x - (anchor.groupOffsetX || 0);
+      const originY = anchor.y - (anchor.groupOffsetY || 0);
+      return { gid, group, anchor, originX, originY };
+    }
+
+    function ibThemeColors() {
+      const bp = currentBp();
+      const isDark = bp.bgTransparent
+        ? document.documentElement.getAttribute('data-theme') !== 'light'
+        : isDarkHex(bp.bg);
+      return {
+        titleColor: isDark ? '#ffffff' : '#111111',
+        bodyColor:  isDark ? '#BFBFBF' : '#555555',
+      };
+    }
+
+    // Append a new label + value pair to the selected info-block group.
+    // Positioned below the bottom-most existing field, matching the
+    // styling of the built-in Client / Materials / Sector rows.
+    function addInfoBlockSection(labelText) {
+      const ctx = selectedInfoBlockGroup();
+      if (!ctx) return;
+      const cleanLabel = String(labelText || '').trim() || 'Section';
+      const labelDisplay = /[:.!?]$/.test(cleanLabel) ? cleanLabel : (cleanLabel + ':');
+      // Find the bottom of the existing group (in groupOffsetY space).
+      const bottomDy = Math.max(...ctx.group.map(it => (it.groupOffsetY || 0) + (it.h || 0)));
+      // 52 = original 80px section spacing minus 28px row height, so the new
+      // section sits flush with the rhythm set by Client / Materials / Sector.
+      const newDy = bottomDy + 52;
+      const colors = ibThemeColors();
+      const bp = currentBp();
+      // Unique groupKeys per section
+      const sid = uid().slice(-6);
+      const labelSpec = {
+        key: 'customLabel_' + sid, dx: 0, dy: newDy, w: 130, h: 28,
+        fontSize: 18, fontWeight: 500, role: 'title',
+      };
+      const valueSpec = {
+        key: 'custom_' + sid, dx: 150, dy: newDy, w: 500, h: 28,
+        fontSize: 18, fontWeight: 400, role: 'body',
+      };
+      const baseFromSpec = (spec, text, color) => ({
+        id: uid(),
+        type: 'text',
+        x: ctx.originX + spec.dx,
+        y: ctx.originY + spec.dy,
+        w: spec.w,
+        h: spec.h,
+        rot: 0,
+        z: ++state.zCounter,
+        text,
+        fontSize: spec.fontSize,
+        fontWeight: spec.fontWeight,
+        align: 'left',
+        padding: 0,
+        lineHeight: 1.4,
+        letterSpacing: 0,
+        transform: 'none',
+        color,
+        wPct: Math.round(spec.w / bp.w * 100),
+        groupId: ctx.gid,
+        groupKey: spec.key,
+        groupOffsetX: spec.dx,
+        groupOffsetY: spec.dy,
+        ibStyleVersion: IB_STYLE_VERSION,
+      });
+      pushHistory();
+      const labelItem = baseFromSpec(labelSpec, labelDisplay, colors.titleColor);
+      const valueItem = baseFromSpec(valueSpec, cleanLabel + ' value', colors.bodyColor);
+      clampItem(labelItem, bp);
+      clampItem(valueItem, bp);
+      currentItems().push(labelItem);
+      currentItems().push(valueItem);
+      renderItem(labelItem);
+      renderItem(valueItem);
+      // Shift selection to the new value so the user can type immediately
+      state.selection = new Set([valueItem.id]);
+      state.primaryId = valueItem.id;
+      refreshSelectionUI();
+      setDirty(true);
+    }
+
+    // Group an info-block's items by visual section. Title and Year share
+    // the top row; Client / Materials / Sector / custom_* each pair a
+    // label item with its value item; Description stands alone.
+    // Returned in render order (top → bottom).
+    function getInfoBlockSections(group) {
+      const buckets = new Map();
+      const sidFor = (key) => {
+        if (key === 'title' || key === 'year') return 'title-row';
+        if (key === 'description') return 'description';
+        if (key === 'client' || key === 'clientLabel') return 'client';
+        if (key === 'materials' || key === 'materialsLabel') return 'materials';
+        if (key === 'sector' || key === 'sectorLabel') return 'sector';
+        if (key && key.startsWith('custom_')) return key;
+        if (key && key.startsWith('customLabel_')) return 'custom_' + key.slice('customLabel_'.length);
+        return key || 'other';
+      };
+      group.forEach(it => {
+        const sid = sidFor(it.groupKey || '');
+        if (!buckets.has(sid)) buckets.set(sid, { id: sid, items: [], minDy: Infinity, minY: Infinity });
+        const b = buckets.get(sid);
+        b.items.push(it);
+        const dy = it.groupOffsetY != null ? it.groupOffsetY : it.y;
+        if (dy < b.minDy) b.minDy = dy;
+        if (it.y < b.minY) b.minY = it.y;
+      });
+      const labelFor = (sec) => {
+        if (sec.id === 'title-row') return 'Title / Year';
+        if (sec.id === 'description') return 'Description';
+        if (sec.id === 'client') return 'Client';
+        if (sec.id === 'materials') return 'Materials';
+        if (sec.id === 'sector') return 'Sector';
+        if (sec.id.startsWith('custom_')) {
+          const labelItem = sec.items.find(i => (i.groupKey || '').startsWith('customLabel_'));
+          const t = (labelItem && labelItem.text) || 'Custom';
+          return t.replace(/[:\s]+$/, '');
+        }
+        return sec.id;
+      };
+      const arr = Array.from(buckets.values()).map(b => ({
+        id: b.id, items: b.items, dy: b.minDy, y: b.minY, label: labelFor(b),
+        isCustom: b.id.startsWith('custom_'),
+      }));
+      arr.sort((a, b) => a.dy - b.dy);
+      return arr;
+    }
+
+    // Swap the y-positions of two adjacent sections in the selected info-block
+    // group. Each section is a label+value pair (or single item). All members
+    // shift by the same delta so spacing within the section is preserved.
+    function moveInfoBlockSection(sectionId, direction) {
+      const ctx = selectedInfoBlockGroup();
+      if (!ctx) return;
+      const sections = getInfoBlockSections(ctx.group);
+      const idx = sections.findIndex(s => s.id === sectionId);
+      if (idx < 0) return;
+      const swapWith = direction === 'up' ? idx - 1 : idx + 1;
+      if (swapWith < 0 || swapWith >= sections.length) return;
+      const a = sections[idx], b = sections[swapWith];
+      const dyDelta = b.dy - a.dy;
+      const yDelta  = b.y  - a.y;
+      pushHistory();
+      a.items.forEach(it => {
+        if (it.groupOffsetY != null) it.groupOffsetY = Math.round(it.groupOffsetY + dyDelta);
+        it.y = Math.round(it.y + yDelta);
+        renderItem(it);
+      });
+      b.items.forEach(it => {
+        if (it.groupOffsetY != null) it.groupOffsetY = Math.round(it.groupOffsetY - dyDelta);
+        it.y = Math.round(it.y - yDelta);
+        renderItem(it);
+      });
+      updateSelectionFrame();
+      setDirty(true);
+      updateInspector();
+    }
+
+    // Remove every item belonging to a custom section (label + value).
+    // Built-in sections are not removable through this path — users can
+    // delete their items individually if they really want them gone.
+    // Sections below the removed one shift up to close the gap so the
+    // remaining rows stay evenly spaced.
+    function deleteInfoBlockSection(sectionId) {
+      if (!sectionId || !sectionId.startsWith('custom_')) return;
+      const ctx = selectedInfoBlockGroup();
+      if (!ctx) return;
+      const sections = getInfoBlockSections(ctx.group);
+      const idx = sections.findIndex(s => s.id === sectionId);
+      if (idx < 0) return;
+      const sec = sections[idx];
+      pushHistory();
+      const ids = new Set(sec.items.map(i => i.id));
+
+      // Reflow: shift every section after this one up by the exact gap
+      // that the removed section occupied (next-section-top minus this-top).
+      if (idx < sections.length - 1) {
+        const next = sections[idx + 1];
+        const shiftDy = next.dy - sec.dy;
+        if (shiftDy > 0) {
+          const shiftIds = new Set();
+          for (let i = idx + 1; i < sections.length; i++) {
+            sections[i].items.forEach(it => shiftIds.add(it.id));
+          }
+          ctx.group.forEach(it => {
+            if (!shiftIds.has(it.id)) return;
+            if (it.groupOffsetY != null) it.groupOffsetY = Math.round(it.groupOffsetY - shiftDy);
+            it.y = Math.round(it.y - shiftDy);
+          });
+        }
+      }
+
+      const bp = currentBp();
+      bp.items = bp.items.filter(it => !ids.has(it.id));
+      // Drop deleted ids out of selection
+      ids.forEach(id => state.selection.delete(id));
+      fullRerender();
+      setDirty(true);
+    }
+
+    // Toggle visibility of every item in a section. Sets/clears item.hidden
+    // (the existing field that drives display:none in renderItem and the
+    // public render).
+    function toggleInfoBlockSectionVisible(sectionId, visible) {
+      const ctx = selectedInfoBlockGroup();
+      if (!ctx) return;
+      const sec = getInfoBlockSections(ctx.group).find(s => s.id === sectionId);
+      if (!sec) return;
+      pushHistory();
+      sec.items.forEach(it => {
+        if (visible) delete it.hidden;
+        else it.hidden = true;
+        renderItem(it);
+      });
+      setDirty(true);
+      // No full re-render needed; only the toggled rows changed.
+    }
+
+    // Render the section list in the inspector. Visibility checkbox,
+    // up/down to reorder, delete (×) only on custom sections.
+    function renderInfoBlockSectionList() {
+      const list = document.getElementById('infoBlockSectionList');
+      if (!list) return;
+      const ctx = selectedInfoBlockGroup();
+      if (!ctx) { list.innerHTML = ''; return; }
+      const sections = getInfoBlockSections(ctx.group);
+      list.innerHTML = '';
+      sections.forEach((sec, i) => {
+        const row = document.createElement('div');
+        row.className = 'ib-sec-row';
+        row.dataset.sid = sec.id;
+        // Visibility checkbox: section is on iff every item in it is visible.
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.title = 'Show / hide this section';
+        cb.style.cursor = 'pointer';
+        cb.checked = sec.items.every(it => !it.hidden);
+        cb.addEventListener('change', () => toggleInfoBlockSectionVisible(sec.id, cb.checked));
+        const lbl = document.createElement('span');
+        lbl.className = 'ib-sec-label';
+        lbl.textContent = sec.label;
+        if (!cb.checked) lbl.style.opacity = '0.45';
+        const up = document.createElement('button');
+        up.className = 'ib-sec-btn';
+        up.textContent = '↑';
+        up.title = 'Move up';
+        up.disabled = i === 0;
+        up.addEventListener('click', () => moveInfoBlockSection(sec.id, 'up'));
+        const dn = document.createElement('button');
+        dn.className = 'ib-sec-btn';
+        dn.textContent = '↓';
+        dn.title = 'Move down';
+        dn.disabled = i === sections.length - 1;
+        dn.addEventListener('click', () => moveInfoBlockSection(sec.id, 'down'));
+        row.appendChild(cb);
+        row.appendChild(lbl);
+        row.appendChild(up);
+        row.appendChild(dn);
+        if (sec.isCustom) {
+          const del = document.createElement('button');
+          del.className = 'ib-sec-btn danger';
+          del.textContent = '×';
+          del.title = 'Delete this section';
+          del.addEventListener('click', () => deleteInfoBlockSection(sec.id));
+          row.appendChild(del);
+        }
+        list.appendChild(row);
+      });
+    }
+
+    // Pull current project metadata (title / year / client / sector /
+    // materials / description) into the corresponding fields of the
+    // selected info-block group. Only overwrites the fields that map.
+    function syncInfoBlockFromProject() {
+      const ctx = selectedInfoBlockGroup();
+      if (!ctx) return;
+      const pid = state.projectId;
+      const proj = (pid && !pid.startsWith('page:'))
+        ? state.projects.find(p => p.id === pid)
+        : null;
+      if (!proj) {
+        setStatus && setStatus('No project metadata to sync from', 'err');
+        return;
+      }
+      const map = {
+        title: proj.title,
+        year: proj.year != null ? String(proj.year) : null,
+        client: proj.client,
+        sector: proj.sector,
+        materials: proj.materials,
+        description: proj.description,
+      };
+      let touched = 0;
+      pushHistory();
+      ctx.group.forEach(it => {
+        const v = map[it.groupKey];
+        if (v != null && v !== '' && v !== it.text) {
+          it.text = String(v);
+          renderItem(it);
+          touched++;
+        }
+      });
+      if (touched) {
+        setDirty(true);
+        if (setStatus) setStatus('Synced ' + touched + ' field' + (touched === 1 ? '' : 's') + ' from project info', 'ok');
+      } else {
+        if (setStatus) setStatus('Info block already matches project metadata', 'ok');
+      }
+    }
+
+    function commitInfoBlockEdit(item, el, key) {
+      if (!key) key = el.dataset.fieldText || el.dataset.field;
+      if (!key) return;
+      let newVal;
+      if (key === 'description') {
+        const ps = Array.from(el.querySelectorAll('p')).map(p => p.textContent.trim()).filter(Boolean);
+        if (!ps.length) {
+          newVal = el.innerText.split(/\n+/).map(s => s.trim()).filter(Boolean);
+        } else {
+          newVal = ps;
+        }
+        if (JSON.stringify(item.description) === JSON.stringify(newVal)) return;
+        pushHistory();
+        item.description = newVal;
+      } else {
+        newVal = el.textContent.trim();
+        if (item[key] === newVal) return;
+        pushHistory();
+        item[key] = newVal;
+      }
+      setDirty(true);
+    }
+
+    // ── IMAGE GRID ───────────────────────────────────────
+    // Single canvas item that lays out R×C cells. Each cell holds an
+    // optional media source (image / video / svg). Scale controls the
+    // image size relative to its cell so padding emerges symmetrically
+    // from the delta. Differing aspect ratios work because cell media
+    // uses object-fit: contain.
+    function addImageGridAt(cx, cy, opts) {
+      pushHistory();
+      const bp = currentBp();
+      const defaultW = Math.min(bp.w - 80, 900);
+      const defaultH = Math.min(bp.h - 80, 700);
+      const rows = Math.max(1, Math.min(20, (opts && +opts.rows) || 3));
+      const cols = Math.max(1, Math.min(20, (opts && +opts.cols) || 3));
+      const scale = Math.max(0.05, Math.min(1, (opts && +opts.scale) || 0.9));
+      const item = {
+        id: uid(),
+        type: 'imagegrid',
+        x: Math.round(cx - defaultW / 2),
+        y: Math.round(cy - defaultH / 2),
+        w: defaultW,
+        h: defaultH,
+        rot: 0,
+        z: ++state.zCounter,
+        rows,
+        cols,
+        scale,
+        // Row-major: cells[row * cols + col]
+        cells: Array.from({ length: rows * cols }, () => ({ src: null, type: null })),
+      };
+      clampItem(item, bp);
+      currentItems().push(item);
+      renderItem(item);
+      selectOnly(item.id);
+      setDirty(true);
+      updateEmptyState();
+      renderTabs();
+      scrollInspectorToSelection();
+    }
+
+    function scrollInspectorToSelection() {
+      const selSec = document.getElementById('selectionSection');
+      const ir = document.getElementById('inspector');
+      if (!selSec || !ir) return;
+      const irR = ir.getBoundingClientRect();
+      const sR = selSec.getBoundingClientRect();
+      const visible = sR.top >= irR.top && sR.bottom <= irR.bottom;
+      if (!visible) selSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Caption width tracks the visible image bounds (object-fit: contain
+    // shrinks media to fit). Cropped cells fill the inner box, so the
+    // caption matches the cell width in that case.
+    function alignCaptionToImage(cellEl) {
+      const cap = cellEl.querySelector('.imgrid__caption');
+      const inner = cellEl.querySelector('.imgrid__inner');
+      if (!cap || !inner) return;
+      if (inner.classList.contains('is-cropped')) {
+        cap.style.setProperty('--cap-w', '100%');
+        cap.style.setProperty('--cap-x', '0px');
+        return;
+      }
+      const media = inner.querySelector('img, video, svg');
+      if (!media) {
+        cap.style.setProperty('--cap-w', '100%');
+        cap.style.setProperty('--cap-x', '0px');
+        return;
+      }
+      const apply = () => {
+        const cw = inner.clientWidth, ch = inner.clientHeight;
+        if (!cw || !ch) return;
+        let nw = media.naturalWidth || media.videoWidth || 0;
+        let nh = media.naturalHeight || media.videoHeight || 0;
+        if ((!nw || !nh) && media.tagName === 'svg' && media.viewBox && media.viewBox.baseVal) {
+          nw = media.viewBox.baseVal.width;
+          nh = media.viewBox.baseVal.height;
+        }
+        if (!nw || !nh) {
+          cap.style.setProperty('--cap-w', '100%');
+          cap.style.setProperty('--cap-x', '0px');
+          return;
+        }
+        const scale = Math.min(cw / nw, ch / nh);
+        const contentW = nw * scale;
+        const offsetX = Math.max(0, (cw - contentW) / 2);
+        cap.style.setProperty('--cap-w', contentW + 'px');
+        cap.style.setProperty('--cap-x', offsetX + 'px');
+      };
+      if (media.tagName === 'IMG' && !media.complete) {
+        media.addEventListener('load', apply, { once: true });
+        media.addEventListener('error', apply, { once: true });
+      } else if (media.tagName === 'VIDEO' && !media.videoWidth) {
+        media.addEventListener('loadedmetadata', apply, { once: true });
+      } else {
+        apply();
+      }
+      if (!cellEl._capRO && typeof ResizeObserver !== 'undefined') {
+        cellEl._capRO = new ResizeObserver(apply);
+        cellEl._capRO.observe(inner);
+      }
+    }
+
+    // Drag a divider between two cells in the same imgrid row to redistribute
+    // their relative widths. Mutates cell.w on both neighbours, then rebuilds
+    // the grid on release so the new layout (and dividers) re-render cleanly.
+    function wireGridDivider(host, item, dividerEl, wrapEl) {
+      dividerEl.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const leftIdx = +dividerEl.dataset.leftIdx;
+        const rightIdx = +dividerEl.dataset.rightIdx;
+        const row = +dividerEl.dataset.row;
+        const cols = Math.max(1, item.cols || 1);
+        item.cells = item.cells || [];
+        const ensureCell = (i) => {
+          while (item.cells.length <= i) item.cells.push({ src: null, type: null });
+          if (!item.cells[i]) item.cells[i] = { src: null, type: null };
+        };
+        ensureCell(leftIdx); ensureCell(rightIdx);
+        const startLeftW = (item.cells[leftIdx].w == null ? 1 : +item.cells[leftIdx].w);
+        const startRightW = (item.cells[rightIdx].w == null ? 1 : +item.cells[rightIdx].w);
+        const sumPair = startLeftW + startRightW;
+        let rowTotal = 0;
+        for (let c = 0; c < cols; c++) {
+          const w = item.cells[row*cols+c]?.w;
+          rowTotal += Math.max(0, w == null ? 1 : +w);
+        }
+        if (!rowTotal) rowTotal = 1;
+        const wrapRect = wrapEl.getBoundingClientRect();
+        const startX = e.clientX;
+        pushHistory();
+        dividerEl.classList.add('is-dragging');
+        dividerEl.setPointerCapture?.(e.pointerId);
+        const cellEls = Array.from(wrapEl.querySelectorAll(`.imgrid__cell[data-row="${row}"]`));
+        const leftEl = cellEls.find(el => +el.dataset.idx === leftIdx);
+        const rightEl = cellEls.find(el => +el.dataset.idx === rightIdx);
+        const leftStartLeftPct = parseFloat(leftEl?.style.left) || 0;
+
+        const onMove = (ev) => {
+          const dxPct = ((ev.clientX - startX) / Math.max(1, wrapRect.width)) * 100;
+          const pairPct = (sumPair / rowTotal) * 100;
+          let newLeftPct = ((startLeftW / rowTotal) * 100) + dxPct;
+          newLeftPct = Math.max(0, Math.min(pairPct, newLeftPct));
+          const newRightPct = pairPct - newLeftPct;
+          const newLeftW = (newLeftPct / 100) * rowTotal;
+          const newRightW = sumPair - newLeftW;
+          item.cells[leftIdx].w = newLeftW;
+          item.cells[rightIdx].w = newRightW;
+          if (leftEl) {
+            leftEl.style.width = newLeftPct + '%';
+            leftEl.dataset.w = newLeftW;
+          }
+          if (rightEl) {
+            rightEl.style.left = (leftStartLeftPct + newLeftPct) + '%';
+            rightEl.style.width = newRightPct + '%';
+            rightEl.dataset.w = newRightW;
+          }
+          dividerEl.style.left = (leftStartLeftPct + newLeftPct) + '%';
+          if (leftEl) alignCaptionToImage(leftEl);
+          if (rightEl) alignCaptionToImage(rightEl);
+        };
+        const onUp = (ev) => {
+          dividerEl.releasePointerCapture?.(ev.pointerId);
+          dividerEl.classList.remove('is-dragging');
+          window.removeEventListener('pointermove', onMove);
+          window.removeEventListener('pointerup', onUp);
+          if (Math.abs((item.cells[leftIdx].w ?? 1) - 1) < 1e-9) delete item.cells[leftIdx].w;
+          if (Math.abs((item.cells[rightIdx].w ?? 1) - 1) < 1e-9) delete item.cells[rightIdx].w;
+          setDirty(true);
+          buildImageGridInto(host, item);
+        };
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+      });
+    }
+
+    // Build (or rebuild) the grid DOM inside the item element. Destroys
+    // prior .imgrid content but keeps .handle children for the canvas
+    // resize handles.
+    function buildImageGridInto(host, item) {
+      Array.from(host.children).forEach(c => { if (!c.classList.contains('handle')) c.remove(); });
+      const rows = Math.max(1, item.rows || 1);
+      const cols = Math.max(1, item.cols || 1);
+      const scale = Math.max(0.05, Math.min(1, item.scale || 1));
+      const cellH = 100 / rows;
+      // padding within each cell = (1 - scale) / 2 * cellSize
+      const innerPad = (1 - scale) / 2;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'imgrid';
+      const cellsForCaption = [];
+      for (let r = 0; r < rows; r++) {
+        // Per-cell weights: cell.w (default 1). Width % within row = w / sum.
+        const weights = [];
+        for (let c = 0; c < cols; c++) {
+          const w = (item.cells && item.cells[r*cols+c] && item.cells[r*cols+c].w);
+          weights.push(Math.max(0, w == null ? 1 : +w));
+        }
+        const total = weights.reduce((a,b) => a+b, 0) || 1;
+        let leftPct = 0;
+        const rowCellRanges = []; // { leftPct, wPct, idx } for each rendered cell in this row
+        for (let c = 0; c < cols; c++) {
+          const wPct = (weights[c] / total) * 100;
+          if (wPct === 0) { continue; }
+          const idx = r * cols + c;
+          const cell = (item.cells && item.cells[idx]) || { src: null, type: null };
+          const el = document.createElement('div');
+          el.className = 'imgrid__cell';
+          el.dataset.row = r; el.dataset.col = c; el.dataset.idx = idx;
+          el.dataset.w = weights[c];
+          el.style.left   = leftPct + '%';
+          el.style.top    = (r * cellH) + '%';
+          el.style.width  = wPct + '%';
+          el.style.height = cellH + '%';
+          el.style.padding = `${innerPad * cellH}% ${innerPad * wPct}%`;
+
+          const inner = document.createElement('div');
+          inner.className = 'imgrid__inner';
+          if (cell.src) {
+            if (cell.crop && cell.crop.w > 0 && cell.crop.h > 0) {
+              inner.classList.add('is-cropped');
+              inner.style.setProperty('--cx', cell.crop.x || 0);
+              inner.style.setProperty('--cy', cell.crop.y || 0);
+              inner.style.setProperty('--cw', cell.crop.w);
+              inner.style.setProperty('--ch', cell.crop.h);
+            }
+            if (cell.type === 'video' || /\.(mp4|webm|mov)$/i.test(cell.src)) {
+              const v = document.createElement('video');
+              v.src = cell.src; v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+              v.setAttribute('draggable', 'false');
+              inner.appendChild(v);
+            } else {
+              const img = document.createElement('img');
+              img.src = cell.src; img.alt = '';
+              img.setAttribute('draggable', 'false');
+              img.style.pointerEvents = 'none';
+              inner.appendChild(img);
+            }
+            // Crop button — appears on hover.
+            const cropBtn = document.createElement('div');
+            cropBtn.className = 'imgrid__cropbtn';
+            cropBtn.textContent = cell.crop ? 'Re-crop' : 'Crop';
+            cropBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+            cropBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+            cropBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              startCellCrop(host, item, idx);
+            });
+            el.appendChild(cropBtn);
+          } else {
+            const ph = document.createElement('div');
+            ph.className = 'imgrid__placeholder';
+            inner.appendChild(ph);
+          }
+          el.appendChild(inner);
+
+          // Editable caption row below the image. Stored in cell.caption,
+          // round-trips through layouts.json and is mirrored in project.html.
+          const cap = document.createElement('div');
+          cap.className = 'imgrid__caption';
+          cap.contentEditable = 'true';
+          cap.spellcheck = false;
+          cap.dataset.placeholder = 'Add caption…';
+          cap.textContent = (cell.caption || '');
+          if (item.captionSize) cap.style.fontSize = item.captionSize + 'px';
+          // Avoid the contenteditable click bubbling up to item-drag/select.
+          cap.addEventListener('pointerdown', (e) => e.stopPropagation());
+          cap.addEventListener('mousedown',  (e) => e.stopPropagation());
+          cap.addEventListener('focus', () => { pushHistory(); });
+          cap.addEventListener('input', () => {
+            item.cells = item.cells || [];
+            while (item.cells.length <= idx) item.cells.push({ src: null, type: null });
+            const next = cap.textContent.replace(/ /g, ' ').trim();
+            item.cells[idx] = { ...(item.cells[idx] || {}), caption: next || undefined };
+            setDirty(true);
+          });
+          cap.addEventListener('keydown', (e) => {
+            // Enter inserts a newline rather than blurring; Esc commits + blurs.
+            if (e.key === 'Escape') { e.preventDefault(); cap.blur(); }
+          });
+          el.appendChild(cap);
+
+          wireGridCell(host, item, el, idx);
+          wrap.appendChild(el);
+          rowCellRanges.push({ leftPct, wPct, idx, c, el });
+          cellsForCaption.push(el);
+          leftPct += wPct;
+        }
+        // Drag-to-resize dividers between adjacent rendered cells in this row.
+        for (let k = 0; k < rowCellRanges.length - 1; k++) {
+          const left = rowCellRanges[k];
+          const right = rowCellRanges[k + 1];
+          const divider = document.createElement('div');
+          divider.className = 'imgrid__divider';
+          divider.style.left = (left.leftPct + left.wPct) + '%';
+          divider.style.top = (r * cellH) + '%';
+          divider.style.height = cellH + '%';
+          divider.dataset.row = r;
+          divider.dataset.leftIdx = left.idx;
+          divider.dataset.rightIdx = right.idx;
+          wireGridDivider(host, item, divider, wrap);
+          wrap.appendChild(divider);
+        }
+      }
+      host.insertBefore(wrap, host.firstChild);
+      cellsForCaption.forEach(alignCaptionToImage);
+    }
+
+    function wireGridCell(host, item, cellEl, idx) {
+      // Accept asset drops (from assets panel) onto this cell
+      cellEl.addEventListener('dragover', (e) => {
+        if (!e.dataTransfer) return;
+        const types = Array.from(e.dataTransfer.types || []);
+        if (types.includes('application/x-asset') || types.includes('Files')) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = 'copy';
+          cellEl.classList.add('dragover');
+        }
+      });
+      cellEl.addEventListener('dragleave', () => cellEl.classList.remove('dragover'));
+      cellEl.addEventListener('drop', (e) => {
+        cellEl.classList.remove('dragover');
+        try {
+          const data = e.dataTransfer.getData('application/x-asset');
+          if (data) {
+            e.preventDefault(); e.stopPropagation();
+            const asset = JSON.parse(data);
+            if (asset.src) {
+              pushHistory();
+              item.cells = item.cells || [];
+              while (item.cells.length <= idx) item.cells.push({ src: null, type: null });
+              const prevW = item.cells[idx]?.w;
+              item.cells[idx] = { src: asset.src, type: asset.type || 'image', ...(prevW != null ? { w: prevW } : {}) };
+              renderItem(item);
+              setDirty(true);
+            }
+          }
+        } catch {}
+      });
+      // Stop item-drag when clicking on a cell that already has an image —
+      // the user probably wants to interact with the cell, not drag the grid.
+      // (Resize handles on the container still work.)
+      // No pointerdown stopPropagation here: we want single-click to still
+      // select the grid item so the inspector opens.
+    }
+
+    // ── PER-CELL IMAGE CROP ─────────────────────────────────────
+    // Opens a fullscreen modal crop editor for one grid cell. The user
+    // drags the rectangle / corner handles to pick a window onto the source
+    // image, then clicks Apply (saves cell.crop = {x, y, w, h} as fractions
+    // 0–1) or Cancel (no-op). Non-destructive — original image src is
+    // preserved; rendering shrinks/translates the img so only the selected
+    // region is visible. Mirrored in project.html.
+    function startCellCrop(host, item, idx) {
+      const cell = item.cells && item.cells[idx];
+      if (!cell || !cell.src) return;
+
+      // Remove any pre-existing crop modal.
+      document.querySelectorAll('.crop-modal').forEach((m) => m.remove());
+
+      const modal = document.createElement('div');
+      modal.className = 'crop-modal';
+      modal.innerHTML = `
+        <div class="crop-modal__header">
+          <span>Drag to move • Corners to resize • Click background to draw new • Enter applies, Esc cancels</span>
+          <div class="crop-modal__actions">
+            <button class="reset" type="button">Remove crop</button>
+            <button class="cancel" type="button">Cancel</button>
+            <button class="primary apply" type="button">Apply</button>
+          </div>
+        </div>
+        <div class="crop-modal__stage">
+          <img class="crop-modal__img" draggable="false" />
+          <div class="crop-modal__mask"></div>
+          <div class="crop-modal__rect">
+            <span class="crop-modal__handle nw" data-h="nw"></span>
+            <span class="crop-modal__handle ne" data-h="ne"></span>
+            <span class="crop-modal__handle sw" data-h="sw"></span>
+            <span class="crop-modal__handle se" data-h="se"></span>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      const stage = modal.querySelector('.crop-modal__stage');
+      const previewImg = modal.querySelector('.crop-modal__img');
+      const mask = modal.querySelector('.crop-modal__mask');
+      const rect = modal.querySelector('.crop-modal__rect');
+      const btnApply = modal.querySelector('.apply');
+      const btnCancel = modal.querySelector('.cancel');
+      const btnReset = modal.querySelector('.reset');
+
+      // Crop state in image-relative fractions [0, 1].
+      const state = {
+        x: cell.crop && cell.crop.x != null ? cell.crop.x : 0,
+        y: cell.crop && cell.crop.y != null ? cell.crop.y : 0,
+        w: cell.crop && cell.crop.w ? cell.crop.w : 1,
+        h: cell.crop && cell.crop.h ? cell.crop.h : 1,
+      };
+
+      // Compute the displayed image rectangle inside the stage so the crop
+      // rectangle is placed in image-relative coordinates regardless of
+      // letterbox bands (image uses object-fit: contain via max-width/height).
+      function imgArea() {
+        const sRect = stage.getBoundingClientRect();
+        const ir = previewImg.getBoundingClientRect();
+        return {
+          left: ir.left - sRect.left,
+          top:  ir.top  - sRect.top,
+          width:  ir.width,
+          height: ir.height,
+        };
+      }
+
+      function paint() {
+        const a = imgArea();
+        if (!a.width || !a.height) return;
+        const left = a.left + state.x * a.width;
+        const top  = a.top  + state.y * a.height;
+        const w = state.w * a.width;
+        const h = state.h * a.height;
+        rect.style.left = left + 'px';
+        rect.style.top = top + 'px';
+        rect.style.width = w + 'px';
+        rect.style.height = h + 'px';
+        mask.style.left = left + 'px';
+        mask.style.top = top + 'px';
+        mask.style.width = w + 'px';
+        mask.style.height = h + 'px';
+      }
+
+      function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+      function clampState() {
+        state.w = Math.max(0.02, Math.min(1, state.w));
+        state.h = Math.max(0.02, Math.min(1, state.h));
+        state.x = clamp01(state.x);
+        state.y = clamp01(state.y);
+        if (state.x + state.w > 1) state.x = 1 - state.w;
+        if (state.y + state.h > 1) state.y = 1 - state.h;
+      }
+
+      previewImg.addEventListener('load', paint);
+      previewImg.src = cell.src;
+      if (previewImg.complete) requestAnimationFrame(paint);
+      window.addEventListener('resize', paint);
+
+      let drag = null;
+      function onStagePointerDown(e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        const handleEl = e.target.closest('.crop-modal__handle');
+        const onRect = e.target === rect || handleEl;
+        const a = imgArea();
+        if (handleEl) {
+          drag = { mode: 'resize', handle: handleEl.dataset.h, startX: e.clientX, startY: e.clientY, base: { ...state }, area: a };
+        } else if (onRect) {
+          drag = { mode: 'move', startX: e.clientX, startY: e.clientY, base: { ...state }, area: a };
+        } else {
+          // Empty stage click — start a fresh crop from that point.
+          const sRect = stage.getBoundingClientRect();
+          const px = clamp01((e.clientX - sRect.left - a.left) / a.width);
+          const py = clamp01((e.clientY - sRect.top  - a.top ) / a.height);
+          state.x = px; state.y = py; state.w = 0.02; state.h = 0.02;
+          clampState();
+          paint();
+          drag = { mode: 'resize', handle: 'se', startX: e.clientX, startY: e.clientY, base: { ...state }, area: a };
+        }
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp, { once: true });
+      }
+      function onPointerMove(e) {
+        if (!drag) return;
+        const dx = (e.clientX - drag.startX) / drag.area.width;
+        const dy = (e.clientY - drag.startY) / drag.area.height;
+        if (drag.mode === 'move') {
+          state.x = drag.base.x + dx;
+          state.y = drag.base.y + dy;
+        } else {
+          const h = drag.handle;
+          if (h.includes('w')) { state.x = drag.base.x + dx; state.w = drag.base.w - dx; }
+          if (h.includes('e')) { state.w = drag.base.w + dx; }
+          if (h.includes('n')) { state.y = drag.base.y + dy; state.h = drag.base.h - dy; }
+          if (h.includes('s')) { state.h = drag.base.h + dy; }
+        }
+        clampState();
+        paint();
+      }
+      function onPointerUp() {
+        drag = null;
+        window.removeEventListener('pointermove', onPointerMove);
+      }
+      stage.addEventListener('pointerdown', onStagePointerDown);
+
+      function close() {
+        modal.remove();
+        window.removeEventListener('resize', paint);
+        document.removeEventListener('keydown', onKey);
+      }
+      function apply() {
+        pushHistory();
+        item.cells = item.cells || [];
+        const next = { ...(item.cells[idx] || {}), crop: { x: state.x, y: state.y, w: state.w, h: state.h } };
+        if (next.crop.w >= 0.999 && next.crop.h >= 0.999 && next.crop.x <= 0.001 && next.crop.y <= 0.001) {
+          delete next.crop;
+        }
+        item.cells[idx] = next;
+        renderItem(item);
+        setDirty(true);
+        close();
+      }
+      function reset() {
+        pushHistory();
+        item.cells = item.cells || [];
+        const next = { ...(item.cells[idx] || {}) };
+        delete next.crop;
+        item.cells[idx] = next;
+        renderItem(item);
+        setDirty(true);
+        close();
+      }
+      btnApply.addEventListener('click', apply);
+      btnCancel.addEventListener('click', close);
+      btnReset.addEventListener('click', reset);
+
+      const onKey = (e) => {
+        if (e.key === 'Escape') { e.preventDefault(); close(); }
+        else if (e.key === 'Enter') { e.preventDefault(); apply(); }
+      };
+      document.addEventListener('keydown', onKey);
     }
 
     function addSpacerItemAt(x, y) {
@@ -5581,7 +7487,10 @@
       el.style.textAlign = item.align || 'left';
       el.style.padding = (item.padding || 0) + 'px';
       el.style.letterSpacing = (item.letterSpacing || 0) + 'em';
-      el.style.fontFamily = item.fontFamily || 'inherit';
+      // Only set inline fontFamily when the item explicitly overrides it,
+      // so the .item-text CSS rule (medium-capable stack) can take effect.
+      if (item.fontFamily) el.style.fontFamily = item.fontFamily;
+      else el.style.removeProperty('font-family');
       el.style.textTransform = item.transform || 'none';
     }
 
@@ -5602,7 +7511,10 @@
       el.style.zIndex = item.z;
       el.style.display = item.hidden ? 'none' : '';
       el.style.opacity = item.locked ? 0.85 : '';
-      el.dataset.kind = item.type === 'text' ? 'text' : (item.type === 'spacer' ? 'spacer' : 'media');
+      el.dataset.kind = item.type === 'text' ? 'text'
+        : (item.type === 'spacer' ? 'spacer'
+        : (item.type === 'infoblock' ? 'infoblock'
+        : (item.type === 'imagegrid' ? 'imagegrid' : 'media')));
       if (item.type !== 'text' && item.type !== 'spacer' && isSvg(item.src)) el.dataset.svg = '1';
       // Responsive-width badge
       let badge = el.querySelector('.wPct-badge');
@@ -5627,9 +7539,17 @@
           t = document.createElement('div');
           t.className = 'item-text';
           el.insertBefore(t, el.firstChild);
-          // Double-click enters inline edit mode
+          // Double-click enters inline edit mode. If the text item is part of
+          // an info-block group and we haven't "entered" it yet, the double-
+          // click also enters the group (selects just this member) so the
+          // user can manipulate fields independently.
           el.addEventListener('dblclick', (ev) => {
             ev.stopPropagation();
+            const it = findItem(item.id);
+            if (it && it.groupId && /^ib_/.test(it.groupId) && state.enteredGroupId !== it.groupId) {
+              state.enteredGroupId = it.groupId;
+              selectOnly(it.id);
+            }
             beginTextEdit(item.id);
           });
         }
@@ -5662,6 +7582,16 @@
       }
       if (item.type === 'spacer') {
         Array.from(el.children).forEach(c => { if (!c.classList.contains('handle')) c.remove(); });
+        updateHandlesFor(el, item);
+        return;
+      }
+      if (item.type === 'infoblock') {
+        buildInfoBlockInto(el, item);
+        updateHandlesFor(el, item);
+        return;
+      }
+      if (item.type === 'imagegrid') {
+        buildImageGridInto(el, item);
         updateHandlesFor(el, item);
         return;
       }
@@ -5710,6 +7640,21 @@
           v.src = item.src; v.muted = true; v.loop = true;
           v.autoplay = true; v.playsInline = true;
           v.dataset.src = item.src;
+          // Snap the item's height to the video's natural aspect once metadata
+          // loads, so the bounding box exactly matches the video (no letterbox,
+          // no crop). Idempotent: only fires when off by >1px. setDirty so the
+          // correction can be saved; no pushHistory because this isn't user-
+          // initiated.
+          v.addEventListener('loadedmetadata', () => {
+            if (!v.videoWidth || !v.videoHeight || !item.w) return;
+            const targetH = Math.round(item.w * v.videoHeight / v.videoWidth);
+            if (Math.abs(targetH - item.h) > 1) {
+              item.h = targetH;
+              el.style.height = item.h + 'px';
+              updateHandlesFor(el, item);
+              setDirty(true);
+            }
+          }, { once: true });
           el.insertBefore(v, el.firstChild);
         } else if (isSvg(item.src)) {
           // Placeholder container so ordering is stable; inliner replaces it
@@ -5717,7 +7662,15 @@
           holder.dataset.src = item.src;
           holder.style.width = '100%'; holder.style.height = '100%';
           el.insertBefore(holder, el.firstChild);
-          __inlineSvgInto(holder, item.src).catch(() => {});
+          __inlineSvgInto(holder, item.src).then(() => {
+            // Re-apply crop styling to the now-present <svg> child so imgPan
+            // / clip-path take effect after async inline finishes.
+            applyCropClip(el, item);
+          }).catch(() => {});
+          el.addEventListener('dblclick', (ev) => {
+            ev.stopPropagation();
+            beginCrop(item.id);
+          });
         } else {
           const img = document.createElement('img');
           img.src = item.src; img.alt = '';
@@ -5735,19 +7688,82 @@
       // Apply crop clip-path if set. Using clip-path preserves image position
       // while trimming visible edges.
       applyCropClip(el, item);
+      ensureItemCaption(el, item);
       updateHandlesFor(el, item);
       // If this item is currently being cropped, keep the crop overlay synced.
       if (state.croppingId === item.id) renderCropOverlay(el, item);
     }
 
+    // Editable caption attached to a single image/video/SVG item. The div
+    // sits below the item's bounded box (CSS top:100%), so adding/removing
+    // a caption never shifts the media. Mirrored at render-time in
+    // project.html via .c-item-caption.
+    function ensureItemCaption(el, item) {
+      let cap = el.querySelector(':scope > .item-caption');
+      if (!cap) {
+        cap = document.createElement('div');
+        cap.className = 'item-caption';
+        cap.contentEditable = 'true';
+        cap.spellcheck = false;
+        cap.dataset.placeholder = 'Add caption…';
+        cap.addEventListener('pointerdown', (e) => e.stopPropagation());
+        cap.addEventListener('mousedown',  (e) => e.stopPropagation());
+        cap.addEventListener('focus', () => { pushHistory(); });
+        cap.addEventListener('input', () => {
+          const next = cap.textContent.replace(/ /g, ' ').trim();
+          item.caption = next || undefined;
+          setDirty(true);
+        });
+        cap.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') { e.preventDefault(); cap.blur(); }
+        });
+        el.appendChild(cap);
+      }
+      const next = item.caption || '';
+      if (cap.textContent !== next && document.activeElement !== cap) cap.textContent = next;
+      cap.style.fontSize = item.captionSize ? item.captionSize + 'px' : '';
+    }
+
     function applyCropClip(el, item) {
-      const mediaChild = el.querySelector(':scope > img, :scope > video');
+      // SVG items render into a <div data-src> holder containing an inline <svg>.
+      // Treat that holder as the media child so clip-path and imgPan apply
+      // identically to raster images.
+      const mediaChild = el.querySelector(':scope > img, :scope > video, :scope > div[data-src]');
       if (!mediaChild) return;
+      const innerSvg = mediaChild.tagName === 'DIV' ? mediaChild.querySelector(':scope > svg') : null;
       const c = item.crop;
       if (c && (c.t || c.r || c.b || c.l)) {
         mediaChild.style.clipPath = 'inset(' + (c.t || 0) + '% ' + (c.r || 0) + '% ' + (c.b || 0) + '% ' + (c.l || 0) + '%)';
       } else {
         mediaChild.style.clipPath = '';
+      }
+      // Apply destructive-crop pan transform if present. Image is sized
+      // larger than the container and offset so the kept region fills it.
+      const p = item.imgPan;
+      if (p && (p.sx !== 1 || p.sy !== 1 || p.ox !== 0 || p.oy !== 0)) {
+        el.style.overflow = 'hidden';
+        mediaChild.style.position = 'absolute';
+        mediaChild.style.left = (-p.ox * 100) + '%';
+        mediaChild.style.top  = (-p.oy * 100) + '%';
+        mediaChild.style.width  = (p.sx * 100) + '%';
+        mediaChild.style.height = (p.sy * 100) + '%';
+        // Inline SVG must stretch to fill the (now scaled) holder, otherwise
+        // preserveAspectRatio="meet" would letterbox and the crop math
+        // wouldn't line up. non-scaling-stroke keeps stroke widths uniform.
+        if (innerSvg) innerSvg.setAttribute('preserveAspectRatio', 'none');
+      } else {
+        mediaChild.style.position = '';
+        mediaChild.style.left = '';
+        mediaChild.style.top = '';
+        if (mediaChild.tagName === 'DIV') {
+          // SVG holder defaults to 100%/100% inline styling — restore it
+          mediaChild.style.width = '100%';
+          mediaChild.style.height = '100%';
+        } else {
+          mediaChild.style.width = '';
+          mediaChild.style.height = '';
+        }
+        if (innerSvg) innerSvg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
     }
 
@@ -5785,7 +7801,90 @@
       el.appendChild(rot);
     }
 
+    // Normalize any old info-block group labels whose text was stored as
+    // uppercase (e.g., "CLIENT") from before we switched to title case.
+    // Runs silently on every render; a no-op once everything is clean.
+    // Bumps once per breaking change to info-block default styling. Items
+    // with ibStyleVersion >= IB_STYLE_VERSION are considered up-to-date
+    // and skipped, so user customizations after migration are preserved.
+    const IB_STYLE_VERSION = 4;
+
+    function migrateInfoBlockLabels() {
+      const bp = currentBp();
+      if (!bp) return;
+      const isDark = bp.bgTransparent
+        ? document.documentElement.getAttribute('data-theme') !== 'light'
+        : isDarkHex(bp.bg);
+      const titleColor = isDark ? '#ffffff' : '#111111';
+      const bodyColor  = isDark ? '#BFBFBF' : '#555555';
+      const specByKey = {};
+      IB_GROUP_SPEC.forEach(s => { specByKey[s.key] = s; });
+
+      let touched = false;
+
+      // 1) Drop any stale descriptionLabel items (redundant in current spec)
+      const beforeN = currentItems().length;
+      const kept = currentItems().filter(it =>
+        !(it && it.type === 'text' && it.groupId && /^ib_/.test(it.groupId) && it.groupKey === 'descriptionLabel')
+      );
+      if (kept.length !== beforeN) {
+        bp.items = kept;
+        touched = true;
+      }
+
+      // 2) Per-item upgrade — runs once, gated by ibStyleVersion
+      currentItems().forEach(it => {
+        if (!it || it.type !== 'text') return;
+        if (!it.groupId || !/^ib_/.test(it.groupId)) return;
+        const spec = specByKey[it.groupKey];
+        if (!spec) return;
+        if ((it.ibStyleVersion || 0) >= IB_STYLE_VERSION) return;
+
+        // Text — only update if it still matches a known default (case-
+        // insensitive). Avoids clobbering names the user has typed in.
+        const knownDefaults = {
+          clientLabel:   ['client', 'CLIENT', 'Client'],
+          materialsLabel:['materials', 'MATERIALS', 'Materials'],
+          sectorLabel:   ['sector', 'SECTOR', 'Sector'],
+        };
+        const defaults = knownDefaults[it.groupKey];
+        if (defaults && defaults.includes(it.text)) {
+          it.text = spec.text;
+        }
+
+        // Strip uppercase transform that older spawns set on labels
+        if (it.transform === 'uppercase' && (it.groupKey || '').endsWith('Label')) {
+          it.transform = 'none';
+        }
+        if (it.letterSpacing && (it.groupKey || '').endsWith('Label')) {
+          it.letterSpacing = 0;
+        }
+
+        // Font size / weight / line-height align with new spec
+        if (spec.fontSize) it.fontSize = spec.fontSize;
+        if (spec.fontWeight) it.fontWeight = spec.fontWeight;
+        if (spec.lineHeight) it.lineHeight = spec.lineHeight;
+
+        // Year used to spawn at dx 500 (right edge 620), but the row guideline
+        // is dx 650. Re-anchor only if year is still on its old default.
+        if (it.groupKey === 'year' && it.groupOffsetX === 500) {
+          it.x = Math.round((it.x || 0) + 30);
+          it.groupOffsetX = 530;
+        }
+
+        // Two-tone color: title = bright, body/description = softer grey
+        const role = spec.role || 'value';
+        it.color = role === 'title' ? titleColor : bodyColor;
+
+        it.ibStyleVersion = IB_STYLE_VERSION;
+        touched = true;
+      });
+
+      if (touched) setDirty(true);
+    }
+
     function fullRerender() {
+      migrateInfoBlockLabels();
       canvasInner.innerHTML = '';
       currentItems().forEach(renderItem);
       updateEmptyState();
@@ -5802,18 +7901,50 @@
     const layersCountEl = document.getElementById('layersCount');
     const tabAssetsBtn = document.getElementById('tabAssets');
     const tabLayersBtn = document.getElementById('tabLayers');
+    const tabGridBtn = document.getElementById('tabGrid');
     const assetsPane = document.getElementById('assetsPane');
     const layersPane = document.getElementById('layersPane');
+    const gridPane = document.getElementById('gridPane');
     function switchPanelTab(tab) {
-      const isAssets = tab === 'assets';
-      tabAssetsBtn.classList.toggle('active', isAssets);
-      tabLayersBtn.classList.toggle('active', !isAssets);
-      assetsPane.classList.toggle('active', isAssets);
-      layersPane.classList.toggle('active', !isAssets);
-      if (!isAssets) renderLayers();
+      tabAssetsBtn.classList.toggle('active', tab === 'assets');
+      tabLayersBtn.classList.toggle('active', tab === 'layers');
+      tabGridBtn.classList.toggle('active', tab === 'grid');
+      assetsPane.classList.toggle('active', tab === 'assets');
+      layersPane.classList.toggle('active', tab === 'layers');
+      gridPane.classList.toggle('active', tab === 'grid');
+      if (tab === 'layers') renderLayers();
     }
     tabAssetsBtn.addEventListener('click', () => switchPanelTab('assets'));
     tabLayersBtn.addEventListener('click', () => switchPanelTab('layers'));
+    tabGridBtn.addEventListener('click', () => switchPanelTab('grid'));
+
+    // ── LEFT-PANEL GRID CONFIGURATOR ──────────────────────
+    // Mirrors the right-side editor but lets the user pre-configure the
+    // rows / cols / scale before spawning. Quick-preset buttons fill in
+    // common shapes.
+    (function wireGridPreset() {
+      const rowsIn = document.getElementById('gridPresetRows');
+      const colsIn = document.getElementById('gridPresetCols');
+      const scaleIn = document.getElementById('gridPresetScale');
+      const scaleOut = document.getElementById('gridPresetScaleOut');
+      const addBtn = document.getElementById('gridPresetAddBtn');
+      scaleIn.addEventListener('input', () => {
+        scaleOut.textContent = Math.round(parseFloat(scaleIn.value) * 100) + '%';
+      });
+      document.querySelectorAll('.gridPreset').forEach(b => {
+        b.addEventListener('click', () => {
+          rowsIn.value = b.dataset.r;
+          colsIn.value = b.dataset.c;
+        });
+      });
+      addBtn.addEventListener('click', () => {
+        const c = currentBp();
+        const rows = Math.max(1, Math.min(20, parseInt(rowsIn.value, 10) || 3));
+        const cols = Math.max(1, Math.min(20, parseInt(colsIn.value, 10) || 3));
+        const scale = Math.max(0.05, Math.min(1, parseFloat(scaleIn.value) || 0.9));
+        addImageGridAt(c.w / 2, c.h / 2, { rows, cols, scale });
+      });
+    })();
 
     function itemDisplayName(it) {
       if (it.name) return it.name;
@@ -6083,13 +8214,46 @@
             newW = origBox.w * (newH / origBox.h);
           }
         }
-        // Clamp to canvas from the top-left anchor
-        newW = Math.min(newW, c.w - origBox.x);
-        newH = Math.min(newH, c.h - origBox.y);
+        // Alt: grow symmetrically from the bbox center on the active axis,
+        // so dragging the right handle expands left and right edges by the
+        // same amount. Doubles the displacement and re-anchors on center.
+        let anchorX = origBox.x, anchorY = origBox.y;
+        if (ev.altKey) {
+          const cx = origBox.x + origBox.w / 2;
+          const cy = origBox.y + origBox.h / 2;
+          if (axis === 'x' || axis === 'xy') {
+            newW = Math.max(minW, origBox.w + 2 * dx);
+            // Don't let either edge leave the canvas.
+            const halfMax = Math.min(cx, c.w - cx);
+            newW = Math.min(newW, halfMax * 2);
+          }
+          if (axis === 'y' || axis === 'xy') {
+            newH = Math.max(minH, origBox.h + 2 * dy);
+            const halfMax = Math.min(cy, c.h - cy);
+            newH = Math.min(newH, halfMax * 2);
+          }
+          if (ratioLock) {
+            if (axis === 'xy') {
+              const s = Math.min(newW / origBox.w, newH / origBox.h);
+              newW = origBox.w * s;
+              newH = origBox.h * s;
+            } else if (axis === 'x') {
+              newH = origBox.h * (newW / origBox.w);
+            } else if (axis === 'y') {
+              newW = origBox.w * (newH / origBox.h);
+            }
+          }
+          anchorX = cx - newW / 2;
+          anchorY = cy - newH / 2;
+        } else {
+          // Default top-left anchor: clamp to canvas right/bottom.
+          newW = Math.min(newW, c.w - origBox.x);
+          newH = Math.min(newH, c.h - origBox.y);
+        }
         origs.forEach(o => {
           const item = findItem(o.id); if (!item) return;
-          item.x = Math.round(origBox.x + o.rx * newW);
-          item.y = Math.round(origBox.y + o.ry * newH);
+          item.x = Math.round(anchorX + o.rx * newW);
+          item.y = Math.round(anchorY + o.ry * newH);
           item.w = Math.max(minW, Math.round(o.rw * newW));
           item.h = Math.max(minH, Math.round(o.rh * newH));
           if (item.wPct != null) item.wPct = Math.round(item.w / c.w * 100);
@@ -6183,14 +8347,75 @@
       // Locked items can't be dragged from the canvas.
       if (item.locked) return;
       e.preventDefault();
-      // Shift is reserved for axis-lock during drag. Use Ctrl/Cmd+click (or
-      // already-multi-selected shift) to toggle selection. We differentiate
-      // by whether the clicked item is already selected: if it is, shift+down
-      // means group-drag with axis-lock (fall through). If not, shift+down
-      // toggles into the selection.
-      if (e.shiftKey && !state.selection.has(id)) selectToggle(id);
-      else if (!state.selection.has(id)) selectOnly(id);
+
+      // Info-block group selection. A group behaves like one object until
+      // the user double-clicks into it (state.enteredGroupId). While
+      // "entered", single clicks pick individual members.
+      const ibGroup = (item.groupId && /^ib_/.test(item.groupId)) ? item.groupId : null;
+      const entered = ibGroup && state.enteredGroupId === ibGroup;
+      // Clicking outside the currently-entered group exits group mode
+      if (state.enteredGroupId && state.enteredGroupId !== ibGroup) {
+        state.enteredGroupId = null;
+      }
+
+      // Track shift-click-on-already-selected: if no drag happens, deselect
+      // on pointerup. Shift+drag still keeps selection + axis-lock intact.
+      let deselectOnUp = false;
+
+      if (ibGroup && !entered) {
+        // Click anywhere on a group member = select/toggle the entire group
+        const groupIds = currentItems()
+          .filter(it => it.groupId === ibGroup)
+          .map(it => it.id);
+        const allSelected = groupIds.every(gid => state.selection.has(gid));
+        if (e.shiftKey) {
+          if (allSelected) {
+            // Will deselect whole group on up (unless user drags)
+            deselectOnUp = true;
+          } else {
+            groupIds.forEach(gid => state.selection.add(gid));
+            refreshSelectionUI();
+          }
+        } else if (!allSelected) {
+          state.selection.clear();
+          groupIds.forEach(gid => state.selection.add(gid));
+          refreshSelectionUI();
+        }
+      } else {
+        // Individual item (no group, or we're inside the entered group)
+        if (e.shiftKey) {
+          if (state.selection.has(id)) {
+            deselectOnUp = true;
+          } else {
+            state.selection.add(id);
+            refreshSelectionUI();
+          }
+        } else if (!state.selection.has(id)) {
+          selectOnly(id);
+        }
+      }
       if (!state.selection.size) return;
+      // Track the clicked item as "primary" — the inspector keeps its
+      // content textarea wired to this one even when the whole group
+      // is selected.
+      state.primaryId = id;
+      updateInspector();
+      // Bring the most relevant inspector section into view so the user
+      // immediately sees the controls wired to this click. Image grids
+      // jump to the Image Grid panel (below Selection); other types land
+      // on Selection itself.
+      let targetSec = null;
+      if (item.type === 'imagegrid') targetSec = document.getElementById('imageGridSection');
+      else if (item.type === 'text' || item.type === 'infoblock') targetSec = document.getElementById('selectionSection');
+      if (targetSec) {
+        const ir = document.getElementById('inspector');
+        if (ir) {
+          const irRect = ir.getBoundingClientRect();
+          const secRect = targetSec.getBoundingClientRect();
+          const visible = secRect.top >= irRect.top && secRect.bottom <= irRect.bottom;
+          if (!visible) targetSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
 
       // Alt-drag: duplicate the entire selection right now, and drag the clones.
       if (e.altKey) {
@@ -6268,6 +8493,17 @@
         drawGuides([]);
         canvasInner.querySelectorAll('.distance-badge').forEach(b => b.remove());
         if (moved) setDirty(true);
+        // Shift-click without drag → deselect the clicked target
+        if (deselectOnUp && !moved) {
+          if (ibGroup && !entered) {
+            currentItems()
+              .filter(it => it.groupId === ibGroup)
+              .forEach(it => state.selection.delete(it.id));
+          } else {
+            state.selection.delete(id);
+          }
+          refreshSelectionUI();
+        }
       }
       window.addEventListener('pointermove', move);
       window.addEventListener('pointerup', up);
@@ -6488,29 +8724,42 @@
       const myLefts = [rect.x, rect.x + rect.w / 2, rect.x + rect.w];
       const myTops  = [rect.y, rect.y + rect.h / 2, rect.y + rect.h];
       const pad = Math.round(c.w * (c.padPct != null ? c.padPct : defaultPadPct(c.w)) / 100);
-      const candidatesX = [0, c.w / 2, c.w, pad, c.w - pad];
-      const candidatesY = [0, c.h / 2, c.h];
+      // Candidates carry an optional `tol` override. Canvas center is "sticky":
+      // a much wider snap radius so it's easy to land an item on the centerline.
+      const STICKY = 18;
+      const candidatesX = [
+        { at: 0, tol: SNAP_TOL },
+        { at: c.w / 2, tol: STICKY },
+        { at: c.w, tol: SNAP_TOL },
+        { at: pad, tol: SNAP_TOL },
+        { at: c.w - pad, tol: SNAP_TOL },
+      ];
+      const candidatesY = [
+        { at: 0, tol: SNAP_TOL },
+        { at: c.h / 2, tol: STICKY },
+        { at: c.h, tol: SNAP_TOL },
+      ];
       currentItems().forEach(it => {
         if (it.id === excludeId) return;
-        candidatesX.push(it.x, it.x + it.w / 2, it.x + it.w);
-        candidatesY.push(it.y, it.y + it.h / 2, it.y + it.h);
+        candidatesX.push({ at: it.x, tol: SNAP_TOL }, { at: it.x + it.w / 2, tol: SNAP_TOL }, { at: it.x + it.w, tol: SNAP_TOL });
+        candidatesY.push({ at: it.y, tol: SNAP_TOL }, { at: it.y + it.h / 2, tol: SNAP_TOL }, { at: it.y + it.h, tol: SNAP_TOL });
       });
       if (c.guides) {
-        (c.guides.x || []).forEach(gx => candidatesX.push(gx));
-        (c.guides.y || []).forEach(gy => candidatesY.push(gy));
+        (c.guides.x || []).forEach(gx => candidatesX.push({ at: gx, tol: SNAP_TOL }));
+        (c.guides.y || []).forEach(gy => candidatesY.push({ at: gy, tol: SNAP_TOL }));
       }
-      let bestX = { dist: SNAP_TOL + 1, dx: 0, at: null };
-      myLefts.forEach(my => candidatesX.forEach(cx => {
-        const d = cx - my;
-        if (Math.abs(d) < bestX.dist) bestX = { dist: Math.abs(d), dx: d, at: cx };
+      let bestX = { dist: Infinity, dx: 0, at: null, tol: 0 };
+      myLefts.forEach(my => candidatesX.forEach(cand => {
+        const d = cand.at - my;
+        if (Math.abs(d) < bestX.dist) bestX = { dist: Math.abs(d), dx: d, at: cand.at, tol: cand.tol };
       }));
-      if (bestX.dist <= SNAP_TOL) { dx = bestX.dx; guides.push({ orient: 'v', at: bestX.at }); }
-      let bestY = { dist: SNAP_TOL + 1, dy: 0, at: null };
-      myTops.forEach(my => candidatesY.forEach(cy => {
-        const d = cy - my;
-        if (Math.abs(d) < bestY.dist) bestY = { dist: Math.abs(d), dy: d, at: cy };
+      if (bestX.dist <= bestX.tol) { dx = bestX.dx; guides.push({ orient: 'v', at: bestX.at }); }
+      let bestY = { dist: Infinity, dy: 0, at: null, tol: 0 };
+      myTops.forEach(my => candidatesY.forEach(cand => {
+        const d = cand.at - my;
+        if (Math.abs(d) < bestY.dist) bestY = { dist: Math.abs(d), dy: d, at: cand.at, tol: cand.tol };
       }));
-      if (bestY.dist <= SNAP_TOL) { dy = bestY.dy; guides.push({ orient: 'h', at: bestY.at }); }
+      if (bestY.dist <= bestY.tol) { dy = bestY.dy; guides.push({ orient: 'h', at: bestY.at }); }
       return { dx, dy, guides };
     }
 
@@ -6691,7 +8940,11 @@
     canvasEl.addEventListener('pointerdown', (e) => {
       if (e.target !== canvasEl && e.target !== canvasInner && e.target !== canvasEmpty && e.target !== gridOverlay) return;
       const start = canvasCoordsFromEvent(e);
-      if (!e.shiftKey) selectNone();
+      if (!e.shiftKey) {
+        selectNone();
+        state.enteredGroupId = null;
+        state.primaryId = null;
+      }
       marqueeEl = document.createElement('div');
       marqueeEl.className = 'marquee';
       marqueeEl.style.left = start.x + 'px';
@@ -6794,34 +9047,73 @@
         }
       }
 
+      // Info Block section — visible when any selected item belongs to an
+      // info-block group (legacy infoblock items also qualify).
+      const infoSection = $('infoBlockSection');
+      if (infoSection) {
+        const sel = Array.from(state.selection).map(findItem).filter(Boolean);
+        const inGroup = sel.some(it =>
+          (it.groupId && /^ib_/.test(it.groupId)) || it.type === 'infoblock'
+        );
+        infoSection.style.display = inGroup ? '' : 'none';
+        if (inGroup) renderInfoBlockSectionList();
+      }
+
+      // Image Grid section — visible when a single imagegrid item is selected
+      const gridSection = $('imageGridSection');
+      if (gridSection) {
+        const show = item && item.type === 'imagegrid';
+        gridSection.style.display = show ? '' : 'none';
+        if (show) {
+          $('gridRows').value = item.rows || 3;
+          $('gridCols').value = item.cols || 3;
+          const s = item.scale == null ? 0.9 : item.scale;
+          $('gridScale').value = s;
+          $('gridScaleReadout').textContent = Math.round(s * 100) + '%';
+          const cs = item.captionSize == null ? 17 : item.captionSize;
+          $('gridCaptionSize').value = cs;
+          $('gridCaptionSizeReadout').textContent = cs + 'px';
+        }
+      }
+
       // Text fields — visible for single text item OR multi-text selection
       const textFields = $('textFields');
       const showText = (item && item.type === 'text') || (multi && textItems.length);
       textFields.style.display = showText ? '' : 'none';
       if (showText) {
         const items = multi ? textItems : [item];
-        // Content textarea + style dropdown are per-item only
+        // Content textarea + style dropdown are per-item. In multi-select,
+        // we still show them when a "primary" item is tracked (e.g., the
+        // last-clicked member of an info-block group) so users can edit
+        // that field's text from the panel without dropping the group.
+        const primary = state.primaryId ? findItem(state.primaryId) : null;
+        const primaryInSel = primary && state.selection.has(primary.id) && primary.type === 'text';
+        const focal = !multi ? item : (primaryInSel ? primary : null);
         const contentRow = $('txtContent').closest('.field-row');
         const styleRow = $('txtStyleSelect').closest('.field-row');
         const saveStyleRow = $('txtSaveAsStyleBtn').closest('.field-row');
-        [contentRow, styleRow, saveStyleRow].forEach(r => { if (r) r.style.display = multi ? 'none' : ''; });
-        if (!multi) {
-          populateStyleDropdown(item);
-          $('txtContent').value = item.text || '';
+        [contentRow, styleRow, saveStyleRow].forEach(r => { if (r) r.style.display = focal ? '' : 'none'; });
+        if (focal) {
+          populateStyleDropdown(focal);
+          $('txtContent').value = focal.text || '';
         }
-        const fs = sharedValue(items, 'fontSize', 16);
+        // Style controls: when there's a primary in a multi-select (e.g.,
+        // the user clicked one field in an info-block group), show the
+        // primary's values so the fields aren't all blank.
+        const srcForStyles = focal ? [focal] : items;
+        const fs = sharedValue(srcForStyles, 'fontSize', 16);
         $('txtFontSize').value = fs === '' ? '' : fs;
-        const fw = sharedValue(items, 'fontWeight', 400);
+        const fw = sharedValue(srcForStyles, 'fontWeight', 400);
         $('txtFontWeight').value = fw === '' ? '' : String(fw);
-        $('txtAlign').value = sharedValue(items, 'align', 'left') || 'left';
-        const pd = sharedValue(items, 'padding', 0);
+        $('txtAlign').value = sharedValue(srcForStyles, 'align', 'left') || 'left';
+        const pd = sharedValue(srcForStyles, 'padding', 0);
         $('txtPadding').value = pd === '' ? '' : pd;
-        const lh = sharedValue(items, 'lineHeight', 1.4);
+        const lh = sharedValue(srcForStyles, 'lineHeight', 1.4);
         $('txtLineHeight').value = lh === '' ? '' : lh;
-        const ls = sharedValue(items, 'letterSpacing', 0);
+        const ls = sharedValue(srcForStyles, 'letterSpacing', 0);
         $('txtLetterSpacing').value = ls === '' ? '' : ls;
-        $('txtTransform').value = sharedValue(items, 'transform', 'none') || 'none';
-        const color = sharedValue(items, 'color', '#ffffff');
+        $('txtTransform').value = sharedValue(srcForStyles, 'transform', 'none') || 'none';
+        const color = sharedValue(srcForStyles, 'color', '#ffffff');
         const c = (color || '').match(/^#([0-9a-f]{6})$/i);
         $('txtColor').value = c ? color : '#ffffff';
       }
@@ -6875,9 +9167,18 @@
       setDirty(true);
     }
     $('txtContent').addEventListener('input', () => {
-      // Text content only editable for a single text item
-      if (state.selection.size !== 1) return;
-      withTextSelection(item => { item.text = $('txtContent').value; });
+      // Text content is per-item. In multi-select, route edits to the
+      // tracked primary (last-clicked item in an info-block group).
+      let target = null;
+      if (state.selection.size === 1) {
+        target = findItem(Array.from(state.selection)[0]);
+      } else if (state.primaryId && state.selection.has(state.primaryId)) {
+        target = findItem(state.primaryId);
+      }
+      if (!target || target.type !== 'text') return;
+      target.text = $('txtContent').value;
+      renderItem(target);
+      setDirty(true);
     });
     $('txtContent').addEventListener('change', pushHistory);
     [
@@ -7238,6 +9539,31 @@
       const items = Array.from(state.selection).map(findItem).filter(Boolean);
       if (!items.length) return;
       const c = currentBp();
+      // Group-as-unit: if every selected item shares the same info-block
+      // groupId, align the bounding box to canvas edges instead of
+      // collapsing items onto each other.
+      const gid = items[0].groupId;
+      const isWholeGroup = items.length > 1
+        && gid && /^ib_/.test(gid)
+        && items.every(it => it.groupId === gid)
+        && currentItems().filter(it => it.groupId === gid).length === items.length;
+      if (isWholeGroup && ['left','right','cx','top','bottom','cy'].includes(kind)) {
+        const x1 = Math.min(...items.map(i => i.x));
+        const y1 = Math.min(...items.map(i => i.y));
+        const x2 = Math.max(...items.map(i => i.x + i.w));
+        const y2 = Math.max(...items.map(i => i.y + i.h));
+        let dx = 0, dy = 0;
+        if (kind === 'left')   dx = 0 - x1;
+        if (kind === 'right')  dx = c.w - x2;
+        if (kind === 'cx')     dx = Math.round((c.w - (x2 - x1)) / 2) - x1;
+        if (kind === 'top')    dy = 0 - y1;
+        if (kind === 'bottom') dy = c.h - y2;
+        if (kind === 'cy')     dy = Math.round((c.h - (y2 - y1)) / 2) - y1;
+        items.forEach(it => { it.x += dx; it.y += dy; renderItem(it); });
+        updateSelectionFrame();
+        setDirty(true);
+        return;
+      }
       if (items.length === 1) {
         const it = items[0];
         if (kind === 'left') it.x = 0;
@@ -7413,6 +9739,30 @@
       });
     }
 
+    // Homepage Layout — global grid-tile label font scale.
+    {
+      const dec = document.getElementById('gridLabelScaleDec');
+      const inc = document.getElementById('gridLabelScaleInc');
+      const readout = document.getElementById('gridLabelScaleReadout');
+      const MIN = 0.7, MAX = 2.5, STEP = 0.05;
+      const clamp = v => Math.min(MAX, Math.max(MIN, Math.round(v / STEP) * STEP));
+      function bump(delta) {
+        const cur = Number(state.homepageSettings.gridLabelScale) || 1;
+        state.homepageSettings.gridLabelScale = clamp(cur + delta);
+        syncHomepageSettingsUI();
+        scheduleHomepageSettingsSave();
+      }
+      if (dec && inc && readout) {
+        dec.addEventListener('click', () => bump(-STEP));
+        inc.addEventListener('click', () => bump(+STEP));
+        readout.addEventListener('dblclick', () => {
+          state.homepageSettings.gridLabelScale = 1;
+          syncHomepageSettingsUI();
+          scheduleHomepageSettingsSave();
+        });
+      }
+    }
+
     // About Content panel wiring (dynamic — accordion is built by renderAboutAccordion)
     {
       const saveBtn = document.getElementById('aboutSaveBtn');
@@ -7490,10 +9840,104 @@
       const c = currentBp();
       addSpacerItemAt(c.w / 2, c.h / 3);
     });
+    $('addInfoBlockBtn').addEventListener('click', () => {
+      const c = currentBp();
+      addInfoBlockGroupAt(c.w / 2, c.h / 2);
+    });
+    $('addImageGridBtn').addEventListener('click', () => {
+      const c = currentBp();
+      addImageGridAt(c.w / 2, c.h / 2);
+    });
+
+    // ── IMAGE GRID inspector wiring ───────────────────────
+    function withSelectedGrid(fn) {
+      if (state.selection.size !== 1) return;
+      const it = findItem(Array.from(state.selection)[0]);
+      if (!it || it.type !== 'imagegrid') return;
+      fn(it);
+    }
+    $('gridRows').addEventListener('input', () => withSelectedGrid((it) => {
+      pushHistory();
+      const n = Math.max(1, Math.min(20, parseInt($('gridRows').value, 10) || 1));
+      it.rows = n;
+      it.cells = Array.from({ length: it.rows * it.cols }, (_, i) => (it.cells && it.cells[i]) || { src: null, type: null });
+      renderItem(it);
+      setDirty(true);
+    }));
+    $('gridCols').addEventListener('input', () => withSelectedGrid((it) => {
+      pushHistory();
+      const n = Math.max(1, Math.min(20, parseInt($('gridCols').value, 10) || 1));
+      it.cols = n;
+      it.cells = Array.from({ length: it.rows * it.cols }, (_, i) => (it.cells && it.cells[i]) || { src: null, type: null });
+      renderItem(it);
+      setDirty(true);
+    }));
+    $('gridScale').addEventListener('input', () => withSelectedGrid((it) => {
+      const v = parseFloat($('gridScale').value);
+      if (isNaN(v)) return;
+      it.scale = Math.max(0.05, Math.min(1, v));
+      $('gridScaleReadout').textContent = Math.round(it.scale * 100) + '%';
+      renderItem(it);
+      setDirty(true);
+    }));
+    $('gridScale').addEventListener('change', pushHistory);
+    $('gridCaptionSize').addEventListener('input', () => withSelectedGrid((it) => {
+      const v = parseInt($('gridCaptionSize').value, 10);
+      if (isNaN(v)) return;
+      it.captionSize = Math.max(8, Math.min(48, v));
+      $('gridCaptionSizeReadout').textContent = it.captionSize + 'px';
+      // Update only the live caption font-size — no full re-render needed.
+      const host = document.querySelector(`.item[data-id="${it.id}"]`);
+      if (host) host.querySelectorAll('.imgrid__caption').forEach(c => { c.style.fontSize = it.captionSize + 'px'; });
+      setDirty(true);
+    }));
+    $('gridCaptionSize').addEventListener('change', pushHistory);
+    $('gridClearBtn').addEventListener('click', () => withSelectedGrid((it) => {
+      if (!it.cells || !it.cells.some(c => c && c.src)) return;
+      pushHistory();
+      it.cells = it.cells.map(() => ({ src: null, type: null }));
+      renderItem(it);
+      setDirty(true);
+    }));
+    const infoBlockResetBtn = document.getElementById('infoBlockResetBtn');
+    if (infoBlockResetBtn) {
+      infoBlockResetBtn.addEventListener('click', resetInfoBlockLayout);
+    }
+    const ibAddBtn = document.getElementById('infoBlockAddSectionBtn');
+    const ibAddInput = document.getElementById('infoBlockNewSectionLabel');
+    const ibSyncBtn = document.getElementById('infoBlockSyncBtn');
+    if (ibAddBtn && ibAddInput) {
+      const fire = () => {
+        const v = ibAddInput.value.trim();
+        if (!v) return;
+        addInfoBlockSection(v);
+        ibAddInput.value = '';
+      };
+      ibAddBtn.addEventListener('click', fire);
+      ibAddInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); fire(); }
+      });
+    }
+    if (ibSyncBtn) ibSyncBtn.addEventListener('click', syncInfoBlockFromProject);
     $('deleteBtn').addEventListener('click', deleteSelected);
     $('duplicateBtn').addEventListener('click', duplicateSelected);
     $('bringFrontBtn').addEventListener('click', bringToFront);
     $('sendBackBtn').addEventListener('click', sendToBack);
+    $('centerAllBtn').addEventListener('click', () => {
+      const items = currentItems().filter(it => it && !it.hidden);
+      if (!items.length) return;
+      const bp = currentBp();
+      // Center each item individually on the canvas centerline. Items that
+      // are already centered are skipped so they don't dirty history.
+      const moves = items
+        .map(it => ({ it, nx: Math.round((bp.w - (it.w || 0)) / 2) }))
+        .filter(m => m.nx !== m.it.x);
+      if (!moves.length) return;
+      pushHistory();
+      moves.forEach(({ it, nx }) => { it.x = nx; renderItem(it); });
+      updateSelectionFrame();
+      setDirty(true);
+    });
     $('saveBtn').addEventListener('click', saveLayout);
     $('saveAsBtn').addEventListener('click', saveAsSnapshot);
     $('undoBtn').addEventListener('click', undo);
@@ -7626,6 +10070,86 @@
       const sorted = [...state.breakpoints].sort((a, b) => b.minWidth - a.minWidth);
       return sorted.find(bp => w >= bp.minWidth) || sorted[sorted.length - 1];
     }
+
+    // ── HEIGHT RESIZE HANDLE ──────────────────────────────
+    // Drag the bottom edge to extend the canvas height. Auto-scrolls the
+    // canvas wrap when the pointer nears the bottom edge so the user can
+    // keep growing past one screen-height without releasing.
+    (function wireHeightHandle() {
+      const handle = $('heightHandle');
+      let readout = null;
+      handle.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const bp = currentBp(); if (!bp) return;
+        handle.classList.add('dragging');
+        const zoom = state.zoom || 1;
+        // Track total movement in canvas-px so auto-scroll doesn't double-count
+        // the page scroll into the height delta.
+        let accumulatedPx = 0;
+        let lastClientY = e.clientY;
+        let lastEv = e;
+        const baseH = bp.h;
+
+        readout = document.createElement('div');
+        readout.className = 'responsive-readout';
+        document.body.appendChild(readout);
+
+        function commit(ev) {
+          const newH = Math.max(200, Math.round(baseH + accumulatedPx / zoom));
+          bp.h = newH;
+          canvasH.value = newH;
+          applyCanvasStyle();
+          setDirty(true);
+          readout.innerHTML = newH + 'px <span class="bp-name">HEIGHT</span>';
+          readout.style.left = (ev.clientX + 14) + 'px';
+          readout.style.top = (ev.clientY - 34) + 'px';
+        }
+
+        function move(ev) {
+          accumulatedPx += (ev.clientY - lastClientY);
+          lastClientY = ev.clientY;
+          lastEv = ev;
+          commit(ev);
+        }
+
+        // Auto-scroll loop: when cursor is in the bottom edge zone of the
+        // canvas wrap, scroll it down and grow the canvas in lockstep so the
+        // user can drag indefinitely.
+        let rafId = null;
+        const EDGE = 80;       // px from bottom that activates auto-scroll
+        const MAX_SPEED = 24;  // px per frame at the very edge
+        function tick() {
+          const rect = canvasWrap.getBoundingClientRect();
+          const distFromBottom = rect.bottom - lastClientY;
+          if (distFromBottom < EDGE) {
+            const ratio = Math.max(0, Math.min(1, 1 - distFromBottom / EDGE));
+            const dy = Math.ceil(MAX_SPEED * ratio);
+            const before = canvasWrap.scrollTop;
+            canvasWrap.scrollTop = before + dy;
+            const actual = canvasWrap.scrollTop - before;
+            if (actual > 0) {
+              accumulatedPx += actual;
+              commit(lastEv);
+            }
+          }
+          rafId = requestAnimationFrame(tick);
+        }
+        rafId = requestAnimationFrame(tick);
+
+        function up() {
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          if (rafId) cancelAnimationFrame(rafId);
+          handle.classList.remove('dragging');
+          if (readout) { readout.remove(); readout = null; }
+          pushHistory();
+        }
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+        commit(e);
+      });
+    })();
 
     // ── PREVIEW OVERLAY ───────────────────────────────────
     const previewOverlay = $('previewOverlay');
@@ -7761,12 +10285,23 @@
         e.preventDefault();
         const bp = currentBp();
         pushHistory();
-        Array.from(state.selection).forEach(id => {
-          const it = findItem(id); if (!it) return;
+        const items = Array.from(state.selection).map(findItem).filter(Boolean);
+        if (items.length === 1) {
+          const it = items[0];
           it.x = Math.round((bp.w - it.w) / 2);
           it.y = Math.round((bp.h - it.h) / 2);
           renderItem(it);
-        });
+        } else if (items.length > 1) {
+          // Center the selection's bounding box as a rigid group so group
+          // members keep their relative positions.
+          const x1 = Math.min(...items.map(i => i.x));
+          const y1 = Math.min(...items.map(i => i.y));
+          const x2 = Math.max(...items.map(i => i.x + i.w));
+          const y2 = Math.max(...items.map(i => i.y + i.h));
+          const dx = Math.round((bp.w - (x2 - x1)) / 2) - x1;
+          const dy = Math.round((bp.h - (y2 - y1)) / 2) - y1;
+          items.forEach(it => { it.x += dx; it.y += dy; renderItem(it); });
+        }
         updateInspector();
         setDirty(true);
       }
@@ -7791,6 +10326,95 @@
     window.addEventListener('beforeunload', (e) => {
       if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
     });
+
+    // ── INSPECTOR ACCORDION ──────────────────────────────
+    // Click a section's title to collapse/expand. Persist per-section
+    // collapsed state to localStorage so it survives reload.
+    (function wireAccordion() {
+      const KEY = 'edInspCollapsed.v1';
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
+      function persist() {
+        try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch {}
+      }
+      document.querySelectorAll('.insp-section.collapsible').forEach(sec => {
+        const k = sec.dataset.collapseKey;
+        if (k && Object.prototype.hasOwnProperty.call(saved, k)) {
+          sec.classList.toggle('collapsed', !!saved[k]);
+        }
+        const title = sec.querySelector('.insp-title');
+        if (!title) return;
+        title.addEventListener('click', (e) => {
+          // Don't toggle when clicking buttons inside the title (e.g. About Save)
+          if (e.target.closest('button')) return;
+          sec.classList.toggle('collapsed');
+          if (k) {
+            saved[k] = sec.classList.contains('collapsed');
+            persist();
+          }
+        });
+      });
+    })();
+
+    // ── SHORTCUTS MODAL ──────────────────────────────────
+    (function wireShortcutsModal() {
+      const btn = document.getElementById('shortcutsBtn');
+      const modal = document.getElementById('shortcutsModal');
+      if (!btn || !modal) return;
+      const open = () => modal.classList.add('open');
+      const close = () => modal.classList.remove('open');
+      btn.addEventListener('click', open);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.matches('[data-close-modal]')) close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) close();
+      });
+    })();
+
+    // ── ADD-ITEM PALETTE ─────────────────────────────────
+    // Single "+ Add" button in the topbar opens a popover that forwards
+    // clicks to the existing (now hidden) per-type buttons.
+    (function wireAddPalette() {
+      const btn = document.getElementById('addPaletteBtn');
+      const palette = document.getElementById('addPalette');
+      if (!btn || !palette) return;
+      const map = {
+        media: 'addMediaBtn',
+        info: 'addInfoBlockBtn',
+        grid: 'addImageGridBtn',
+        text: 'addTextBtn',
+        spacer: 'addSpacerBtn',
+      };
+      function position() {
+        const r = btn.getBoundingClientRect();
+        palette.style.top = (r.bottom + window.scrollY + 6) + 'px';
+        palette.style.left = (r.left + window.scrollX) + 'px';
+      }
+      function open() { position(); palette.classList.add('open'); }
+      function close() { palette.classList.remove('open'); }
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        palette.classList.contains('open') ? close() : open();
+      });
+      palette.querySelectorAll('button[data-add]').forEach(b => {
+        b.addEventListener('click', () => {
+          const target = document.getElementById(map[b.dataset.add]);
+          if (target) target.click();
+          close();
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!palette.classList.contains('open')) return;
+        if (e.target === btn || palette.contains(e.target)) return;
+        close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+      });
+      // Move the palette to body so it isn't clipped by the topbar's overflow
+      document.body.appendChild(palette);
+    })();
 
     function resetAll() {
       state.breakpoints = DEFAULT_BREAKPOINTS();
