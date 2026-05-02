@@ -2830,6 +2830,9 @@
         <div class="field-row" style="margin-bottom:6px;">
           <button class="btn ghost" id="gridClearBtn" style="flex:1;justify-content:center;" title="Remove all images from every cell">Clear Images</button>
         </div>
+        <div class="field-row" style="margin-bottom:6px;">
+          <button class="btn ghost" id="gridEqualizeHBtn" style="flex:1;justify-content:center;" title="Set each cell's width weight proportional to its image's aspect ratio so every image renders at the same height across its row">Equalize Heights</button>
+        </div>
         <div class="hp-hint">Drag assets from the Assets panel onto any cell. Scale adds symmetric padding — different aspect ratios are preserved (images fit within their cell). Click below an image to add a caption. Drag the vertical handle between cells to resize images within a row.</div>
       </div>
 
@@ -10164,6 +10167,47 @@
       it.cells = it.cells.map(() => ({ src: null, type: null }));
       renderItem(it);
       setDirty(true);
+    }));
+    // Equalize heights: load each cell's image, set cell.w proportional to
+    // its (cropped) aspect ratio. With cells laid out in a row at row-height H,
+    // a cell with aspect a renders an image of width H*a — every image in
+    // the row ends up the same rendered height.
+    const gridEqHBtn = document.getElementById('gridEqualizeHBtn');
+    if (gridEqHBtn) gridEqHBtn.addEventListener('click', () => withSelectedGrid(async (it) => {
+      const cells = it.cells || [];
+      const withSrc = cells.filter(c => c && c.src);
+      if (withSrc.length < 2) {
+        setStatus('Add at least 2 images to equalize', 'err');
+        return;
+      }
+      gridEqHBtn.disabled = true;
+      setStatus('Loading image dimensions…');
+      const loadAspect = (src) => new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(img.naturalWidth / Math.max(1, img.naturalHeight));
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+      const aspects = await Promise.all(cells.map(async c => {
+        if (!c || !c.src) return 1;
+        let a = await loadAspect(c.src);
+        if (!a || !isFinite(a)) return 1;
+        // Cropped cells render only a sub-region — adjust effective aspect.
+        if (c.crop && c.crop.w > 0 && c.crop.h > 0) {
+          a = a * (c.crop.w / c.crop.h);
+        }
+        return a;
+      }));
+      pushHistory();
+      cells.forEach((cell, i) => {
+        if (!cell) cells[i] = cell = {};
+        cell.w = Number(aspects[i].toFixed(4));
+      });
+      it.cells = cells;
+      renderItem(it);
+      setDirty(true);
+      gridEqHBtn.disabled = false;
+      setStatus('Heights equalized', 'ok');
     }));
     const infoBlockResetBtn = document.getElementById('infoBlockResetBtn');
     if (infoBlockResetBtn) {
