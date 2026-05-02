@@ -7,8 +7,8 @@
   <style>
   </style>
   <script>
-    // Always start in dark mode
-    document.documentElement.classList.remove('light-mode');
+    // Always start in light mode
+    document.documentElement.classList.add('light-mode');
     localStorage.removeItem('theme');
 
     // iOS URL-bar tracker — Safari's bottom URL pill expands/collapses mid-scroll,
@@ -1921,6 +1921,7 @@
     /* ─── SHARED LCD GLOW HOVER ──────────────────── */
     /* ─── HOVER DESCRIPTION TOOLTIP ──────────────── */
     .project-desc-tooltip {
+      display: none !important;
       position: absolute;
       top: 0;
       left: 50%;
@@ -3412,7 +3413,7 @@
   <!-- ENTRY SCREEN -->
   <div id="entryScreen">
     <video id="entryVideo" autoplay muted playsinline loop>
-      <source src="ENTRY-VIDEO/ENTRY-VIDEO.mov" type="video/mp4">
+      <source src="https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694782/studio-colby/intro/ENTRY-VIDEO_anuy6o.mp4" type="video/mp4">
     </video>
     <canvas id="dotOverlay"></canvas>
     <button id="enterBtn">Start<span class="entry-cursor"></span></button>
@@ -4220,7 +4221,7 @@
         // <img>/<video> inside sizes itself by natural aspect and the absolute
         // container shrink-wraps around it. Text elements (and cropped images
         // using imgRegion) need definite pixel heights.
-        const isMedia = elData.type === 'image';
+        const isMedia = elData.type === 'image' || elData.type === 'video' || isVideoSrc(elData.src);
         const isCropped = isMedia && elData.imgRegion &&
           (elData.imgRegion.x || elData.imgRegion.y ||
            elData.imgRegion.w < 100 || elData.imgRegion.h < 100);
@@ -4235,7 +4236,7 @@
           el.style.wordBreak = 'break-word';
           el.textContent = elData.content;
           if (elData.style) Object.keys(elData.style).forEach(k => { el.style[k] = elData.style[k]; });
-        } else if (elData.type === 'image' && isVideoSrc(elData.src)) {
+        } else if (elData.type === 'video' || (elData.type === 'image' && isVideoSrc(elData.src))) {
           // Videos always render at full content width on the live site so
           // there's no empty gutter/page-bg visible next to them. Their
           // height is driven by the video's natural aspect via loadedmetadata.
@@ -4243,6 +4244,7 @@
           el.style.width = '100%';
           const vc = buildHoverPlayVideo(elData.src, project && project.title);
           vc.style.width = '100%';
+          if (elData.aspect) vc.style.aspectRatio = elData.aspect;
           el.appendChild(vc);
         } else if (elData.type === 'image') {
           const img = document.createElement('img');

@@ -468,6 +468,59 @@
        percentages of the c-item box so custom layouts from the editor
        round-trip exactly. */
     .c-item[data-kind="infoblock"] { overflow: hidden; }
+
+    /* ── MOBILE INFO BLOCK ─────────────────────────────────
+       When a project's only canvas was authored at desktop width (≥1024)
+       but the viewer is on a phone, the info-block group's authored
+       two-column layout collapses unreadably. The renderer rebuilds the
+       group as a single stacked block at the same canvas anchor, taking
+       the full canvas width with labels above values and generous row
+       spacing so every line is readable on a phone. */
+    .c-item[data-kind="mobile-ib"] {
+      overflow: visible;
+      height: auto !important;
+      min-height: 0 !important;
+    }
+    .mib { width: 100%; display: flex; flex-direction: column; gap: clamp(14px, 4cqi, 28px); }
+    .mib__title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .mib__title {
+      font-size: clamp(18px, 5cqi, 26px);
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: 1.25;
+      color: var(--text);
+    }
+    .mib__year {
+      font-size: clamp(12px, 3cqi, 16px);
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .mib__pair { display: flex; flex-direction: column; gap: 4px; }
+    .mib__label {
+      font-size: clamp(10px, 2.4cqi, 12px);
+      /* 700 (not 600) so the weight gap stays visible against the body's
+         500 default — Arial commonly maps 500/600 to the same glyph. */
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+    }
+    .mib__value {
+      font-size: clamp(12px, 3cqi, 15px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .mib__description {
+      font-size: clamp(12px, 3cqi, 15px);
+      font-weight: 400;
+      line-height: 1.65;
+      color: var(--text);
+    }
+    .mib__description p { margin: 0 0 10px; }
+    .mib__description p:last-child { margin-bottom: 0; }
+
     .ib {
       position: relative;
       width: 100%;
@@ -485,13 +538,15 @@
     .ib__label {
       color: var(--text-mid);
       font-size: clamp(9px, 0.76cqi, 11px);
-      font-weight: 600;
+      /* 700 (not 600) so the weight gap is visible against the body's 500
+         default — Arial often maps 500/600 to the same rendered glyph. */
+      font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       white-space: nowrap;
       margin-right: 14px;
     }
-    .ib__value { color: var(--text); font-size: clamp(11px, 0.9cqi, 13px); line-height: 1.55; }
+    .ib__value { color: var(--text); font-weight: 400; font-size: clamp(11px, 0.9cqi, 13px); line-height: 1.55; }
     .ib__field--title .ib__value { font-size: clamp(15px, 1.53cqi, 22px); letter-spacing: 0.01em; }
     .ib__field--year .ib__value { font-size: clamp(11px, 0.97cqi, 14px); display: block; text-align: right; }
     .ib__field--description .ib__value { display: block; line-height: 1.7; font-size: clamp(10.5px, 0.87cqi, 12.5px); }
@@ -1057,14 +1112,33 @@
 
     function applyTextStyle(el, item, canvasW) {
       el.style.width = '100%';
-      el.style.height = '100%';
+      // Info-block group members (editor's "Add Info Block" emits each field
+      // as its own text item) bake the desktop pixel height into the c-item
+      // box. When the canvas downscales for mobile that box collapses far
+      // below the font-size floor and labels/values clip + overlap. Letting
+      // grouped items grow vertically lets the text stay readable. min-height
+      // preserves the authored desktop layout — items only grow when their
+      // wrapped content exceeds the authored slot.
+      const isIbGroupMember = typeof item.groupId === 'string' && /^ib_/.test(item.groupId);
+      if (isIbGroupMember) {
+        el.style.height = 'auto';
+        el.style.minHeight = '100%';
+        el.style.overflow = 'visible';
+      } else {
+        el.style.height = '100%';
+        el.style.overflow = 'hidden';
+      }
       el.style.boxSizing = 'border-box';
       el.style.whiteSpace = 'pre-wrap';
       el.style.wordBreak = 'break-word';
-      el.style.overflow = 'hidden';
       el.style.color = item.color || 'inherit';
       el.style.fontSize = responsiveFontSize(item.fontSize || 20, canvasW);
-      el.style.fontWeight = item.fontWeight || 500;
+      // Force info-block group label items (e.g. "Materials:") to 700 so they
+      // visibly outweigh their values. Arial's authored 500 vs 400 collapses
+      // to a single rendered weight in many browsers, which is what the user
+      // sees as "labels look the same as the text".
+      const isIbLabel = isIbGroupMember && /Label$/.test(item.groupKey || '');
+      el.style.fontWeight = isIbLabel ? 700 : (item.fontWeight || 500);
       el.style.lineHeight = item.lineHeight || 1.4;
       el.style.textAlign = item.align || 'left';
       el.style.padding = (item.padding || 0) + 'px';
@@ -1090,6 +1164,32 @@
         return baseEl;
       }
       if (item.type === 'spacer') {
+        return baseEl;
+      }
+      if (item.type === 'mobileInfoBlock') {
+        baseEl.dataset.kind = 'mobile-ib';
+        const esc = (s) => { const d = document.createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; };
+        const wrap = document.createElement('div');
+        wrap.className = 'mib';
+        let html = '';
+        if (item._title || item._year) {
+          html += '<div class="mib__title-row">';
+          html += `<div class="mib__title">${esc(item._title || '')}</div>`;
+          if (item._year) html += `<div class="mib__year">${esc(item._year)}</div>`;
+          html += '</div>';
+        }
+        for (const p of (item._pairs || [])) {
+          if (!p.label && !p.value) continue;
+          html += '<div class="mib__pair">';
+          if (p.label) html += `<div class="mib__label">${esc(p.label)}</div>`;
+          if (p.value) html += `<div class="mib__value">${esc(p.value)}</div>`;
+          html += '</div>';
+        }
+        if (Array.isArray(item._descParas) && item._descParas.length) {
+          html += '<div class="mib__description">' + item._descParas.map(p => `<p>${esc(p)}</p>`).join('') + '</div>';
+        }
+        wrap.innerHTML = html;
+        baseEl.appendChild(wrap);
         return baseEl;
       }
       if (item.type === 'imagegrid') {
@@ -1324,6 +1424,72 @@
       return baseEl;
     }
 
+    // When a project lacks a phone-width breakpoint, viewing it on mobile
+    // shrinks the desktop info-block group's two-column layout into an
+    // unreadable strip (labels overlap values, description bleeds into the
+    // next image). This collapses each ib_* text-item group into one
+    // stacked "mobileInfoBlock" item — labels above values, full canvas
+    // width — anchored at the group's bounding-box top. Only applies when
+    // the picked breakpoint was authored for desktop (canvas.w ≥ 1024) AND
+    // the viewer is at ≤768px, so projects with proper mobile breakpoints
+    // are left alone.
+    function maybeReflowInfoBlocksForMobile(items, canvas) {
+      if (!canvas || (canvas.w || 0) < 1024) return items;
+      if (typeof window === 'undefined' || !window.matchMedia) return items;
+      if (!window.matchMedia('(max-width: 768px)').matches) return items;
+
+      const groups = new Map();
+      const memberIds = new Set();
+      for (const it of items) {
+        if (it.type !== 'text') continue;
+        if (it.hidden) continue;
+        if (typeof it.groupId !== 'string' || !/^ib_/.test(it.groupId)) continue;
+        if (!it.groupKey) continue;
+        if (!groups.has(it.groupId)) groups.set(it.groupId, []);
+        groups.get(it.groupId).push(it);
+        memberIds.add(it.id);
+      }
+      if (groups.size === 0) return items;
+
+      const out = items.filter(it => !memberIds.has(it.id));
+      for (const [gid, members] of groups) {
+        const minX = Math.min(...members.map(m => m.x));
+        const minY = Math.min(...members.map(m => m.y));
+        const maxY = Math.max(...members.map(m => m.y + m.h));
+        const find = (k) => members.find(m => m.groupKey === k);
+        const titleM = find('title');
+        const yearM  = find('year');
+        const descM  = find('description');
+        const pairs = [];
+        for (const k of ['client', 'materials', 'sector']) {
+          const v = find(k);
+          const l = find(k + 'Label');
+          if (!v && !l) continue;
+          pairs.push({ label: l && (l.text || ''), value: v && (v.text || '') });
+        }
+        const descParas = (() => {
+          const t = (descM && descM.text) || '';
+          const split = t.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
+          return split.length ? split : (t.trim() ? [t.trim()] : []);
+        })();
+
+        out.push({
+          id: 'mobile_ib_' + gid,
+          type: 'mobileInfoBlock',
+          x: minX, y: minY,
+          w: canvas.w - minX, // extend from anchor to the canvas's right edge
+          h: maxY - minY,     // bbox height (canvas units); CSS overrides to auto
+          z: Math.max(...members.map(m => m.z || 0)),
+          _title: titleM && titleM.text,
+          _year: yearM && yearM.text,
+          _pairs: pairs,
+          _descParas: descParas,
+          _authoredBboxBottomY: maxY, // canvas y; used to find items to shift
+        });
+      }
+      return out;
+    }
+
     // ── CANVAS LAYOUT RENDERER ───────────────────────────────
     function renderCanvasLayout(target, layout) {
       target.innerHTML = '';
@@ -1361,7 +1527,10 @@
           stage.classList.add('dark-bg');
         }
 
-        const items = [...(canvas.items || [])].sort((a, b) => (a.z || 0) - (b.z || 0));
+        const items = maybeReflowInfoBlocksForMobile(
+          [...(canvas.items || [])],
+          canvas
+        ).sort((a, b) => (a.z || 0) - (b.z || 0));
         items.forEach(it => {
           if (it.hidden) return;
           const div = document.createElement('div');
@@ -1377,6 +1546,12 @@
           if (it.z)   div.style.zIndex = it.z;
           if (it.padding) div.style.padding = it.padding + 'px';
 
+          if (it.type === 'mobileInfoBlock' && it._authoredBboxBottomY != null) {
+            // Stash where the original (pre-reflow) info block ended so the
+            // post-render shift can find items below it without re-deriving.
+            div.dataset.authoredBottomPct =
+              (it._authoredBboxBottomY / canvas.h * 100).toFixed(4);
+          }
           buildItem(it, div, canvas.w);
           // If the item has a link, wrap it in an <a>. Clicks on media with
           // fullscreen handlers stopPropagation, so the link only fires when
@@ -1395,6 +1570,41 @@
         });
 
         target.appendChild(stage);
+
+        // Mobile info-block reflow grew the block past its authored bbox.
+        // Push every item below it down by the height delta and extend the
+        // stage min-height to match, so subsequent images don't get covered.
+        // Runs after layout so offsetHeight reflects the actual cqi-sized
+        // typography; rerun on resize is handled by the outer draw() rebuild.
+        const ibs = stage.querySelectorAll('.c-item[data-kind="mobile-ib"]');
+        if (ibs.length) {
+          requestAnimationFrame(() => {
+            const stageH = stage.getBoundingClientRect().height;
+            if (!stageH) return;
+            let maxDelta = 0;
+            for (const ibEl of ibs) {
+              const authoredBottomPct = parseFloat(ibEl.dataset.authoredBottomPct || '0');
+              const ibTopPct = parseFloat(ibEl.style.top) || 0;
+              const ibAuthoredHeightPct = authoredBottomPct - ibTopPct;
+              const ibAuthoredHeightPx = ibAuthoredHeightPct / 100 * stageH;
+              const ibActualHeightPx = ibEl.offsetHeight;
+              const delta = ibActualHeightPx - ibAuthoredHeightPx;
+              if (delta <= 0) continue;
+              for (const c of stage.querySelectorAll('.c-item')) {
+                if (c === ibEl) continue;
+                const cTopPct = parseFloat(c.style.top);
+                // Tolerance: float math from earlier % conversion can drift
+                // a hair below the authored bottom; treat near-equal as below.
+                if (cTopPct + 0.05 < authoredBottomPct) continue;
+                c.style.top = `calc(${cTopPct}% + ${delta}px)`;
+              }
+              if (delta > maxDelta) maxDelta = delta;
+            }
+            if (maxDelta > 0) {
+              stage.style.minHeight = (stageH + maxDelta) + 'px';
+            }
+          });
+        }
       }
 
       draw();

@@ -285,9 +285,15 @@ const server = http.createServer((req, res) => {
         const branch = branchOut.trim();
         log.push(`branch: ${branch}`);
 
-        // Stage only the allowlist. Quote each path so paths with spaces or
-        // odd characters don't get mangled by the shell.
-        const addArgs = PUBLISH_PATHS.map(p => `"${p}"`).join(' ');
+        // Stage only the allowlist. Filter to paths that actually exist on
+        // disk — a missing file (e.g. content/archive.json on a project that
+        // hasn't created an archive yet) would otherwise trip git's pathspec
+        // check and abort the whole publish.
+        const existingPaths = PUBLISH_PATHS.filter(p =>
+          fs.existsSync(path.join(__dirname, p))
+        );
+        if (existingPaths.length === 0) throw new Error('No publishable files exist');
+        const addArgs = existingPaths.map(p => `"${p}"`).join(' ');
         await run(`git add -- ${addArgs}`);
 
         // Detect whether anything is actually staged (git diff --cached
@@ -308,23 +314,24 @@ const server = http.createServer((req, res) => {
         await run(`git push origin ${branch}`);
         log.push(`pushed ${branch}`);
 
-        // Fast-forward main → branch tip and push, so GitHub Pages picks it
-        // up. ff-only is intentional: a divergent main means someone else
-        // committed; we surface that instead of silently auto-merging.
+        // Fast-forward origin/main → current branch tip so GitHub Pages picks
+        // it up. Pushing remote-side (no local checkout) avoids the headache
+        // of switching branches with uncommitted work in the tree — git
+        // refuses checkouts that would clobber dirty files (e.g. project.html
+        // edits on v2 don't exist on main, so checkout main bails).
+        // No --force: a non-FF refspec push fails, surfacing divergent state
+        // instead of silently overwriting.
         if (branch !== 'main') {
-          await run('git checkout main');
-          let ffOk = false;
           try {
-            await run(`git merge --ff-only ${branch}`);
-            await run('git push origin main');
-            log.push('fast-forwarded main and pushed');
-            ffOk = true;
+            await run(`git push origin ${branch}:main`);
+            log.push(`fast-forwarded origin/main → ${branch}`);
           } catch (e) {
-            log.push('FF FAILED on main: ' + (e.stderr || e.message).trim());
-          } finally {
-            await run(`git checkout ${branch}`);
+            const msg = (e.stderr || e.message || '').trim();
+            throw new Error(
+              `Could not fast-forward origin/main from ${branch}. ` +
+              `Resolve divergence manually, then retry. Git said: ${msg}`
+            );
           }
-          if (!ffOk) throw new Error('main could not be fast-forwarded — resolve manually, then retry');
         }
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
