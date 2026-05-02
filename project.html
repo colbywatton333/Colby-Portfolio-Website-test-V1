@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project — Studio Colby</title>
+  <script>
+    // Default to light mode to match index.html
+    document.documentElement.classList.add('light-mode');
+  </script>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d0d0d;
+      --text: #E4E4E4;
+      --text-dim: #555;
+      --text-mid: #888;
+      --border: #1f1f1f;
+      --nav-border: #5C5754;
+      /* Single tokens that drive responsive padding across every project page.
+         Outer pad: breathing room between the canvas and the screen edges.
+         Inner inset: extra shrink on the canvas at narrow widths so items
+         never sit flush against the canvas border, regardless of each
+         project's baked-in padPct. */
+      --canvas-outer-pad: clamp(16px, 4.5vw, 80px);
+      --canvas-inner-inset: clamp(0px, 1.5vw, 20px);
+      --site-pad: var(--canvas-outer-pad);
+      --font: Arial, sans-serif;
+    }
+    html.light-mode {
+      --bg: #F1ECE5;
+      --text: #1A1A1A;
+      --text-dim: #999;
+      --text-mid: #666;
+      --border: #D9D4CC;
+      --nav-border: #B8B2AA;
+    }
+    /* In light mode, force text items on a non-dark stage to render dark.
+       Mirrors the editor override so a text colour saved as white (from
+       a dark canvas) flips to readable when the page is in light mode. */
+    html.light-mode .canvas-stage:not(.dark-bg) .c-item-text {
+      color: #1A1A1A !important;
+    }
+    .c-item-text {
+      font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    }
+
+    html {
+      font-size: 12px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 500;
+      min-height: 100vh;
+      opacity: 0;
+      transition: opacity 1.2s ease, background 0.4s ease, color 0.4s ease;
+    }
+    body.ready { opacity: 1; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── CUSTOM HAND CURSOR (matches index.html) ─────────── */
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      * { cursor: none !important; }
+    }
+    #galleryCursor {
+      position: fixed;
+      width: 68px;
+      height: 68px;
+      background-color: transparent;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 748.49 603.2'%3E%3Cpath fill='%23fff' stroke-width='0' d='M445.69,501.45c-17.08,0-34.15-.18-51.22.09-6.08.1-10-2.22-13.19-7.26-7.05-11.11-14.47-21.98-21.76-32.94-5.54-8.32-12.42-14.62-22.15-18.34-15.72-6-27.64-17.51-38.98-29.58-9.48-10.08-17.53-21.22-24.47-33.16-5.99-10.3-15.34-16.81-25.25-22.64-8.01-4.71-16.49-8.67-24.37-13.58-4.15-2.59-8.23-5.96-11.01-9.92-4.26-6.09-1.27-14.86,5.86-20.11,6.97-5.13,14.86-6.44,23.23-5.21,18,2.65,32.57,11.83,45.61,23.97,3.06,2.85,6.26,5.62,9.68,8.01,3.52,2.47,5.85,1.49,6.31-2.74,1.79-16.33,2.57-32.69-5.03-47.97-8.58-17.27-17.65-34.3-26.31-51.54-7.05-14.01-14.02-28.06-20.6-42.3-2.63-5.7-3.19-11.95.11-17.86,7.68-13.77,26.71-15.38,35.79-2.53,9.82,13.87,18.91,28.27,28.16,42.53,6.08,9.38,11.86,18.95,17.86,28.38,1.31,2.05,2.81,4.06,4.59,5.7,3.01,2.79,6.71,1.97,8.08-1.91.99-2.81,1.71-5.91,1.62-8.86-.43-14.36-1.13-28.72-1.8-43.08-.47-9.91-.98-19.83-1.58-29.73-.64-10.6-1.36-21.2-2.14-31.79-1.34-18.04,18.8-27.38,32.55-21.37,7.99,3.5,11.18,10.17,11.69,18.38,1.04,16.77,1.94,33.56,2.89,50.34.92,16.2,1.7,32.41,2.85,48.6.33,4.58,1.52,9.14,2.78,13.58.78,2.75,2.73,5.02,6.01,5.06,3.37.04,5.03-2.4,5.84-5.15,3.15-10.68,6.54-21.31,9.02-32.15,4.98-21.84,9.43-43.8,14.07-65.71,2.58-12.18,13.39-17.95,25.64-15.37,9.16,1.93,16.32,6.95,18.13,16.65.79,4.26-.1,9.04-1.08,13.39-5.35,23.78-11.11,47.47-16.4,71.27-1.81,8.15-2.68,16.5-3.88,24.78-.21,1.48-.03,3.03.11,4.54.27,2.99,1.49,5.58,4.49,6.47,2.99.89,5.18-1,6.83-3.23,4.72-6.36,9.4-12.76,13.96-19.24,6.64-9.43,13.24-18.89,19.69-28.46,4.6-6.82,10.71-10.57,18.96-9.08,9.79,1.77,16.73,7.27,19.6,17.17,1.79,6.15-.38,11.6-3.56,16.55-6.92,10.78-14.2,21.32-21.29,31.99-5.16,7.76-10.03,15.72-15.42,23.31-6.74,9.49-8.19,20.55-10.26,31.49-4.05,21.44-7.76,43-15.49,63.52-2.4,6.37-5.97,12.32-9.26,18.32-2.58,4.72-2.65,6.42.53,10.79,14.41,19.79,28.82,39.58,43.2,59.39,1.16,1.59,2.11,3.34,3.11,5.03,4.38,7.39-1.1,13.4-8,13.45-6.78.05-13.57.03-20.35.03-11.34,0-22.69,0-34.03,0Z'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 100000;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+    html.light-mode #galleryCursor {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 748.49 603.2'%3E%3Cpath fill='%231A1A1A' stroke-width='0' d='M445.69,501.45c-17.08,0-34.15-.18-51.22.09-6.08.1-10-2.22-13.19-7.26-7.05-11.11-14.47-21.98-21.76-32.94-5.54-8.32-12.42-14.62-22.15-18.34-15.72-6-27.64-17.51-38.98-29.58-9.48-10.08-17.53-21.22-24.47-33.16-5.99-10.3-15.34-16.81-25.25-22.64-8.01-4.71-16.49-8.67-24.37-13.58-4.15-2.59-8.23-5.96-11.01-9.92-4.26-6.09-1.27-14.86,5.86-20.11,6.97-5.13,14.86-6.44,23.23-5.21,18,2.65,32.57,11.83,45.61,23.97,3.06,2.85,6.26,5.62,9.68,8.01,3.52,2.47,5.85,1.49,6.31-2.74,1.79-16.33,2.57-32.69-5.03-47.97-8.58-17.27-17.65-34.3-26.31-51.54-7.05-14.01-14.02-28.06-20.6-42.3-2.63-5.7-3.19-11.95.11-17.86,7.68-13.77,26.71-15.38,35.79-2.53,9.82,13.87,18.91,28.27,28.16,42.53,6.08,9.38,11.86,18.95,17.86,28.38,1.31,2.05,2.81,4.06,4.59,5.7,3.01,2.79,6.71,1.97,8.08-1.91.99-2.81,1.71-5.91,1.62-8.86-.43-14.36-1.13-28.72-1.8-43.08-.47-9.91-.98-19.83-1.58-29.73-.64-10.6-1.36-21.2-2.14-31.79-1.34-18.04,18.8-27.38,32.55-21.37,7.99,3.5,11.18,10.17,11.69,18.38,1.04,16.77,1.94,33.56,2.89,50.34.92,16.2,1.7,32.41,2.85,48.6.33,4.58,1.52,9.14,2.78,13.58.78,2.75,2.73,5.02,6.01,5.06,3.37.04,5.03-2.4,5.84-5.15,3.15-10.68,6.54-21.31,9.02-32.15,4.98-21.84,9.43-43.8,14.07-65.71,2.58-12.18,13.39-17.95,25.64-15.37,9.16,1.93,16.32,6.95,18.13,16.65.79,4.26-.1,9.04-1.08,13.39-5.35,23.78-11.11,47.47-16.4,71.27-1.81,8.15-2.68,16.5-3.88,24.78-.21,1.48-.03,3.03.11,4.54.27,2.99,1.49,5.58,4.49,6.47,2.99.89,5.18-1,6.83-3.23,4.72-6.36,9.4-12.76,13.96-19.24,6.64-9.43,13.24-18.89,19.69-28.46,4.6-6.82,10.71-10.57,18.96-9.08,9.79,1.77,16.73,7.27,19.6,17.17,1.79,6.15-.38,11.6-3.56,16.55-6.92,10.78-14.2,21.32-21.29,31.99-5.16,7.76-10.03,15.72-15.42,23.31-6.74,9.49-8.19,20.55-10.26,31.49-4.05,21.44-7.76,43-15.49,63.52-2.4,6.37-5.97,12.32-9.26,18.32-2.58,4.72-2.65,6.42.53,10.79,14.41,19.79,28.82,39.58,43.2,59.39,1.16,1.59,2.11,3.34,3.11,5.03,4.38,7.39-1.1,13.4-8,13.45-6.78.05-13.57.03-20.35.03-11.34,0-22.69,0-34.03,0Z'/%3E%3C/svg%3E");
+    }
+    @media (hover: hover) and (pointer: fine) {
+      #galleryCursor { display: block; }
+    }
+
+    /* ── BACK + THEME CORNER BUTTONS ───────────────────── */
+    .corner-btn {
+      position: fixed;
+      top: 24px;
+      z-index: 100;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: clamp(10px, 0.95vw, 14px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 6px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.9s ease 0.2s, color 0.15s;
+    }
+    body.ready .corner-btn { opacity: 1; }
+    #backBtn { left: 24px; }
+    #backBtn::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 1.5px;
+      background: currentColor;
+      transition: transform 0.25s cubic-bezier(.2,.9,.3,1.1);
+    }
+    #backBtn:hover { color: var(--text-mid); }
+    #backBtn:hover::before { transform: translateX(-4px); }
+
+    #themeBtn { right: 24px; }
+    #themeBtn:hover { color: var(--text-mid); }
+
+    @media (max-width: 768px) {
+      .corner-btn { top: 16px; }
+      #backBtn { left: 16px; }
+      #themeBtn { right: 16px; }
+    }
+
+    /* ── STATES ───────────────────────────────────────── */
+    #projectLoading, #projectError {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    #projectError { color: #b14545; display: none; }
+
+    #projectContent {
+      opacity: 0;
+      transition: opacity 1.2s ease 0.1s;
+      min-height: 60vh;
+      /* Clearance so the fixed Back / Light-Dark corner buttons never sit
+         on top of content at the very top of the canvas / fallback grid. */
+      padding-top: 72px;
+      /* Continuous outer padding around the canvas — clamps from 16px on
+         tiny phones to 80px on ultra-wide. Replaces the prior mobile-only
+         5vw rule so there's no abrupt change at 768px. */
+      padding-left: var(--canvas-outer-pad);
+      padding-right: var(--canvas-outer-pad);
+    }
+    #projectContent.ready { opacity: 1; }
+    @media (max-width: 768px) {
+      #projectContent { padding-top: 56px; }
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    #siteFooter {
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding: 48px var(--site-pad);
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      transition: opacity 0.8s ease 0.3s, background 0.4s ease, border-color 0.4s ease;
+    }
+    body.ready #siteFooter { opacity: 1; }
+    .footer-logo {
+      height: 40px;
+      width: auto;
+    }
+    html.light-mode .footer-logo { filter: invert(1); }
+    .footer-link {
+      color: var(--text);
+      font-size: clamp(10px, 0.9vw, 15px);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--text-mid); }
+    @media (max-width: 768px) {
+      #siteFooter {
+        gap: 16px;
+        padding: 32px var(--site-pad);
+      }
+      .footer-logo { height: 30px; }
+    }
+
+    /* ── CANVAS LAYOUT RENDERER ───────────────────────── */
+    #gallery {
+      width: 100%;
+    }
+    .canvas-stage {
+      position: relative;
+      width: 100%;
+      margin: 0 auto;
+      /* container-type lets text items inside use cqi units that scale
+         relative to the stage's actual rendered width (driving the
+         clamp() font-size set in applyItemTextStyle). */
+      container-type: inline-size;
+      container-name: stage;
+      /* Clip horizontal bleed so a stray oversized item can't trigger
+         page-level horizontal scroll. Captions sit inside the stage's
+         vertical span (top:100% + their own height) and are unaffected. */
+      overflow: clip;
+    }
+    .canvas-stage .c-item {
+      position: absolute;
+      display: block;
+      overflow: visible;
+    }
+    /* Per-item caption that sits below the media. Mirrors the editor's
+       .item-caption: absolutely positioned at top:100% so it doesn't
+       affect the item's bounded box, with breathing-room padding. */
+    .canvas-stage .c-item-caption {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 10px;
+      padding: 8px 0 0;
+      /* Scale with the stage like other text. cqi target = 17/1440*100. */
+      font-size: clamp(11px, 1.18cqi, 17px);
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
+    /* Media frame that crops to the item's box */
+    .canvas-stage .c-item-media {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .canvas-stage .c-item-media img,
+    .canvas-stage .c-item-media video {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .canvas-stage .c-item-media img { object-fit: contain; }
+    /* Videos: the box itself is sized to the video's aspect ratio at
+       loadedmetadata (see buildItem), so contain == no letterbox in steady
+       state. contain (not cover) is used so the pre-metadata frame doesn't
+       crop on aspect-mismatch. */
+    .canvas-stage .c-item-media video {
+      object-fit: contain;
+      background: transparent;
+    }
+
+    /* Inlined SVGs fill their container */
+    .canvas-stage .c-item-media svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* CAD-exported technical icons use huge viewBoxes with thin strokes that
+       scale below one screen pixel. non-scaling-stroke pins stroke-width to
+       screen pixels so thin lines stay visible regardless of display size. */
+    .c-item-media svg path,
+    .c-item-media svg rect,
+    .c-item-media svg circle,
+    .c-item-media svg ellipse,
+    .c-item-media svg line,
+    .c-item-media svg polyline,
+    .c-item-media svg polygon,
+    .fallback-media svg path,
+    .fallback-media svg rect,
+    .fallback-media svg circle,
+    .fallback-media svg ellipse,
+    .fallback-media svg line,
+    .fallback-media svg polyline,
+    .fallback-media svg polygon {
+      vector-effect: non-scaling-stroke;
+    }
+
+    /* Click anywhere on media to open the in-page overlay */
+    .c-item-media { cursor: pointer; }
+    .fallback-media { cursor: pointer; }
+
+    /* ── IN-PAGE MEDIA OVERLAY ──────────────────────────
+       A lightbox that keeps the page visible (dimmed + blurred) behind it.
+       Click the backdrop or press Esc to close; clicks on the media itself
+       are a no-op. */
+    #mediaOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.55s ease;
+    }
+    #mediaOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .media-overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 13, 13, 0.88);
+      backdrop-filter: blur(18px) saturate(0.6);
+      -webkit-backdrop-filter: blur(18px) saturate(0.6);
+      cursor: pointer;
+    }
+    html.light-mode .media-overlay-backdrop {
+      background: rgba(241, 236, 229, 0.92);
+    }
+    .media-overlay-stage {
+      position: relative;
+      z-index: 1;
+      max-width: 82vw;
+      max-height: 82vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .media-overlay-stage img,
+    .media-overlay-stage video,
+    .media-overlay-stage svg {
+      max-width: 82vw;
+      max-height: 82vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.65s ease;
+      clip-path: none !important;
+      cursor: pointer;
+    }
+    #mediaOverlay.active .media-overlay-stage img,
+    #mediaOverlay.active .media-overlay-stage video,
+    #mediaOverlay.active .media-overlay-stage svg {
+      opacity: 1;
+    }
+    .media-overlay-close {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 2;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: clamp(10px, 0.95vw, 14px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 6px 10px;
+      opacity: 0.75;
+      transition: opacity 0.2s ease;
+    }
+    .media-overlay-close:hover { opacity: 1; }
+
+    /* ── FALLBACK GALLERY (no saved canvas layout) ────── */
+    .fallback-gallery {
+      padding: 4vh 7vw 10vh;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .fallback-row {
+      display: grid;
+      gap: 24px;
+    }
+    .fallback-row.cols-1 { grid-template-columns: 1fr; }
+    .fallback-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .fallback-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .fallback-media {
+      position: relative;
+      background: transparent;
+    }
+    .fallback-media .c-item-media {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .fallback-media img,
+    .fallback-media video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .fallback-media img { object-fit: contain; }
+    .fallback-media video { object-fit: cover; background: transparent; }
+    .fallback-media svg { width: 100%; height: auto; display: block; }
+
+    @media (max-width: 900px) {
+      .fallback-gallery { padding: 2vh 5vw 10vh; gap: 12px; }
+      .fallback-row { gap: 12px; }
+      .fallback-row.cols-2,
+      .fallback-row.cols-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── IMAGE GRID ──────────────────────────────────────
+       R×C cells, each hosting optional media. `scale` adds symmetric
+       padding; `object-fit: contain` preserves varied aspect ratios. */
+    .c-item[data-kind="imagegrid"] { overflow: hidden; }
+    .imgrid { position: relative; width: 100%; height: 100%; box-sizing: border-box; }
+    .imgrid__cell { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+    .imgrid__inner { flex: 1 1 auto; min-height: 0; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .imgrid__inner img,
+    .imgrid__inner video,
+    .imgrid__inner svg {
+      max-width: 100%;
+      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    /* Cropped cell: image is sized so the crop window fills the inner box. */
+    .imgrid__inner.is-cropped { align-items: stretch; justify-content: stretch; }
+    .imgrid__inner.is-cropped img,
+    .imgrid__inner.is-cropped video {
+      position: absolute;
+      width: calc(100% / var(--cw, 1));
+      height: calc(100% / var(--ch, 1));
+      left: calc(-100% * var(--cx, 0) / var(--cw, 1));
+      top: calc(-100% * var(--cy, 0) / var(--ch, 1));
+      max-width: none;
+      max-height: none;
+      object-fit: cover;
+    }
+    .imgrid__caption {
+      flex: 0 0 auto;
+      width: var(--cap-w, 100%);
+      margin-left: var(--cap-x, 0);
+      font-size: clamp(11px, 1.18cqi, 17px);
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      padding: 6px 2px 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── INFO BLOCK (project-detail component) ─────────────
+       Mirrors editor.html. Each field is absolutely positioned in
+       percentages of the c-item box so custom layouts from the editor
+       round-trip exactly. */
+    .c-item[data-kind="infoblock"] { overflow: hidden; }
+    .ib {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      font-family: inherit;
+      color: var(--text);
+    }
+    .ib__field { position: absolute; box-sizing: border-box; }
+    /* Info-block fonts use container query units against .canvas-stage (which
+       has container-type: inline-size) so they scale with the canvas the same
+       way item text does. cqi values target each rule's original px size at
+       the typical 1440px design canvas; clamp() floors at a readable minimum. */
+    .ib__label {
+      color: var(--text-mid);
+      font-size: clamp(9px, 0.76cqi, 11px);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      margin-right: 14px;
+    }
+    .ib__value { color: var(--text); font-size: clamp(11px, 0.9cqi, 13px); line-height: 1.55; }
+    .ib__field--title .ib__value { font-size: clamp(15px, 1.53cqi, 22px); letter-spacing: 0.01em; }
+    .ib__field--year .ib__value { font-size: clamp(11px, 0.97cqi, 14px); display: block; text-align: right; }
+    .ib__field--description .ib__value { display: block; line-height: 1.7; font-size: clamp(10.5px, 0.87cqi, 12.5px); }
+    .ib__field--description .ib__value p { margin: 0 0 12px; }
+    .ib__field--description .ib__value p:last-child { margin-bottom: 0; }
+
+  </style>
+</head>
+<body>
+  <button id="backBtn" class="corner-btn" aria-label="Back to index">Back</button>
+  <button id="themeBtn" class="corner-btn" aria-label="Toggle light/dark">Light</button>
+  <div id="galleryCursor"></div>
+
+  <div id="projectLoading">Loading…</div>
+  <div id="projectError">Project not found</div>
+
+  <article id="projectContent" style="display:none;">
+    <div id="gallery"></div>
+  </article>
+
+  <footer id="siteFooter">
+    <img class="footer-logo" src="brand_assets/STUDIO COLBY WEBSITE WORD MARK.svg" alt="Studio Colby">
+    <a class="footer-link" data-view="about">About</a>
+    <a class="footer-link" data-view="rectgrid">Archive</a>
+    <a class="footer-link" href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+    <a class="footer-link" data-view="about">Contact</a>
+  </footer>
+
+  <script>
+    // ── BACK BUTTON + FOOTER LINKS → navigate back to index.html ────
+    function goIndex(view) {
+      const url = view ? 'index.html?view=' + view : 'index.html';
+      document.body.style.opacity = '0';
+      setTimeout(() => { location.href = url; }, 450);
+    }
+    document.getElementById('backBtn')?.addEventListener('click', () => goIndex());
+
+    // ── Custom hand cursor — matches index.html behavior ───────
+    (function () {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      const gc = document.getElementById('galleryCursor');
+      if (!gc) return;
+      const getZoom = () =>
+        parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+      document.addEventListener('mousemove', (e) => {
+        const z = getZoom();
+        gc.style.left = (e.clientX / z) + 'px';
+        gc.style.top  = (e.clientY / z) + 'px';
+      });
+    })();
+
+    // Theme toggle — button label always shows the *opposite* mode so
+    // the user knows what clicking will do.
+    const themeBtn = document.getElementById('themeBtn');
+    function syncThemeLabel() {
+      if (!themeBtn) return;
+      themeBtn.textContent = document.documentElement.classList.contains('light-mode') ? 'Dark' : 'Light';
+    }
+    syncThemeLabel();
+    themeBtn?.addEventListener('click', () => {
+      const isLight = document.documentElement.classList.toggle('light-mode');
+      try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch {}
+      syncThemeLabel();
+      if (typeof recolorAllInlinedSvgs === 'function') recolorAllInlinedSvgs();
+      if (typeof reboostAllInlinedSvgs === 'function') reboostAllInlinedSvgs();
+    });
+    document.querySelectorAll('#siteFooter .footer-link[data-view]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const v = a.getAttribute('data-view');
+        if (v === 'projects') goIndex();
+        else if (v === 'about') {
+          // Route to the editable About page instead of the index about section
+          document.body.style.opacity = '0';
+          setTimeout(() => { location.href = 'page.html?slug=about'; }, 450);
+        }
+        else if (v === 'rectgrid') goIndex('rectgrid');
+        else goIndex();
+      });
+    });
+
+    // ── SVG INLINE + SMART RECOLOR ───────────────────────────
+    // Walks an SVG DOM, rewriting dark strokes/fills to the theme foreground
+    // color. <image> elements (embedded raster) are left untouched.
+    const __svgCache = new Map();           // src → parsed Document
+    const __inlinedSvgs = new Set();         // live <svg> nodes to re-color on theme change
+
+    function isDarkColor(v) {
+      if (!v) return false;
+      const s = v.toString().trim().toLowerCase();
+      if (s === 'none' || s === 'transparent' || s === 'currentcolor') return false;
+      if (s === 'black' || s === '#000' || s === '#000000') return true;
+      const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(s);
+      if (hex) {
+        let h = hex[1];
+        if (h.length === 3) h = h.split('').map(c => c + c).join('');
+        const r = parseInt(h.slice(0, 2), 16);
+        const g = parseInt(h.slice(2, 4), 16);
+        const b = parseInt(h.slice(4, 6), 16);
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.3;
+      }
+      const m = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(s);
+      if (m) {
+        const r = +m[1], g = +m[2], b = +m[3];
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.3;
+      }
+      return false;
+    }
+
+    // Treat both full-black and full-white as "themable": SVGs authored for a
+    // dark background use white strokes and vice-versa, so both get swapped to
+    // the current foreground color to stay visible against whatever bg they sit on.
+    function isLightColor(v) {
+      if (!v) return false;
+      const s = v.toString().trim().toLowerCase();
+      if (s === 'white' || s === '#fff' || s === '#ffffff') return true;
+      const m = /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(s);
+      if (m) {
+        const r = +m[1], g = +m[2], b = +m[3];
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.85;
+      }
+      return false;
+    }
+    function recolorSvg(root, color) {
+      const SKIP = new Set(['image', 'IMAGE']);
+      root.querySelectorAll('*').forEach(el => {
+        if (SKIP.has(el.nodeName) || SKIP.has(el.tagName)) return;
+        const s = el.getAttribute('stroke');
+        if (isDarkColor(s) || isLightColor(s) || s === '__orig-dark') el.setAttribute('stroke', color);
+        const f = el.getAttribute('fill');
+        if (isDarkColor(f) || isLightColor(f) || f === '__orig-dark') el.setAttribute('fill', color);
+        const tag = (el.tagName || el.nodeName || '').toLowerCase();
+        if (tag === 'text' || tag === 'tspan') {
+          // Force the SAME color as strokes regardless of how the source
+          // SVG painted text (attribute, inline style, or <style> block).
+          // Inline style beats <style> rules — without this, text often
+          // ends up brighter than the surrounding strokes.
+          el.setAttribute('fill', color);
+          if (el.style) {
+            el.style.fill = color;
+            // Stop a black/white stroke around glyphs from doubling the
+            // perceived brightness.
+            el.style.stroke = 'none';
+            el.style.fontWeight = '400';
+          }
+          el.setAttribute('font-weight', '400');
+        }
+      });
+      root.querySelectorAll('style').forEach(st => {
+        if (st.__origText == null) st.__origText = st.textContent;
+        st.textContent = st.__origText
+          .replace(/(stroke\s*:\s*)(#0{3,6}|black|rgb\(\s*0\s*,\s*0\s*,\s*0\s*\))/gi, '$1' + color)
+          .replace(/(fill\s*:\s*)(#0{3,6}|black|rgb\(\s*0\s*,\s*0\s*,\s*0\s*\))/gi, '$1' + color)
+          // Whites authored for dark-mode SVGs also need swapping so they
+          // don't disappear against a white background in light mode.
+          .replace(/(stroke\s*:\s*)(#f{3,6}|white|rgb\(\s*255\s*,\s*255\s*,\s*255\s*\))/gi, '$1' + color)
+          .replace(/(fill\s*:\s*)(#f{3,6}|white|rgb\(\s*255\s*,\s*255\s*,\s*255\s*\))/gi, '$1' + color)
+          // Strip any bold weight declarations on text elements so SVG
+          // labels match the regular weight of body copy.
+          .replace(/(font-weight\s*:\s*)(bold|[6-9]00|1000)/gi, '$1400');
+      });
+    }
+
+    function currentFgColor() {
+      // Match SVG strokes/fills/text to the same --text the page body uses
+      // so a CAD line and a paragraph next to it read as the same color.
+      // Falls back to the literal token if --text isn't resolvable yet
+      // (e.g., during very early init before styles are applied).
+      try {
+        const v = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+        if (v) return v;
+      } catch {}
+      return document.documentElement.classList.contains('light-mode') ? '#1A1A1A' : '#E4E4E4';
+    }
+
+    // Off-screen sandbox for resolving an SVG's embedded <style> rules into
+    // per-element attributes before the SVG ever enters a visible container.
+    // Different Illustrator-exported CAD icons reuse the same generic class
+    // names (.cls-1, .cls-2, …) with file-specific stroke-widths. If their
+    // <style> blocks land in document scope together, the last-inlined
+    // wins for everyone — thin strokes collapse and vanish. Flatten +
+    // remove <style> to keep each SVG self-contained.
+    function __getSvgSandbox() {
+      let s = document.getElementById('__svgSandbox');
+      if (!s) {
+        s = document.createElement('div');
+        s.id = '__svgSandbox';
+        s.setAttribute('aria-hidden', 'true');
+        s.style.cssText = 'position:absolute;left:-99999px;top:0;width:1px;height:1px;overflow:hidden;pointer-events:none;visibility:hidden;';
+        (document.body || document.documentElement).appendChild(s);
+      }
+      return s;
+    }
+    function flattenSvgStyles(svg) {
+      const sandbox = __getSvgSandbox();
+      sandbox.appendChild(svg);
+      // Read-then-write: interleaving getComputedStyle with setAttribute
+      // triggers a style recalc per shape. Batch reads first, then writes.
+      const shapes = Array.from(svg.querySelectorAll('path, rect, circle, ellipse, line, polyline, polygon, text, tspan'));
+      const styles = shapes.map(el => {
+        const cs = getComputedStyle(el);
+        let bbox = null;
+        // CAD exports (Illustrator / DWG) draw "lines" as filled sliver
+        // paths with stroke-width: 0. At the rendered size these slivers
+        // (~0.2 viewBox units thick) collapse to <1 screen pixel and
+        // render unevenly. Capture the bbox so we can promote them to a
+        // proper non-scaling stroke below.
+        if (typeof el.getBBox === 'function') {
+          try { bbox = el.getBBox(); } catch (e) { bbox = null; }
+        }
+        return {
+          fill: cs.fill,
+          stroke: cs.stroke,
+          sw: parseFloat(cs.strokeWidth) || 0,
+          lc: cs.strokeLinecap,
+          lj: cs.strokeLinejoin,
+          ml: cs.strokeMiterlimit,
+          bbox,
+        };
+      });
+      shapes.forEach((el, i) => {
+        const s = styles[i];
+        if (s.fill) el.setAttribute('fill', s.fill);
+        if (s.stroke && s.stroke !== 'none') el.setAttribute('stroke', s.stroke);
+        if (s.sw > 0) {
+          el.setAttribute('stroke-width', s.sw);
+          el.dataset.origSw = s.sw;
+        }
+        if (s.lc && s.lc !== 'butt') el.setAttribute('stroke-linecap', s.lc);
+        if (s.lj && s.lj !== 'miter') el.setAttribute('stroke-linejoin', s.lj);
+        if (s.ml && s.ml !== '4') el.setAttribute('stroke-miterlimit', s.ml);
+        el.setAttribute('vector-effect', 'non-scaling-stroke');
+        // Promote sliver-fill paths (CAD line outlines) to a stroke that
+        // matches their fill, so boostStrokesForVisibility can guarantee a
+        // visible screen-pixel width. Only triggers when:
+        //   - element has a fill (and isn't the page background)
+        //   - element has no real stroke
+        //   - bbox is thin in at least one axis (< 1 viewBox unit)
+        // Glyph and large-fill shapes have both bbox dims >= 1 so they're
+        // left alone — text doesn't get bolded.
+        const tag = (el.tagName || '').toLowerCase();
+        if (tag !== 'text' && tag !== 'tspan'
+            && s.fill && s.fill !== 'none'
+            && (!s.stroke || s.stroke === 'none')
+            && s.bbox
+            && (s.bbox.width < 1 || s.bbox.height < 1)) {
+          el.setAttribute('stroke', s.fill);
+          // Match the CAD hairline default (0.25 viewBox-units). With the
+          // boost floor, this renders at 0.35 screen px non-scaling — same
+          // weight as natively stroked .cls-5 lines on other CAD exports.
+          el.setAttribute('stroke-width', '0.25');
+          el.dataset.origSw = '0.25';
+        }
+      });
+      svg.querySelectorAll('style').forEach(n => n.remove());
+      // Auto-trim viewBox to actual content bounds. CAD exports often keep
+      // the original full-page viewBox even when content only occupies a
+      // corner (especially after splitting one drawing into multiple SVGs),
+      // which makes the drawing render tiny inside its layout box. Tight
+      // viewBox + a margin equal to half the rendered stroke gives the
+      // content room to fill its container without clipping strokes.
+      try {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        svg.querySelectorAll('path, rect, circle, ellipse, line, polyline, polygon, text, tspan').forEach(el => {
+          if (typeof el.getBBox !== 'function') return;
+          let b;
+          try { b = el.getBBox(); } catch (e) { return; }
+          if (!b || (!b.width && !b.height)) return;
+          if (b.x < minX) minX = b.x;
+          if (b.y < minY) minY = b.y;
+          if (b.x + b.width  > maxX) maxX = b.x + b.width;
+          if (b.y + b.height > maxY) maxY = b.y + b.height;
+        });
+        const vb = svg.viewBox && svg.viewBox.baseVal;
+        if (vb && isFinite(minX) && isFinite(maxX)
+            && (maxX - minX) > 0 && (maxY - minY) > 0
+            // Only trim when there's meaningful empty space — avoids
+            // jiggling SVGs whose content already fills their viewBox.
+            && ((maxX - minX) / vb.width < 0.9 || (maxY - minY) / vb.height < 0.9)) {
+          const pad = Math.max(0.5, Math.min(vb.width, vb.height) * 0.01);
+          const nx = Math.max(0, minX - pad);
+          const ny = Math.max(0, minY - pad);
+          const nw = (maxX - minX) + pad * 2;
+          const nh = (maxY - minY) + pad * 2;
+          svg.setAttribute('viewBox', nx + ' ' + ny + ' ' + nw + ' ' + nh);
+        }
+      } catch (e) {}
+      sandbox.removeChild(svg);
+    }
+
+    // Build a fully-prepared SVG "template" (flattened attributes +
+    // boosted stroke widths) once per URL. Subsequent calls just clone the
+    // prepared template — no re-parsing or re-flattening.
+    async function __getSvgTemplate(url) {
+      const cached = __svgCache.get(url);
+      if (cached) return cached;
+      if (!__svgCache.__pending) __svgCache.__pending = new Map();
+      const pending = __svgCache.__pending;
+      if (pending.has(url)) return pending.get(url);
+      const p = (async () => {
+        try {
+          const text = await fetch(url).then(r => r.text());
+          const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+          if (doc.documentElement.nodeName.toLowerCase() !== 'svg') return null;
+          const tpl = doc.documentElement.cloneNode(true);
+          tpl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+          flattenSvgStyles(tpl);
+          boostStrokesForVisibility(tpl);
+          __svgCache.set(url, tpl);
+          return tpl;
+        } catch { return null; }
+        finally { pending.delete(url); }
+      })();
+      pending.set(url, p);
+      return p;
+    }
+    async function inlineSvgInto(container, url) {
+      const tpl = await __getSvgTemplate(url);
+      if (!tpl) return false;
+      const svg = tpl.cloneNode(true);
+      recolorSvg(svg, currentFgColor());
+      container.innerHTML = '';
+      container.appendChild(svg);
+      __inlinedSvgs.add(svg);
+      return true;
+    }
+
+    // Caption width tracks the visible image bounds (object-fit: contain
+    // shrinks media to fit). Cropped cells fill the inner box, so the
+    // caption matches the cell width in that case.
+    function alignCaptionToImage(cellEl) {
+      const cap = cellEl.querySelector('.imgrid__caption');
+      const inner = cellEl.querySelector('.imgrid__inner');
+      if (!cap || !inner) return;
+      if (inner.classList.contains('is-cropped')) {
+        cap.style.setProperty('--cap-w', '100%');
+        cap.style.setProperty('--cap-x', '0px');
+        return;
+      }
+      const media = inner.querySelector('img, video, svg');
+      if (!media) return;
+      const apply = () => {
+        const cw = inner.clientWidth, ch = inner.clientHeight;
+        if (!cw || !ch) return;
+        let nw = media.naturalWidth || media.videoWidth || 0;
+        let nh = media.naturalHeight || media.videoHeight || 0;
+        if ((!nw || !nh) && media.tagName === 'svg' && media.viewBox && media.viewBox.baseVal) {
+          nw = media.viewBox.baseVal.width;
+          nh = media.viewBox.baseVal.height;
+        }
+        if (!nw || !nh) {
+          cap.style.setProperty('--cap-w', '100%');
+          cap.style.setProperty('--cap-x', '0px');
+          return;
+        }
+        const scale = Math.min(cw / nw, ch / nh);
+        const contentW = nw * scale;
+        const offsetX = Math.max(0, (cw - contentW) / 2);
+        cap.style.setProperty('--cap-w', contentW + 'px');
+        cap.style.setProperty('--cap-x', offsetX + 'px');
+      };
+      if (media.tagName === 'IMG' && !media.complete) {
+        media.addEventListener('load', apply, { once: true });
+        media.addEventListener('error', apply, { once: true });
+      } else if (media.tagName === 'VIDEO' && !media.videoWidth) {
+        media.addEventListener('loadedmetadata', apply, { once: true });
+      } else {
+        apply();
+      }
+      if (!cellEl._capRO && typeof ResizeObserver !== 'undefined') {
+        cellEl._capRO = new ResizeObserver(apply);
+        cellEl._capRO.observe(inner);
+      }
+    }
+
+    // Thin CAD strokes (<1 unit) become sub-pixel on screen. With
+    // non-scaling-stroke applied via CSS, stroke-width is now in screen px,
+    // so floor any sub-pixel strokes high enough that thin outlines don't
+    // disappear. Dark mode needs a heavier floor — light strokes on black
+    // fade into the background faster than dark strokes on white do.
+    function boostStrokesForVisibility(svg) {
+      // Unified floor across light + dark so boost is theme-independent.
+      const floor = 0.35;
+      svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
+        // Prefer the width captured at flatten time. Reading getComputedStyle
+        // live would race with any other SVG whose <style> might still be in
+        // scope and could briefly resolve stroke-width to zero.
+        let orig = parseFloat(el.dataset.origSw);
+        if (!orig) {
+          const sw = parseFloat(getComputedStyle(el).strokeWidth) || 0;
+          if (sw <= 0) return;
+          orig = sw;
+          el.dataset.origSw = sw;
+        }
+        if (!el.hasAttribute('vector-effect')) {
+          el.setAttribute('vector-effect', 'non-scaling-stroke');
+        }
+        el.style.strokeWidth = Math.max(floor, orig * 1.0 + 0.05) + 'px';
+      });
+    }
+
+    function reboostAllInlinedSvgs() {
+      __inlinedSvgs.forEach(svg => {
+        if (!document.contains(svg)) return;
+        boostStrokesForVisibility(svg);
+      });
+    }
+
+    function recolorAllInlinedSvgs() {
+      const color = currentFgColor();
+      __inlinedSvgs.forEach(svg => {
+        if (!document.contains(svg)) { __inlinedSvgs.delete(svg); return; }
+        recolorSvg(svg, color);
+      });
+    }
+
+    // ── MEDIA HELPERS ────────────────────────────────────────
+    function isVideoSrc(src) {
+      const s = (src || '').toLowerCase();
+      return s.endsWith('.mp4') || s.endsWith('.mov') || s.endsWith('.webm');
+    }
+    function isSvgSrc(src) {
+      return (src || '').toLowerCase().endsWith('.svg');
+    }
+    function isDarkBg(hex) {
+      if (!hex) return true;
+      const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim());
+      if (!m) return true;
+      let h = m[1];
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      const r = parseInt(h.slice(0, 2), 16);
+      const g = parseInt(h.slice(2, 4), 16);
+      const b = parseInt(h.slice(4, 6), 16);
+      const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      return lum < 0.55;
+    }
+    const hasHoverPointer = () =>
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // In-page media overlay (lightbox). Keeps the page visible behind a dim,
+    // blurred backdrop; click the backdrop or press Esc to close. Clicks on
+    // the enlarged media are a no-op.
+    let __mediaOverlay = null;
+    function getMediaOverlay() {
+      if (__mediaOverlay) return __mediaOverlay;
+      const ov = document.createElement('div');
+      ov.id = 'mediaOverlay';
+      const backdrop = document.createElement('div');
+      backdrop.className = 'media-overlay-backdrop';
+      const stage = document.createElement('div');
+      stage.className = 'media-overlay-stage';
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'media-overlay-close';
+      closeBtn.type = 'button';
+      closeBtn.textContent = 'Close';
+      ov.appendChild(backdrop);
+      ov.appendChild(stage);
+      ov.appendChild(closeBtn);
+      document.body.appendChild(ov);
+
+      const close = () => {
+        ov.classList.remove('active');
+        setTimeout(() => { stage.innerHTML = ''; }, 650);
+      };
+      backdrop.addEventListener('click', close);
+      closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+      // Any click inside the stage — including on the media itself — closes.
+      stage.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && ov.classList.contains('active')) close();
+      });
+
+      __mediaOverlay = { el: ov, stage, close };
+      return __mediaOverlay;
+    }
+
+    function openMediaOverlay(src, kind) {
+      const { el, stage } = getMediaOverlay();
+      stage.innerHTML = '';
+      let node;
+      if (kind === 'video') {
+        node = document.createElement('video');
+        node.src = src;
+        node.controls = true;
+        node.autoplay = true;
+        node.loop = true;
+        node.playsInline = true;
+      } else {
+        node = document.createElement('img');
+        node.src = src;
+        node.alt = '';
+      }
+      stage.appendChild(node);
+      requestAnimationFrame(() => el.classList.add('active'));
+    }
+
+    // Click-to-enlarge helper used by image, svg, and video items. Always
+    // opens the in-page overlay — the page stays visible behind it.
+    function attachFullscreenClick(mediaEl, preferredEl, srcOverride, kindOverride) {
+      mediaEl.style.cursor = 'pointer';
+      mediaEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        // Resolve src + kind from the preferred element when not explicitly passed.
+        let src = srcOverride;
+        let kind = kindOverride;
+        if (!src) {
+          const el = preferredEl || mediaEl;
+          if (el.tagName === 'IMG') { src = el.currentSrc || el.src; kind = 'image'; }
+          else if (el.tagName === 'VIDEO') { src = el.currentSrc || el.src; kind = 'video'; }
+          else {
+            const innerImg = mediaEl.querySelector('img');
+            const innerVid = mediaEl.querySelector('video');
+            if (innerVid) { src = innerVid.currentSrc || innerVid.src; kind = 'video'; }
+            else if (innerImg) { src = innerImg.currentSrc || innerImg.src; kind = 'image'; }
+          }
+        }
+        if (!src) return;
+        openMediaOverlay(src, kind);
+      });
+    }
+
+
+    function applyCropClip(mediaHost, item) {
+      const c = item && item.crop;
+      const SEL = 'img, video, svg';
+      if (c && (c.t || c.r || c.b || c.l)) {
+        const clip = 'inset(' + (c.t || 0) + '% ' + (c.r || 0) + '% ' + (c.b || 0) + '% ' + (c.l || 0) + '%)';
+        mediaHost.querySelectorAll(SEL).forEach(n => { n.style.clipPath = clip; });
+      }
+      // Destructive-crop pan transform — image is sized larger than its
+      // host with offsets so the kept region fills the visible box.
+      const p = item && item.imgPan;
+      if (p && (p.sx !== 1 || p.sy !== 1 || p.ox !== 0 || p.oy !== 0)) {
+        mediaHost.style.overflow = 'hidden';
+        mediaHost.style.position = mediaHost.style.position || 'relative';
+        mediaHost.querySelectorAll(SEL).forEach(n => {
+          n.style.position = 'absolute';
+          n.style.left = (-p.ox * 100) + '%';
+          n.style.top  = (-p.oy * 100) + '%';
+          n.style.width  = (p.sx * 100) + '%';
+          n.style.height = (p.sy * 100) + '%';
+          // Inline SVGs default to preserveAspectRatio="meet" which would
+          // letterbox inside the scaled host. For crop math to line up the
+          // SVG must stretch to fill — non-scaling-stroke keeps strokes uniform.
+          if (n.tagName && n.tagName.toLowerCase() === 'svg') {
+            n.setAttribute('preserveAspectRatio', 'none');
+          }
+        });
+      }
+    }
+
+    // Build a font-size that scales with the canvas via container query
+    // units (cqi against the .canvas-stage container) but is floored at a
+    // minimum px size for readability and capped at the originally-designed
+    // px value. canvasW is the design-time canvas width — required to map
+    // a px font-size to its proportional cqi share.
+    function responsiveFontSize(px, canvasW) {
+      if (!canvasW || !px) return px + 'px';
+      const cqi = (px / canvasW * 100).toFixed(3);
+      return `clamp(11px, ${cqi}cqi, ${px}px)`;
+    }
+
+    function applyTextStyle(el, item, canvasW) {
+      el.style.width = '100%';
+      el.style.height = '100%';
+      el.style.boxSizing = 'border-box';
+      el.style.whiteSpace = 'pre-wrap';
+      el.style.wordBreak = 'break-word';
+      el.style.overflow = 'hidden';
+      el.style.color = item.color || 'inherit';
+      el.style.fontSize = responsiveFontSize(item.fontSize || 20, canvasW);
+      el.style.fontWeight = item.fontWeight || 500;
+      el.style.lineHeight = item.lineHeight || 1.4;
+      el.style.textAlign = item.align || 'left';
+      el.style.padding = (item.padding || 0) + 'px';
+      el.style.letterSpacing = (item.letterSpacing || 0) + 'em';
+      // Only set inline fontFamily when the item explicitly overrides it,
+      // so the .c-item-text CSS rule (medium-capable stack) can take effect.
+      if (item.fontFamily) el.style.fontFamily = item.fontFamily;
+      else el.style.removeProperty('font-family');
+      el.style.textTransform = item.transform || 'none';
+    }
+
+    // Build media + (optional) controls. Returns the .c-item (wrap).
+    // For videos, creates an inner .c-item-media frame that holds the video
+    // with object-fit:cover (so there are no side bars), and places controls
+    // OUTSIDE the frame at the bottom-left.
+    function buildItem(item, baseEl, canvasW) {
+      if (item.type === 'text') {
+        const t = document.createElement('div');
+        t.className = 'c-item-text';
+        t.textContent = item.text || '';
+        applyTextStyle(t, item, canvasW);
+        baseEl.appendChild(t);
+        return baseEl;
+      }
+      if (item.type === 'spacer') {
+        return baseEl;
+      }
+      if (item.type === 'imagegrid') {
+        baseEl.dataset.kind = 'imagegrid';
+        const rows = Math.max(1, item.rows || 1);
+        const cols = Math.max(1, item.cols || 1);
+        const scale = Math.max(0.05, Math.min(1, item.scale == null ? 1 : item.scale));
+        const cells = Array.isArray(item.cells) ? item.cells : [];
+        const cellH = 100 / rows;
+        const pad = (1 - scale) / 2;
+        const esc = (s) => { const d = document.createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; };
+        const wrap = document.createElement('div');
+        wrap.className = 'imgrid';
+        let html = '';
+        const renderedIdx = [];
+        for (let r = 0; r < rows; r++) {
+          // Per-cell weights: cell.w (default 1). Width % within row = w / sum.
+          const weights = [];
+          for (let c = 0; c < cols; c++) {
+            const w = cells[r*cols+c]?.w;
+            weights.push(Math.max(0, w == null ? 1 : +w));
+          }
+          const total = weights.reduce((a,b) => a+b, 0) || 1;
+          // First and last rendered column in this row — used to zero padding
+          // on the outer edges so the grid's bbox matches its visible content.
+          let firstC = -1, lastC = -1;
+          for (let cc = 0; cc < cols; cc++) {
+            if (weights[cc] > 0) {
+              if (firstC < 0) firstC = cc;
+              lastC = cc;
+            }
+          }
+          let leftPct = 0;
+          for (let c = 0; c < cols; c++) {
+            const wPct = (weights[c] / total) * 100;
+            if (wPct === 0) continue;
+            const idx = r * cols + c;
+            const cell = cells[idx] || {};
+            let media = '';
+            if (cell.src) {
+              if (cell.type === 'video' || /\.(mp4|webm|mov)$/i.test(cell.src)) {
+                media = `<video src="${esc(cell.src)}" muted loop autoplay playsinline></video>`;
+              } else {
+                media = `<img src="${esc(cell.src)}" alt="">`;
+              }
+            }
+            // Outer-edge cells drop outer-side padding so the grid's bounds
+            // match its visible content and snap flush with regular images.
+            const padTop    = (r === 0)        ? 0 : pad * cellH;
+            const padBottom = (r === rows - 1) ? 0 : pad * cellH;
+            const padLeft   = (c === firstC)   ? 0 : pad * wPct;
+            const padRight  = (c === lastC)    ? 0 : pad * wPct;
+            const style = `left:${leftPct}%;top:${r*cellH}%;width:${wPct}%;height:${cellH}%;padding:${padTop}% ${padRight}% ${padBottom}% ${padLeft}%;`;
+            const capStyle = item.captionSize ? ` style="font-size:${responsiveFontSize(parseInt(item.captionSize, 10), canvasW)}"` : '';
+            const cap = cell.caption ? `<div class="imgrid__caption"${capStyle}>${esc(cell.caption)}</div>` : '';
+            const hasCrop = cell.crop && cell.crop.w > 0 && cell.crop.h > 0;
+            const innerCls = hasCrop ? 'imgrid__inner is-cropped' : 'imgrid__inner';
+            const innerStyle = hasCrop ? ` style="--cx:${+cell.crop.x || 0};--cy:${+cell.crop.y || 0};--cw:${+cell.crop.w};--ch:${+cell.crop.h}"` : '';
+            html += `<div class="imgrid__cell" style="${style}"><div class="${innerCls}"${innerStyle}>${media}</div>${cap}</div>`;
+            renderedIdx.push(idx);
+            leftPct += wPct;
+          }
+        }
+        wrap.innerHTML = html;
+        baseEl.appendChild(wrap);
+        wrap.querySelectorAll('.imgrid__cell').forEach((cellEl, i) => {
+          const cell = cells[renderedIdx[i]] || {};
+          const inner = cellEl.querySelector('.imgrid__inner');
+          // SVGs need to be inlined so theme recoloring applies — without
+          // this, white-stroked CAD drawings stay invisible in light mode.
+          const isSvg = cell.src && isSvgSrc(cell.src) && cell.type !== 'video' && inner;
+          if (isSvg) {
+            inlineSvgInto(inner, cell.src).then(() => alignCaptionToImage(cellEl));
+          } else {
+            alignCaptionToImage(cellEl);
+          }
+          const media = cellEl.querySelector('img, video');
+          if (media) attachFullscreenClick(cellEl, media);
+        });
+        return baseEl;
+      }
+      if (item.type === 'infoblock') {
+        baseEl.dataset.kind = 'infoblock';
+        const esc = (s) => {
+          const d = document.createElement('div');
+          d.textContent = String(s == null ? '' : s);
+          return d.innerHTML;
+        };
+        // Defaults must match editor.html's IB_DEFAULTS exactly so layouts round-trip.
+        const IB_DEFAULTS = {
+          title:       { x: 6,  y: 6,  w: 60, label: null },
+          year:        { x: 80, y: 10, w: 14, label: null },
+          client:      { x: 6,  y: 22, w: 88, label: 'Client' },
+          materials:   { x: 6,  y: 32, w: 88, label: 'Materials' },
+          sector:      { x: 6,  y: 42, w: 88, label: 'Sector' },
+          description: { x: 6,  y: 54, w: 88, label: 'Description' },
+        };
+        const layoutFor = (key) => {
+          const d = IB_DEFAULTS[key];
+          const o = (item.layout && item.layout[key]) || {};
+          return {
+            x: o.x != null ? +o.x : d.x,
+            y: o.y != null ? +o.y : d.y,
+            w: o.w != null ? +o.w : d.w,
+          };
+        };
+        const paras = Array.isArray(item.description)
+          ? item.description
+          : (item.description ? [item.description] : []);
+        const wrap = document.createElement('div');
+        wrap.className = 'ib';
+        Object.keys(IB_DEFAULTS).forEach(key => {
+          const def = IB_DEFAULTS[key];
+          const pos = layoutFor(key);
+          let content;
+          if (key === 'description') {
+            content = `<span class="ib__value">${paras.map(p => `<p>${esc(p)}</p>`).join('')}</span>`;
+          } else {
+            content = `<span class="ib__value">${esc(item[key])}</span>`;
+          }
+          const label = def.label ? `<span class="ib__label">${esc(def.label)}</span>` : '';
+          const fieldHtml = `<div class="ib__field ib__field--${key}" style="left:${pos.x}%;top:${pos.y}%;width:${pos.w}%;">${label}${content}</div>`;
+          wrap.insertAdjacentHTML('beforeend', fieldHtml);
+        });
+        baseEl.appendChild(wrap);
+        return baseEl;
+      }
+      const isVideo = item.type === 'video' || isVideoSrc(item.src);
+      const isSvg = isSvgSrc(item.src);
+      if (isSvg) baseEl.dataset.svg = '1';
+      if (isVideo) baseEl.dataset.video = '1';
+
+      const media = document.createElement('div');
+      media.className = 'c-item-media';
+
+      if (isVideo) {
+        const v = document.createElement('video');
+        v.src = item.src;
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.preload = 'metadata';
+        // Lock the bounding box to the video's natural aspect. If the editor
+        // saved item.aspect, apply it synchronously so there's no letterbox
+        // flash before metadata loads. loadedmetadata still corrects legacy
+        // items without a saved aspect.
+        if (item.aspect) {
+          baseEl.style.aspectRatio = item.aspect;
+          baseEl.style.height = 'auto';
+        }
+        v.addEventListener('loadedmetadata', () => {
+          if (!v.videoWidth || !v.videoHeight) return;
+          baseEl.style.aspectRatio = v.videoWidth + ' / ' + v.videoHeight;
+          baseEl.style.height = 'auto';
+        }, { once: true });
+
+        // Per-item autoplay flag (set in the editor) overrides hover-to-play.
+        // When on: video starts immediately and never pauses on mouseleave.
+        if (item.autoplay) {
+          v.autoplay = true;
+          baseEl.classList.add('playing');
+          v.play().catch(() => {});
+        } else if (hasHoverPointer()) {
+          v.autoplay = false;
+          baseEl.addEventListener('mouseenter', () => {
+            v.play().then(() => baseEl.classList.add('playing')).catch(() => {});
+          });
+          baseEl.addEventListener('mouseleave', () => {
+            if (!document.fullscreenElement || document.fullscreenElement !== v) {
+              v.pause();
+              baseEl.classList.remove('playing');
+            }
+          });
+        } else {
+          v.autoplay = true;
+          v.play().catch(() => {});
+        }
+
+        // Click anywhere on the video = toggle fullscreen
+        attachFullscreenClick(media, v);
+
+        function onFsChange() {
+          const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+          if (fsEl === v) {
+            v.controls = true;
+            if (v.paused) v.play().catch(() => {});
+          } else {
+            v.controls = false;
+          }
+        }
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
+
+        media.appendChild(v);
+        baseEl.appendChild(media);
+      } else if (isSvg) {
+        baseEl.appendChild(media);
+        inlineSvgInto(media, item.src).then(ok => {
+          if (!ok) {
+            const img = document.createElement('img');
+            img.loading = 'lazy';
+            img.src = item.src;
+            img.alt = '';
+            media.appendChild(img);
+          }
+          // Re-apply crop now that the SVG is in the DOM (synchronous call
+          // at line ~1097 missed it because inlineSvgInto is async).
+          applyCropClip(baseEl, item);
+        });
+        // Click anywhere on the SVG = fullscreen (the media wrapper)
+        attachFullscreenClick(media, media);
+      } else {
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.src = item.src;
+        img.alt = '';
+        media.appendChild(img);
+        baseEl.appendChild(media);
+        // Click anywhere on the image = fullscreen (prefer image element
+        // so the browser can scale it pixel-perfectly)
+        attachFullscreenClick(media, img);
+      }
+
+      applyCropClip(baseEl, item);
+      if (item.caption) {
+        const cap = document.createElement('div');
+        cap.className = 'c-item-caption';
+        if (item.captionSize) cap.style.fontSize = responsiveFontSize(parseInt(item.captionSize, 10), canvasW);
+        cap.textContent = String(item.caption);
+        baseEl.appendChild(cap);
+      }
+      return baseEl;
+    }
+
+    // ── CANVAS LAYOUT RENDERER ───────────────────────────────
+    function renderCanvasLayout(target, layout) {
+      target.innerHTML = '';
+
+      const pick = () => {
+        const w = window.innerWidth;
+        if (layout.kind === 'canvas-v3' && Array.isArray(layout.breakpoints) && layout.breakpoints.length) {
+          const sorted = [...layout.breakpoints].sort((a, b) => b.minWidth - a.minWidth);
+          return sorted.find(bp => w >= bp.minWidth) || sorted[sorted.length - 1];
+        }
+        const narrow = window.matchMedia('(max-width: 768px)').matches;
+        if (narrow && layout.mobile && layout.mobile.items && layout.mobile.items.length) return layout.mobile;
+        return layout.desktop || layout.mobile;
+      };
+
+      function draw() {
+        const canvas = pick();
+        if (!canvas) return;
+        target.innerHTML = '';
+
+        const stage = document.createElement('div');
+        stage.className = 'canvas-stage';
+        // Force every project canvas to be transparent — uses the page theme bg
+        // instead of any stored per-project canvas.bg color.
+        const transparent = true;
+        stage.style.background = 'transparent';
+        stage.style.aspectRatio = (canvas.w || 1440) + ' / ' + (canvas.h || 2400);
+        // Cap at the design width AND back off by --canvas-inner-inset on
+        // each side so items don't sit flush to the canvas border at narrow
+        // viewports. At desktop the design width wins; at mobile the inset
+        // calc wins, giving consistent breathing room across every project.
+        const designW = (canvas.w || 1440) + 'px';
+        stage.style.maxWidth = `min(${designW}, calc(100% - 2 * var(--canvas-inner-inset)))`;
+        if (!document.documentElement.classList.contains('light-mode')) {
+          stage.classList.add('dark-bg');
+        }
+
+        const items = [...(canvas.items || [])].sort((a, b) => (a.z || 0) - (b.z || 0));
+        items.forEach(it => {
+          if (it.hidden) return;
+          const div = document.createElement('div');
+          div.className = 'c-item';
+          div.style.left = (it.x / canvas.w * 100) + '%';
+          div.style.top  = (it.y / canvas.h * 100) + '%';
+          const widthPct = it.wPct != null
+            ? Math.min(100, it.wPct)
+            : (it.w / canvas.w * 100);
+          div.style.width  = widthPct + '%';
+          div.style.height = (it.h / canvas.h * 100) + '%';
+          if (it.rot) div.style.transform = 'rotate(' + it.rot + 'deg)';
+          if (it.z)   div.style.zIndex = it.z;
+          if (it.padding) div.style.padding = it.padding + 'px';
+
+          buildItem(it, div, canvas.w);
+          // If the item has a link, wrap it in an <a>. Clicks on media with
+          // fullscreen handlers stopPropagation, so the link only fires when
+          // clicking non-fullscreen areas (text items, plain divs, etc).
+          if (it.link) {
+            const a = document.createElement('a');
+            a.href = it.link;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.style.cssText = 'display:block;width:100%;height:100%;cursor:pointer;';
+            // Move children of div into a
+            while (div.firstChild) a.appendChild(div.firstChild);
+            div.appendChild(a);
+          }
+          stage.appendChild(div);
+        });
+
+        target.appendChild(stage);
+      }
+
+      draw();
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(draw, 120);
+      });
+    }
+
+    (async function () {
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      const loadingEl = document.getElementById('projectLoading');
+      const errorEl = document.getElementById('projectError');
+      const contentEl = document.getElementById('projectContent');
+
+      function fail() {
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'flex';
+      }
+
+      if (!id) return fail();
+
+      let data;
+      try {
+        const res = await fetch('content/projects.json');
+        data = await res.json();
+      } catch (e) { return fail(); }
+
+      const project = (data.projects || []).find(p => p.id === id);
+      if (!project) return fail();
+
+      document.title = project.title + ' — Studio Colby';
+
+      // Load layout — draft in preview mode, otherwise layouts.json
+      const gallery = document.getElementById('gallery');
+      const previewMode = params.get('preview') === '1';
+      let loadedLayout = null;
+      if (previewMode) {
+        try {
+          const draft = localStorage.getItem('canvas-draft:' + id);
+          if (draft) {
+            const parsed = JSON.parse(draft);
+            if (parsed && Array.isArray(parsed.breakpoints)) {
+              loadedLayout = { kind: 'canvas-v3', breakpoints: parsed.breakpoints };
+            }
+          }
+        } catch {}
+      }
+
+      if (!loadedLayout) {
+        try {
+          const lres = await fetch('content/layouts.json?t=' + Date.now());
+          if (lres.ok) {
+            const layouts = await lres.json();
+            loadedLayout = layouts[id] || null;
+          }
+        } catch {}
+      }
+
+      let canvasRendered = false;
+      if (loadedLayout) {
+        if (loadedLayout.kind === 'canvas-v3' || loadedLayout.kind === 'canvas-v2') {
+          renderCanvasLayout(gallery, loadedLayout);
+          canvasRendered = true;
+        } else if (loadedLayout.kind === 'canvas') {
+          renderCanvasLayout(gallery, {
+            kind: 'canvas-v2',
+            desktop: { ...(loadedLayout.canvas || {}), items: loadedLayout.items || [] },
+            mobile: null,
+          });
+          canvasRendered = true;
+        }
+      }
+
+      if (!canvasRendered) {
+        const rows = project.images || [];
+        if (rows.length) {
+          const wrap = document.createElement('div');
+          wrap.className = 'fallback-gallery';
+          rows.forEach(row => {
+            if (!row || !row.length) return;
+            const rowEl = document.createElement('div');
+            const n = Math.min(row.length, 3);
+            rowEl.className = 'fallback-row cols-' + n;
+            row.forEach(src => {
+              const cell = document.createElement('div');
+              cell.className = 'fallback-media';
+              if (isSvgSrc(src)) cell.dataset.svg = '1';
+              if (isVideoSrc(src)) cell.dataset.video = '1';
+              const mediaItem = { type: isVideoSrc(src) ? 'video' : 'image', src };
+              buildItem(mediaItem, cell);
+              // Non-video fallback cells need their own FS click (buildItem
+              // only wires FS for the canvas-layout .c-item-media div)
+              if (!isVideoSrc(src)) {
+                const mediaEl = cell.querySelector('.c-item-media') || cell;
+                if (!mediaEl.__fsBound) {
+                  const inner = cell.querySelector('img, svg');
+                  attachFullscreenClick(mediaEl, inner || mediaEl);
+                  mediaEl.__fsBound = true;
+                }
+              }
+              rowEl.appendChild(cell);
+            });
+            wrap.appendChild(rowEl);
+          });
+          gallery.appendChild(wrap);
+        }
+      }
+
+      loadingEl.style.display = 'none';
+      contentEl.style.display = 'block';
+      requestAnimationFrame(() => {
+        document.body.classList.add('ready');
+        contentEl.classList.add('ready');
+      });
+    })();
+  </script>
+</body>
+</html>
