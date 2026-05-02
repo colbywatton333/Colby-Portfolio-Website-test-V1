@@ -880,6 +880,14 @@
       if (!tpl) return false;
       const svg = tpl.cloneNode(true);
       recolorSvg(svg, currentFgColor());
+      // Strip intrinsic dimensions so the SVG sizes from its container,
+      // not from the source file's width/height attributes (CAD exports
+      // commonly bake big pixel sizes that overflow narrow containers).
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      svg.style.display = 'block';
       container.innerHTML = '';
       container.appendChild(svg);
       __inlinedSvgs.add(svg);

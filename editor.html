@@ -3357,6 +3357,15 @@
       if (!tpl) return false;
       const svg = tpl.cloneNode(true);
       __recolorSvg(svg, __fgColorForCanvas());
+      // Strip the source file's intrinsic width/height + force fill via inline
+      // style. Without this, an Illustrator export with width="1000" overflows
+      // any holder div smaller than 1000px (the .item > svg CSS rule doesn't
+      // reach SVGs nested inside the holder div pattern used for canvas items).
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      svg.style.display = 'block';
       container.innerHTML = '';
       container.appendChild(svg);
       __inlinedSvgs.add(svg);
