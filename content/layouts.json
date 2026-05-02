@@ -116,7 +116,7 @@
           {
             "id": "ioivorrj",
             "type": "video",
-            "src": "IMAGES/BASS-SPEAKER/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO.mov",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777754228/studio-colby/bass-speaker/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO_vvogkr.mov",
             "x": 537,
             "y": 5193,
             "w": 357,
@@ -128,7 +128,7 @@
           {
             "id": "iwbadq75",
             "type": "image",
-            "src": "IMAGES/BASS-SPEAKER/IMG_0850.jpg",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754224/studio-colby/bass-speaker/IMG_0850_vwduif.jpg",
             "x": 491,
             "y": 2296,
             "w": 485,
@@ -139,7 +139,7 @@
           {
             "id": "iw2telat",
             "type": "image",
-            "src": "IMAGES/BASS-SPEAKER/IMG_1627.png",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754235/studio-colby/bass-speaker/IMG_1627_jbjzoz.jpg",
             "x": 473,
             "y": 3803,
             "w": 485,
@@ -167,15 +167,15 @@
             "scale": 0.9,
             "cells": [
               {
-                "src": "IMAGES/BASS-SPEAKER/IMG_6662.jpeg",
+                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754226/studio-colby/bass-speaker/IMG_6662_vbyn3q.jpg",
                 "type": "image"
               },
               {
-                "src": "IMAGES/BASS-SPEAKER/IMG_7226.png",
+                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754241/studio-colby/bass-speaker/IMG_7226_rluvhw.jpg",
                 "type": "image"
               },
               {
-                "src": "IMAGES/BASS-SPEAKER/IMG_6658.jpeg",
+                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754225/studio-colby/bass-speaker/IMG_6658_gkxa7l.jpg",
                 "type": "image"
               },
               {
@@ -438,7 +438,7 @@
           {
             "id": "i3c6rg3i",
             "type": "image",
-            "src": "IMAGES/BASS-SPEAKER/IMG_0249.jpg",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754223/studio-colby/bass-speaker/IMG_0249_ev4mon.jpg",
             "x": 556,
             "y": 1288,
             "w": 330,
