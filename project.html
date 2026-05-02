@@ -1479,8 +1479,12 @@
         out.push({
           id: 'mobile_ib_' + gid,
           type: 'mobileInfoBlock',
-          x: minX, y: minY,
-          w: canvas.w - minX, // extend from anchor to the canvas's right edge
+          // Snap to the full canvas width so the block inherits the
+          // canvas-stage's symmetric outer padding — the original anchor's
+          // x offset (e.g. 13% of 1440 for pathway) gave a heavy left
+          // indent and zero right margin on phones.
+          x: 0, y: minY,
+          w: canvas.w,
           h: maxY - minY,     // bbox height (canvas units); CSS overrides to auto
           z: Math.max(...members.map(m => m.z || 0)),
           _title: titleM && titleM.text,
