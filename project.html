@@ -1599,11 +1599,26 @@
         // Mobile info-block reflow grew the block past its authored bbox.
         // Push every item below it down by the height delta and extend the
         // stage min-height to match, so subsequent images don't get covered.
-        // Runs after layout so offsetHeight reflects the actual cqi-sized
-        // typography; rerun on resize is handled by the outer draw() rebuild.
+        //
+        // Re-runs on every measurable change to the info block (fonts loading
+        // late on iOS Safari, viewport URL bar collapsing, etc.) — without
+        // ResizeObserver a single rAF measurement would lock in too small a
+        // delta and items below would creep back over the description.
         const ibs = stage.querySelectorAll('.c-item[data-kind="mobile-ib"]');
         if (ibs.length) {
-          requestAnimationFrame(() => {
+          // Cache each item's original top% so successive reshifts compute
+          // delta from the authored value, not from a previously-shifted
+          // calc() expression.
+          const others = [];
+          for (const c of stage.querySelectorAll('.c-item')) {
+            if (c.dataset.kind === 'mobile-ib') continue;
+            const top0 = parseFloat(c.style.top);
+            if (Number.isFinite(top0)) {
+              c.dataset.origTopPct = String(top0);
+              others.push(c);
+            }
+          }
+          const reshift = () => {
             const stageH = stage.getBoundingClientRect().height;
             if (!stageH) return;
             let maxDelta = 0;
@@ -1615,20 +1630,32 @@
               const ibActualHeightPx = ibEl.offsetHeight;
               const delta = ibActualHeightPx - ibAuthoredHeightPx;
               if (delta <= 0) continue;
-              for (const c of stage.querySelectorAll('.c-item')) {
-                if (c === ibEl) continue;
-                const cTopPct = parseFloat(c.style.top);
+              for (const c of others) {
+                const orig = parseFloat(c.dataset.origTopPct || '0');
                 // Tolerance: float math from earlier % conversion can drift
                 // a hair below the authored bottom; treat near-equal as below.
-                if (cTopPct + 0.05 < authoredBottomPct) continue;
-                c.style.top = `calc(${cTopPct}% + ${delta}px)`;
+                if (orig + 0.05 < authoredBottomPct) continue;
+                c.style.top = `calc(${orig}% + ${delta}px)`;
               }
               if (delta > maxDelta) maxDelta = delta;
             }
-            if (maxDelta > 0) {
-              stage.style.minHeight = (stageH + maxDelta) + 'px';
-            }
-          });
+            stage.style.minHeight = maxDelta > 0 ? (stageH + maxDelta) + 'px' : '';
+          };
+          // Initial shift after first layout pass.
+          requestAnimationFrame(reshift);
+          // Re-shift whenever any info block resizes (font load, late image
+          // load, viewport changes, theme toggle, etc.). One observer per
+          // ib element so layout never lags behind reality on iOS Safari.
+          if (typeof ResizeObserver !== 'undefined') {
+            const ro = new ResizeObserver(() => reshift());
+            for (const ibEl of ibs) ro.observe(ibEl);
+          }
+          // Fonts settling can change wrap heights well after first paint —
+          // explicit await covers that case even where ResizeObserver fires
+          // too late.
+          if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => reshift()).catch(() => {});
+          }
         }
       }
 
