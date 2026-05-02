@@ -10175,9 +10175,14 @@
     if (ibAddBtn && ibAddInput) {
       const fire = () => {
         const v = ibAddInput.value.trim();
-        if (!v) return;
+        if (!v) { setStatus('Type a section label first (e.g. "Process")', 'err'); ibAddInput.focus(); return; }
+        if (!selectedInfoBlockGroup()) {
+          setStatus('Select an info-block field on the canvas first', 'err');
+          return;
+        }
         addInfoBlockSection(v);
         ibAddInput.value = '';
+        setStatus('Added "' + v + '" section', 'ok');
       };
       ibAddBtn.addEventListener('click', fire);
       ibAddInput.addEventListener('keydown', (e) => {
