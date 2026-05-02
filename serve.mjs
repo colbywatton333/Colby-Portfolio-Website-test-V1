@@ -136,6 +136,41 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ── API: remove an image from a project's images[] ──
+  // Cloudinary asset itself is NOT deleted (no API key on the server) —
+  // the file stays hosted, just gets removed from the project's persisted
+  // image list so it doesn't reappear in the editor's asset panel.
+  if (req.method === 'DELETE' && req.url.match(/^\/api\/projects\/[^/]+\/images$/)) {
+    const projId = decodeURIComponent(req.url.split('/')[3]);
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const { src } = JSON.parse(body || '{}');
+        if (!src) throw new Error('src required');
+        const projPath = path.join(__dirname, 'content', 'projects.json');
+        const data = JSON.parse(fs.readFileSync(projPath, 'utf8'));
+        const proj = (data.projects || []).find(p => p.id === projId);
+        if (!proj) throw new Error('Project not found');
+        if (!Array.isArray(proj.images)) proj.images = [];
+        // images is an array of slots; each slot is either a string or an
+        // array of strings. Drop the src from any slot it appears in, then
+        // prune slots that became empty.
+        proj.images = proj.images.map(slot => {
+          if (Array.isArray(slot)) return slot.filter(s => s !== src);
+          return slot === src ? null : slot;
+        }).filter(slot => slot != null && (!Array.isArray(slot) || slot.length));
+        fs.writeFileSync(projPath, JSON.stringify(data, null, 2));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
   // ── API: upload image to project (base64 in JSON) ──
   if (req.method === 'POST' && req.url.match(/^\/api\/projects\/[^/]+\/images$/)) {
     const projId = decodeURIComponent(req.url.split('/')[3]);

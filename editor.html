@@ -467,6 +467,29 @@
       border-top: 1px solid var(--border);
       border-right: 1px solid var(--border);
     }
+    .asset-thumb__delete {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 0;
+      font-size: 14px;
+      line-height: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      z-index: 2;
+      font-weight: 600;
+      transition: background 0.12s, color 0.12s;
+    }
+    .asset-thumb:hover .asset-thumb__delete { display: flex; }
+    .asset-thumb__delete:hover { background: #b14545; color: #fff; border-color: #b14545; }
     html[data-theme="light"] .asset-thumb .badge {
       background: var(--bg);
       color: var(--text);
@@ -5922,7 +5945,74 @@
         addItemAt(a, c.w / 2, c.h / 4);
       });
 
+      // Delete button — × in the top-right. Stops propagation so it doesn't
+      // also trigger the click-to-add behavior.
+      const del = document.createElement('button');
+      del.className = 'asset-thumb__delete';
+      del.type = 'button';
+      del.title = 'Remove this asset from the project';
+      del.textContent = '×';
+      del.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        removeAsset(a.src);
+      });
+      del.addEventListener('mousedown', (e) => e.stopPropagation());
+      el.appendChild(del);
+
       assetList.appendChild(el);
+    }
+
+    // Remove an asset from the project's panel + persisted images[]. If any
+    // canvas item still references the src, ask the user to confirm — the
+    // asset will reappear next load (rebuilt from item refs) but the explicit
+    // confirm prevents accidental removal of in-use thumbnails.
+    async function removeAsset(src) {
+      if (!src) return;
+      const inUse = (() => {
+        for (const bp of state.breakpoints) {
+          for (const it of bp.items) {
+            if (it.src === src) return true;
+            if (Array.isArray(it.cells)) {
+              for (const c of it.cells) if (c && c.src === src) return true;
+            }
+          }
+        }
+        return false;
+      })();
+      const msg = inUse
+        ? 'This asset is still placed on the canvas. Remove from the project anyway?'
+        : 'Remove this asset from the project?';
+      if (!confirm(msg)) return;
+      // Drop from in-memory list + DOM
+      state.assets = state.assets.filter(a => a.src !== src);
+      const thumb = assetList.querySelector('.asset-thumb[data-src="' + CSS.escape(src) + '"]');
+      if (thumb) thumb.remove();
+      assetCount.textContent = state.assets.length;
+      // Persist to projects.json so the asset doesn't reappear from
+      // p.images on next project load (the item-derived seed will still
+      // bring it back if a canvas item references it).
+      if (state.projectId && !state.projectId.startsWith('page:')) {
+        try {
+          await fetch('/api/projects/' + encodeURIComponent(state.projectId) + '/images', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ src }),
+          });
+          // Mirror the removal in our in-memory project so subsequent
+          // operations don't see the stale src.
+          const proj = state.projects.find(p => p.id === state.projectId);
+          if (proj && Array.isArray(proj.images)) {
+            proj.images = proj.images.map(slot => {
+              if (Array.isArray(slot)) return slot.filter(s => s !== src);
+              return slot === src ? null : slot;
+            }).filter(slot => slot != null && (!Array.isArray(slot) || slot.length));
+          }
+        } catch (e) {
+          setStatus('Asset removed from panel, but server update failed: ' + e.message, 'err');
+        }
+      }
+      setStatus('Asset removed', 'ok');
     }
 
     // ── FILE UPLOAD ───────────────────────────────────────
