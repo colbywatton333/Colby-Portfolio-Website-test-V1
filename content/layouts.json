@@ -116,7 +116,7 @@
           {
             "id": "ioivorrj",
             "type": "video",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694057/studio-colby/bass-speaker/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO_hyqq5k.mov",
+            "src": "IMAGES/BASS-SPEAKER/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO.mov",
             "x": 538,
             "y": 4995,
             "w": 357,
@@ -128,7 +128,7 @@
           {
             "id": "iwbadq75",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0850_obxtg6.jpg",
+            "src": "IMAGES/BASS-SPEAKER/IMG_0850.jpg",
             "x": 491,
             "y": 2259,
             "w": 485,
@@ -139,7 +139,7 @@
           {
             "id": "iw2telat",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694427/studio-colby/bass-speaker/IMG_1627_o92pnq.jpg",
+            "src": "IMAGES/BASS-SPEAKER/IMG_1627.png",
             "x": 473,
             "y": 3649,
             "w": 485,
@@ -167,15 +167,15 @@
             "scale": 0.9,
             "cells": [
               {
-                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694056/studio-colby/bass-speaker/IMG_6662_vcin5v.jpg",
+                "src": "IMAGES/BASS-SPEAKER/IMG_6662.jpeg",
                 "type": "image"
               },
               {
-                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694432/studio-colby/bass-speaker/IMG_7226_jn30lx.jpg",
+                "src": "IMAGES/BASS-SPEAKER/IMG_7226.png",
                 "type": "image"
               },
               {
-                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694054/studio-colby/bass-speaker/IMG_6658_uaepgn.jpg",
+                "src": "IMAGES/BASS-SPEAKER/IMG_6658.jpeg",
                 "type": "image"
               },
               {
@@ -384,7 +384,7 @@
             "z": 31,
             "wPct": 42,
             "padding": 0,
-            "text": "Sector name",
+            "text": "Object, Sound ",
             "fontSize": 18,
             "fontWeight": 400,
             "color": "#BFBFBF",
@@ -438,7 +438,7 @@
           {
             "id": "i3c6rg3i",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0249_ly84pv.jpg",
+            "src": "IMAGES/BASS-SPEAKER/IMG_0249.jpg",
             "x": 556,
             "y": 1105,
             "w": 330,
