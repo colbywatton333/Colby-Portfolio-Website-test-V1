@@ -3918,7 +3918,7 @@
       {
         "id": "bp-desktop",
         "label": "Desktop",
-        "minWidth": 1024,
+        "minWidth": 0,
         "w": 1440,
         "h": 3565,
         "bg": "#0d0d0d",
@@ -4203,82 +4203,6 @@
             "rot": 0,
             "z": 22,
             "wPct": 44
-          }
-        ]
-      },
-      {
-        "id": "bp-mobile",
-        "label": "Mobile",
-        "minWidth": 0,
-        "w": 390,
-        "h": 1800,
-        "bg": "#0d0d0d",
-        "bgTransparent": false,
-        "padPct": 5,
-        "guides": {
-          "x": [],
-          "y": []
-        },
-        "items": [
-          {
-            "id": "i5ixddi4",
-            "type": "image",
-            "src": "IMAGES/I-BEAM-BRACELET/ICON_-_I_BEAM_BRACELET.svg",
-            "x": 20,
-            "y": 20,
-            "w": 350,
-            "h": 159,
-            "rot": 0,
-            "z": 4,
-            "wPct": 100
-          },
-          {
-            "id": "i4rqtqe8",
-            "type": "image",
-            "src": "IMAGES/I-BEAM-BRACELET/unnamed.jpg",
-            "x": 60,
-            "y": 263,
-            "w": 270,
-            "h": 295,
-            "rot": 0,
-            "z": 7,
-            "wPct": 69
-          },
-          {
-            "id": "irr4wy4b",
-            "type": "image",
-            "src": "IMAGES/I-BEAM-BRACELET/Photo 2022-07-30, 9 42 04 PM.jpg",
-            "x": 20,
-            "y": 574,
-            "w": 350,
-            "h": 467,
-            "rot": 0,
-            "z": 18,
-            "wPct": 100
-          },
-          {
-            "id": "in6v18zb",
-            "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777755452/studio-colby/i-beam-bracelet/I_BEAM_VARIATION_h05sld.svg",
-            "x": 20,
-            "y": 1057,
-            "w": 350,
-            "h": 281,
-            "rot": 0,
-            "z": 20,
-            "wPct": 100
-          },
-          {
-            "id": "irrcr4hb",
-            "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777755521/studio-colby/i-beam-bracelet/I_BEAM_VARIATION_gqzrsl.svg",
-            "x": 20,
-            "y": 1354,
-            "w": 350,
-            "h": 244,
-            "rot": 0,
-            "z": 23,
-            "wPct": 100
           }
         ]
       }
