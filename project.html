@@ -1606,40 +1606,63 @@
         // delta and items below would creep back over the description.
         const ibs = stage.querySelectorAll('.c-item[data-kind="mobile-ib"]');
         if (ibs.length) {
-          // Cache each item's original top% so successive reshifts compute
-          // delta from the authored value, not from a previously-shifted
-          // calc() expression.
-          const others = [];
+          // Cache each item's authored top% and height% so reshifts can
+          // recompute pixel positions from the canvas's aspect-driven height
+          // instead of compounding against the (now-growing) stage height.
           for (const c of stage.querySelectorAll('.c-item')) {
-            if (c.dataset.kind === 'mobile-ib') continue;
             const top0 = parseFloat(c.style.top);
-            if (Number.isFinite(top0)) {
-              c.dataset.origTopPct = String(top0);
-              others.push(c);
-            }
+            const h0 = parseFloat(c.style.height);
+            if (Number.isFinite(top0)) c.dataset.origTopPct = String(top0);
+            if (Number.isFinite(h0)) c.dataset.origHeightPct = String(h0);
+          }
+          // Largest authored-bottom% across all info blocks — used to decide
+          // which items get pushed down.
+          let ibAuthoredBottomPct = 0;
+          for (const ibEl of ibs) {
+            const v = parseFloat(ibEl.dataset.authoredBottomPct || '0');
+            if (v > ibAuthoredBottomPct) ibAuthoredBottomPct = v;
           }
           const reshift = () => {
-            const stageH = stage.getBoundingClientRect().height;
-            if (!stageH) return;
+            const stageWidth = stage.getBoundingClientRect().width;
+            if (!stageWidth) return;
+            // Drive layout off the canvas's aspect-driven height, NOT the
+            // current stage height. We grow stage min-height below; if we
+            // measured against that, item top% would stretch with it and
+            // the last items would overshoot the new bottom.
+            const aspectH = stageWidth * (canvas.h / canvas.w);
+
             let maxDelta = 0;
             for (const ibEl of ibs) {
               const authoredBottomPct = parseFloat(ibEl.dataset.authoredBottomPct || '0');
-              const ibTopPct = parseFloat(ibEl.style.top) || 0;
-              const ibAuthoredHeightPct = authoredBottomPct - ibTopPct;
-              const ibAuthoredHeightPx = ibAuthoredHeightPct / 100 * stageH;
+              const ibTopPct = parseFloat(ibEl.dataset.origTopPct || '0');
+              const ibAuthoredHeightPx = (authoredBottomPct - ibTopPct) / 100 * aspectH;
               const ibActualHeightPx = ibEl.offsetHeight;
               const delta = ibActualHeightPx - ibAuthoredHeightPx;
-              if (delta <= 0) continue;
-              for (const c of others) {
-                const orig = parseFloat(c.dataset.origTopPct || '0');
-                // Tolerance: float math from earlier % conversion can drift
-                // a hair below the authored bottom; treat near-equal as below.
-                if (orig + 0.05 < authoredBottomPct) continue;
-                c.style.top = `calc(${orig}% + ${delta}px)`;
-              }
               if (delta > maxDelta) maxDelta = delta;
             }
-            stage.style.minHeight = maxDelta > 0 ? (stageH + maxDelta) + 'px' : '';
+
+            // Convert every item's top + height to absolute pixels so the
+            // following min-height bump can't perturb their positions or
+            // sizes. Items below the info block also receive +delta px.
+            for (const c of stage.querySelectorAll('.c-item')) {
+              const orig = parseFloat(c.dataset.origTopPct || 'NaN');
+              if (!Number.isFinite(orig)) continue;
+              const isMobileIb = c.dataset.kind === 'mobile-ib';
+              const isShifted = !isMobileIb && (orig + 0.05 >= ibAuthoredBottomPct);
+              c.style.top = ((orig / 100) * aspectH + (isShifted ? maxDelta : 0)) + 'px';
+              // Lock height in pixels for non-info-block items (mobile-ib's
+              // height is auto via CSS — leave that one alone).
+              if (!isMobileIb) {
+                const origH = c.dataset.origHeightPct;
+                if (origH != null) {
+                  c.style.height = (parseFloat(origH) / 100 * aspectH) + 'px';
+                }
+              }
+            }
+            // 24px safety buffer — videos size their height after the
+            // loadedmetadata event, which can grow the bottom-most item a
+            // few pixels past the computed stage min-height on iOS Safari.
+            stage.style.minHeight = (aspectH + maxDelta + 24) + 'px';
           };
           // Initial shift after first layout pass.
           requestAnimationFrame(reshift);
