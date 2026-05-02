@@ -891,6 +891,13 @@
       container.innerHTML = '';
       container.appendChild(svg);
       __inlinedSvgs.add(svg);
+      if (typeof ResizeObserver !== 'undefined') {
+        // Re-boost on resize so the stroke floor tracks display width
+        // (mobile vs desktop scale; orientation changes; layout reflows).
+        try { svg._sizeRO && svg._sizeRO.disconnect(); } catch {}
+        svg._sizeRO = new ResizeObserver(() => boostStrokesForVisibility(svg));
+        svg._sizeRO.observe(svg);
+      }
       return true;
     }
 
@@ -948,8 +955,16 @@
     // disappear. Dark mode needs a heavier floor — light strokes on black
     // fade into the background faster than dark strokes on white do.
     function boostStrokesForVisibility(svg) {
-      // Unified floor across light + dark so boost is theme-independent.
-      const floor = 0.35;
+      // Stroke widths are in screen px (non-scaling-stroke). The desktop
+      // floor of 0.35px reads as a hairline at ~800px+ display width but
+      // looks chunky on a ~270px-wide mobile render. Below 500px display
+      // width, drop the floor and shrink the boost proportionally so the
+      // line weight reads at the same *visual* density as desktop.
+      const dispW = (svg.getBoundingClientRect && svg.getBoundingClientRect().width) || 800;
+      const isNarrow = dispW > 0 && dispW < 500;
+      const floor = isNarrow ? 0.22 : 0.35;
+      const boost = isNarrow ? 0.7 : 1.0;
+      const pad   = isNarrow ? 0.03 : 0.05;
       svg.querySelectorAll('line, path, polyline, polygon, circle, ellipse, rect').forEach(el => {
         // Prefer the width captured at flatten time. Reading getComputedStyle
         // live would race with any other SVG whose <style> might still be in
@@ -964,7 +979,7 @@
         if (!el.hasAttribute('vector-effect')) {
           el.setAttribute('vector-effect', 'non-scaling-stroke');
         }
-        el.style.strokeWidth = Math.max(floor, orig * 1.0 + 0.05) + 'px';
+        el.style.strokeWidth = Math.max(floor, orig * boost + pad) + 'px';
       });
     }
 
