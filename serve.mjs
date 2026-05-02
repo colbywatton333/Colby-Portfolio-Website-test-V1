@@ -2,6 +2,10 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execp = promisify(exec);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = 3000;
@@ -256,6 +260,80 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ error: e.message }));
       }
     });
+    return;
+  }
+
+  // ── API: publish editor changes to live site ──
+  // Stages an explicit allowlist (content/*.json + IMAGES/), commits on the
+  // current branch, fast-forwards main to match, and pushes both. Unrelated
+  // dirty files (HTML, scripts, untracked PNGs, etc.) are left alone — they
+  // never enter the publish commit.
+  if (req.method === 'POST' && req.url === '/api/publish') {
+    (async () => {
+      const cwd = __dirname;
+      const run = (cmd) => execp(cmd, { cwd, windowsHide: true });
+      const log = [];
+      const PUBLISH_PATHS = [
+        'content/projects.json',
+        'content/layouts.json',
+        'content/about.json',
+        'content/archive.json',
+        'IMAGES',
+      ];
+      try {
+        const { stdout: branchOut } = await run('git rev-parse --abbrev-ref HEAD');
+        const branch = branchOut.trim();
+        log.push(`branch: ${branch}`);
+
+        // Stage only the allowlist. Quote each path so paths with spaces or
+        // odd characters don't get mangled by the shell.
+        const addArgs = PUBLISH_PATHS.map(p => `"${p}"`).join(' ');
+        await run(`git add -- ${addArgs}`);
+
+        // Detect whether anything is actually staged (git diff --cached
+        // exits 1 when there's a diff, 0 when clean — invert that).
+        let didCommit = false;
+        try {
+          await run('git diff --cached --quiet');
+          log.push('no editor changes to publish');
+        } catch {
+          const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+          await run(`git commit -m "Editor publish ${stamp}"`);
+          log.push('committed editor changes');
+          didCommit = true;
+        }
+
+        // Push current branch first so origin/<branch> is up to date before
+        // we try to fast-forward main onto its tip.
+        await run(`git push origin ${branch}`);
+        log.push(`pushed ${branch}`);
+
+        // Fast-forward main → branch tip and push, so GitHub Pages picks it
+        // up. ff-only is intentional: a divergent main means someone else
+        // committed; we surface that instead of silently auto-merging.
+        if (branch !== 'main') {
+          await run('git checkout main');
+          let ffOk = false;
+          try {
+            await run(`git merge --ff-only ${branch}`);
+            await run('git push origin main');
+            log.push('fast-forwarded main and pushed');
+            ffOk = true;
+          } catch (e) {
+            log.push('FF FAILED on main: ' + (e.stderr || e.message).trim());
+          } finally {
+            await run(`git checkout ${branch}`);
+          }
+          if (!ffOk) throw new Error('main could not be fast-forwarded — resolve manually, then retry');
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, didCommit, log }));
+      } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: (e.stderr || e.message || String(e)).trim(), log }));
+      }
+    })();
     return;
   }
 

@@ -1007,7 +1007,7 @@
       left: 0;
       right: 0;
       margin-top: 10px;
-      padding: 8px 10px;
+      padding: 8px 0 0;
       font-size: 17px;
       line-height: 1.4;
       letter-spacing: 0.02em;
@@ -2526,6 +2526,7 @@
     <button class="btn ghost" id="bringFrontBtn" title="Bring to front">Front</button>
     <button class="btn ghost" id="sendBackBtn" title="Send to back">Back</button>
     <button class="btn ghost" id="centerAllBtn" title="Snap every visible item to the canvas centerline (each item independently; vertical positions are preserved)">Center All</button>
+    <button class="btn ghost" id="distributeEvenlyBtn" title="Distribute every visible item vertically — equal gaps between items, first and last anchors preserved (info blocks treated as one unit)">Distribute Evenly</button>
 
     <div class="divider"></div>
 
@@ -2538,6 +2539,7 @@
     <button class="btn ghost" id="importBtn" title="Import JSON">Import</button>
     <button class="btn ghost" id="saveAsBtn" title="Save a named version">Save as…</button>
     <button class="btn primary" id="saveBtn" title="Save (Ctrl+S)">Save</button>
+    <button class="btn primary" id="publishBtn" title="Commit content + push to GitHub (deploys to live site)" style="background:#1a4220;border-color:#1a4220;">Publish</button>
     <button class="btn ghost icon" id="shortcutsBtn" title="Keyboard shortcuts" style="margin-left:6px;">?</button>
   </div>
 
@@ -2833,6 +2835,9 @@
           <button class="btn ghost" data-align="fit-h"        title="Match tallest (set all heights to largest)">Match Tallest</button>
           <button class="btn ghost" data-align="fit-same"     title="Match both (set W and H to largest)">Match W+H</button>
           <button class="btn ghost" data-align="fit-smallest" title="Match smallest (set W and H to smallest)">Match Smallest</button>
+        </div>
+        <div class="align-grid" style="margin-top:5px;">
+          <button class="btn ghost" data-align="equalize-h" title="Equalize heights & justify as a row — widths scale by aspect, gaps even out, row span preserved">Equalize Heights</button>
         </div>
       </div>
 
@@ -3249,6 +3254,10 @@
       const shapes = Array.from(svg.querySelectorAll('path, rect, circle, ellipse, line, polyline, polygon, text, tspan'));
       const styles = shapes.map(el => {
         const cs = getComputedStyle(el);
+        let bbox = null;
+        if (typeof el.getBBox === 'function') {
+          try { bbox = el.getBBox(); } catch (e) { bbox = null; }
+        }
         return {
           fill: cs.fill,
           stroke: cs.stroke,
@@ -3256,6 +3265,7 @@
           lc: cs.strokeLinecap,
           lj: cs.strokeLinejoin,
           ml: cs.strokeMiterlimit,
+          bbox,
         };
       });
       shapes.forEach((el, i) => {
@@ -3270,8 +3280,51 @@
         if (s.lj && s.lj !== 'miter') el.setAttribute('stroke-linejoin', s.lj);
         if (s.ml && s.ml !== '4') el.setAttribute('stroke-miterlimit', s.ml);
         el.setAttribute('vector-effect', 'non-scaling-stroke');
+        // Promote CAD-export sliver-fill paths to a non-scaling stroke that
+        // matches their fill — same fix as project.html. Without this,
+        // filled "lines" thinner than 1 viewBox unit collapse to sub-pixel
+        // width when scaled down and render unevenly. Glyphs (text/tspan)
+        // and large fills are left alone.
+        const tag = (el.tagName || '').toLowerCase();
+        if (tag !== 'text' && tag !== 'tspan'
+            && s.fill && s.fill !== 'none'
+            && (!s.stroke || s.stroke === 'none')
+            && s.bbox
+            && (s.bbox.width < 1 || s.bbox.height < 1)) {
+          el.setAttribute('stroke', s.fill);
+          // Match the standard CAD hairline (0.25 viewBox-units).
+          el.setAttribute('stroke-width', '0.25');
+          el.dataset.origSw = '0.25';
+        }
       });
       svg.querySelectorAll('style').forEach(n => n.remove());
+      // Auto-trim viewBox to actual content bounds — see project.html for
+      // rationale. Avoids tiny renders when CAD exports keep an oversized
+      // viewBox after the drawing was cropped or split into multiple SVGs.
+      try {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        svg.querySelectorAll('path, rect, circle, ellipse, line, polyline, polygon, text, tspan').forEach(el => {
+          if (typeof el.getBBox !== 'function') return;
+          let b;
+          try { b = el.getBBox(); } catch (e) { return; }
+          if (!b || (!b.width && !b.height)) return;
+          if (b.x < minX) minX = b.x;
+          if (b.y < minY) minY = b.y;
+          if (b.x + b.width  > maxX) maxX = b.x + b.width;
+          if (b.y + b.height > maxY) maxY = b.y + b.height;
+        });
+        const vb = svg.viewBox && svg.viewBox.baseVal;
+        if (vb && isFinite(minX) && isFinite(maxX)
+            && (maxX - minX) > 0 && (maxY - minY) > 0
+            && ((maxX - minX) / vb.width < 0.9 || (maxY - minY) / vb.height < 0.9)) {
+          const pad = Math.max(0.5, Math.min(vb.width, vb.height) * 0.01);
+          const nx = Math.max(0, minX - pad);
+          const ny = Math.max(0, minY - pad);
+          const nw = (maxX - minX) + pad * 2;
+          const nh = (maxY - minY) + pad * 2;
+          svg.setAttribute('viewBox', nx + ' ' + ny + ' ' + nw + ' ' + nh);
+        }
+      } catch (e) {}
       sandbox.removeChild(svg);
     }
 
@@ -6027,6 +6080,7 @@
       measureAsset(asset).then(dim => {
         if (!dim || !dim.w || !dim.h) return;
         const ratio = dim.h / dim.w;
+        const isVid = asset.type === 'video';
 
         // Active bp: place centered on drop point at natural-ish size
         const c = currentBp();
@@ -6035,6 +6089,7 @@
         item.h = Math.round(item.w * ratio);
         item.x = Math.round(x - item.w / 2);
         item.y = Math.round(y - item.h / 2);
+        if (isVid) item.aspect = dim.w / dim.h;
         clampItem(item, c);
         renderItem(item);
         if (state.selection.has(item.id)) updateInspector();
@@ -6045,6 +6100,7 @@
           const mirror = [...bp.items].reverse().find(i => i.src === asset.src);
           if (!mirror) return;
           mirror.h = Math.round(mirror.w * ratio);
+          if (isVid) mirror.aspect = dim.w / dim.h;
           // Grow canvas height if mirror overflows
           if (mirror.y + mirror.h + 20 > bp.h) bp.h = mirror.y + mirror.h + 20;
         });
@@ -7103,6 +7159,15 @@
           weights.push(Math.max(0, w == null ? 1 : +w));
         }
         const total = weights.reduce((a,b) => a+b, 0) || 1;
+        // First and last rendered column in this row — used to zero padding
+        // on the outer edges so the grid's bbox matches its visible content.
+        let firstC = -1, lastC = -1;
+        for (let cc = 0; cc < cols; cc++) {
+          if (weights[cc] > 0) {
+            if (firstC < 0) firstC = cc;
+            lastC = cc;
+          }
+        }
         let leftPct = 0;
         const rowCellRanges = []; // { leftPct, wPct, idx } for each rendered cell in this row
         for (let c = 0; c < cols; c++) {
@@ -7118,7 +7183,14 @@
           el.style.top    = (r * cellH) + '%';
           el.style.width  = wPct + '%';
           el.style.height = cellH + '%';
-          el.style.padding = `${innerPad * cellH}% ${innerPad * wPct}%`;
+          // Outer-edge cells drop their outer-side padding so the grid's
+          // outer bounds match its visible content (and snap edge-to-edge
+          // with regular images). Inner gaps between cells are preserved.
+          const padTop    = (r === 0)        ? 0 : innerPad * cellH;
+          const padBottom = (r === rows - 1) ? 0 : innerPad * cellH;
+          const padLeft   = (c === firstC)   ? 0 : innerPad * wPct;
+          const padRight  = (c === lastC)    ? 0 : innerPad * wPct;
+          el.style.padding = `${padTop}% ${padRight}% ${padBottom}% ${padLeft}%`;
 
           const inner = document.createElement('div');
           inner.className = 'imgrid__inner';
@@ -7503,6 +7575,13 @@
         el.addEventListener('pointerdown', onItemPointerDown);
         canvasInner.appendChild(el);
       }
+      // Lock video items to their natural aspect: any drift (resize with
+      // shift held, breakpoint mirroring, legacy data) would expose canvas
+      // bg through object-fit:contain. Snap before applying styles.
+      if (item.type === 'video' && item.aspect && item.w) {
+        const targetH = Math.round(item.w / item.aspect);
+        if (Math.abs(targetH - item.h) > 1) item.h = targetH;
+      }
       el.style.left = item.x + 'px';
       el.style.top = item.y + 'px';
       el.style.width = item.w + 'px';
@@ -7640,19 +7719,21 @@
           v.src = item.src; v.muted = true; v.loop = true;
           v.autoplay = true; v.playsInline = true;
           v.dataset.src = item.src;
-          // Snap the item's height to the video's natural aspect once metadata
-          // loads, so the bounding box exactly matches the video (no letterbox,
-          // no crop). Idempotent: only fires when off by >1px. setDirty so the
-          // correction can be saved; no pushHistory because this isn't user-
-          // initiated.
+          // Persist the natural aspect on the item so renderItem can keep the
+          // box locked to it on every render (and the website can apply it
+          // immediately, before video metadata loads — no letterbox flash).
           v.addEventListener('loadedmetadata', () => {
-            if (!v.videoWidth || !v.videoHeight || !item.w) return;
-            const targetH = Math.round(item.w * v.videoHeight / v.videoWidth);
-            if (Math.abs(targetH - item.h) > 1) {
-              item.h = targetH;
-              el.style.height = item.h + 'px';
-              updateHandlesFor(el, item);
-              setDirty(true);
+            if (!v.videoWidth || !v.videoHeight) return;
+            const aspect = v.videoWidth / v.videoHeight;
+            if (item.aspect !== aspect) { item.aspect = aspect; setDirty(true); }
+            if (item.w) {
+              const targetH = Math.round(item.w / aspect);
+              if (Math.abs(targetH - item.h) > 1) {
+                item.h = targetH;
+                el.style.height = item.h + 'px';
+                updateHandlesFor(el, item);
+                setDirty(true);
+              }
             }
           }, { once: true });
           el.insertBefore(v, el.firstChild);
@@ -8570,11 +8651,15 @@
           renderItem(item); updateInspector();
           return;
         }
-        // Ratio-lock default applies to any corner (xy) drag. Shift inverts:
-        // corner → free, edge → locked ratio. This is the "diagonal snap"
-        // behavior — the dragged corner stays on the line from the anchor
-        // corner at the item's original aspect ratio.
-        const ratioLock = axis === 'xy' ? !ev.shiftKey : ev.shiftKey;
+        // Ratio-lock default applies to any corner (xy) drag. Shift inverts.
+        // For media items (image/video) edge drags also default to ratio-
+        // lock so resizing one side doesn't introduce object-fit letterbox
+        // bands — the box stays the same shape as the media. Hold Shift to
+        // override and free-resize one axis.
+        const isMedia = item.type === 'image' || item.type === 'video';
+        const ratioLock = axis === 'xy'
+          ? !ev.shiftKey
+          : (isMedia ? !ev.shiftKey : ev.shiftKey);
         const c = currentBp();
         // Each fixed edge defines how much room the drag has on its axis.
         const maxW = leftFixed ? (c.w - origX) : (origX + origW);
@@ -9639,6 +9724,38 @@
           clampItem(i, c);
           renderItem(i);
         });
+      } else if (kind === 'equalize-h') {
+        // Justify a row: equalize heights, scale widths by each item's aspect,
+        // lay out left-to-right preserving the row's leftmost x, total span,
+        // and using the average current gap. Requires 2+ items.
+        if (items.length >= 2) {
+          const sorted = [...items].sort((a, b) => a.x - b.x);
+          const aspects = sorted.map(i => i.w / Math.max(i.h, 1)); // w/h
+          const firstX = sorted[0].x;
+          const lastEdge = Math.max(...sorted.map(i => i.x + i.w));
+          const totalSpan = Math.max(1, lastEdge - firstX);
+          // Average current gap (clamped to 0). If items overlap, gap is 0.
+          let gapSum = 0;
+          for (let k = 1; k < sorted.length; k++) {
+            gapSum += sorted[k].x - (sorted[k - 1].x + sorted[k - 1].w);
+          }
+          const avgGap = Math.max(0, Math.round(gapSum / (sorted.length - 1)));
+          const sumAspect = aspects.reduce((s, a) => s + a, 0);
+          const inner = Math.max(1, totalSpan - avgGap * (sorted.length - 1));
+          const targetH = Math.max(10, Math.round(inner / sumAspect));
+          // Align tops of all items to the topmost item, so the row sits flush.
+          const topY = Math.min(...sorted.map(i => i.y));
+          let cursor = firstX;
+          sorted.forEach((it, idx) => {
+            it.h = targetH;
+            it.w = Math.max(10, Math.round(targetH * aspects[idx]));
+            it.x = Math.round(cursor);
+            it.y = topY;
+            clampItem(it, c);
+            renderItem(it);
+            cursor += it.w + avgGap;
+          });
+        }
       }
       updateSelectionFrame();
       updateInspector();
@@ -9923,22 +10040,122 @@
     $('duplicateBtn').addEventListener('click', duplicateSelected);
     $('bringFrontBtn').addEventListener('click', bringToFront);
     $('sendBackBtn').addEventListener('click', sendToBack);
+    $('distributeEvenlyBtn').addEventListener('click', () => {
+      // Treat each info-block group as a single unit (its bbox); loose
+      // items distribute on their own. Result: equal vertical gaps between
+      // consecutive units, with the topmost and bottommost units pinned in
+      // place so the overall span is preserved.
+      const all = currentItems().filter(it => it && !it.hidden);
+      if (all.length < 2) return;
+      const ibGroups = new Map();
+      const units = [];
+      all.forEach(it => {
+        if (it.groupId && /^ib_/.test(it.groupId)) {
+          if (!ibGroups.has(it.groupId)) ibGroups.set(it.groupId, []);
+          ibGroups.get(it.groupId).push(it);
+        } else {
+          units.push({ items: [it], top: it.y, bottom: it.y + (it.h || 0) });
+        }
+      });
+      ibGroups.forEach(group => {
+        let top = Infinity, bottom = -Infinity;
+        group.forEach(it => {
+          top = Math.min(top, it.y);
+          bottom = Math.max(bottom, it.y + (it.h || 0));
+        });
+        units.push({ items: group, top, bottom });
+      });
+      if (units.length < 2) return;
+      units.sort((a, b) => a.top - b.top);
+      const totalSpan = units[units.length - 1].bottom - units[0].top;
+      const totalHeight = units.reduce((s, u) => s + (u.bottom - u.top), 0);
+      const gap = (totalSpan - totalHeight) / (units.length - 1);
+      const moves = [];
+      let cursor = units[0].top;
+      units.forEach(u => {
+        const dy = Math.round(cursor - u.top);
+        if (dy !== 0) moves.push({ items: u.items, dy });
+        cursor += (u.bottom - u.top) + gap;
+      });
+      if (!moves.length) return;
+      pushHistory();
+      moves.forEach(({ items, dy }) => {
+        items.forEach(it => { it.y += dy; renderItem(it); });
+      });
+      updateSelectionFrame();
+      setDirty(true);
+    });
     $('centerAllBtn').addEventListener('click', () => {
       const items = currentItems().filter(it => it && !it.hidden);
       if (!items.length) return;
       const bp = currentBp();
-      // Center each item individually on the canvas centerline. Items that
-      // are already centered are skipped so they don't dirty history.
-      const moves = items
-        .map(it => ({ it, nx: Math.round((bp.w - (it.w || 0)) / 2) }))
-        .filter(m => m.nx !== m.it.x);
-      if (!moves.length) return;
+      // Info-block groups are centered as a single unit so their internal
+      // layout (Title / Year, label / value pairs, Description) stays
+      // intact. Loose items center individually on the canvas centerline.
+      const ibGroups = new Map();
+      const loose = [];
+      items.forEach(it => {
+        if (it.groupId && /^ib_/.test(it.groupId)) {
+          if (!ibGroups.has(it.groupId)) ibGroups.set(it.groupId, []);
+          ibGroups.get(it.groupId).push(it);
+        } else {
+          loose.push(it);
+        }
+      });
+      const moves = [];
+      loose.forEach(it => {
+        const nx = Math.round((bp.w - (it.w || 0)) / 2);
+        if (nx !== it.x) moves.push({ it, nx });
+      });
+      const groupShifts = [];
+      ibGroups.forEach(group => {
+        let minX = Infinity, maxX = -Infinity;
+        group.forEach(it => {
+          minX = Math.min(minX, it.x);
+          maxX = Math.max(maxX, it.x + (it.w || 0));
+        });
+        if (!isFinite(minX)) return;
+        const dx = Math.round((bp.w - (maxX - minX)) / 2 - minX);
+        if (dx !== 0) groupShifts.push({ group, dx });
+      });
+      if (!moves.length && !groupShifts.length) return;
       pushHistory();
       moves.forEach(({ it, nx }) => { it.x = nx; renderItem(it); });
+      groupShifts.forEach(({ group, dx }) => {
+        group.forEach(it => { it.x += dx; renderItem(it); });
+      });
       updateSelectionFrame();
       setDirty(true);
     });
     $('saveBtn').addEventListener('click', saveLayout);
+    $('publishBtn').addEventListener('click', async () => {
+      if (state.dirty && !confirm('You have unsaved changes. Publish anyway?\n(Click Save first to include them.)')) return;
+      if (!confirm('Publish editor content to studiocolby.com?\nThis commits & pushes content/JSON + IMAGES/ to GitHub. The live site updates within ~1 minute.')) return;
+      const btn = $('publishBtn');
+      const originalText = btn.textContent;
+      btn.textContent = 'Publishing…';
+      btn.disabled = true;
+      setStatus('Publishing…', '');
+      try {
+        const res = await fetch('/api/publish', { method: 'POST' });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) {
+          const msg = (data && data.error) ? data.error : ('HTTP ' + res.status);
+          setStatus('Publish failed: ' + msg, 'err');
+          alert('Publish failed:\n\n' + msg);
+        } else if (!data.didCommit) {
+          setStatus('Nothing new to publish', 'ok');
+        } else {
+          setStatus('Published — live site updates in ~1 min', 'ok');
+        }
+      } catch (e) {
+        setStatus('Publish failed: ' + e.message, 'err');
+        alert('Publish failed:\n\n' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
     $('saveAsBtn').addEventListener('click', saveAsSnapshot);
     $('undoBtn').addEventListener('click', undo);
     $('redoBtn').addEventListener('click', redo);
