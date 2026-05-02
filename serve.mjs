@@ -83,7 +83,10 @@ const server = http.createServer((req, res) => {
   }
 
   // ── API: delete project ──
-  if (req.method === 'DELETE' && req.url.startsWith('/api/projects/')) {
+  // Strict match on /api/projects/<id> with no further path so subroutes
+  // like /api/projects/<id>/images don't get swallowed and end up trying
+  // to delete a project named "<id>/images".
+  if (req.method === 'DELETE' && /^\/api\/projects\/[^/]+$/.test(req.url)) {
     const projId = decodeURIComponent(req.url.slice('/api/projects/'.length));
     try {
       const projPath = path.join(__dirname, 'content', 'projects.json');
