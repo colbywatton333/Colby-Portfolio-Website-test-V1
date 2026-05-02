@@ -104,7 +104,7 @@
         "label": "Desktop",
         "minWidth": 0,
         "w": 1440,
-        "h": 6001,
+        "h": 6314,
         "bg": "#0d0d0d",
         "bgTransparent": false,
         "padPct": 3,
@@ -117,19 +117,20 @@
             "id": "ioivorrj",
             "type": "video",
             "src": "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777754228/studio-colby/bass-speaker/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO_vvogkr.mov",
-            "x": 537,
-            "y": 5193,
+            "x": 542,
+            "y": 5564,
             "w": 357,
             "h": 635,
             "rot": 0,
-            "z": 2
+            "z": 2,
+            "aspect": 0.5625
           },
           {
             "id": "iwbadq75",
             "type": "image",
             "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754224/studio-colby/bass-speaker/IMG_0850_vwduif.jpg",
-            "x": 491,
-            "y": 2296,
+            "x": 478,
+            "y": 4148,
             "w": 485,
             "h": 599,
             "rot": 0,
@@ -139,10 +140,10 @@
             "id": "iw2telat",
             "type": "image",
             "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754235/studio-colby/bass-speaker/IMG_1627_jbjzoz.jpg",
-            "x": 473,
-            "y": 3803,
-            "w": 485,
-            "h": 604,
+            "x": 404,
+            "y": 2359,
+            "w": 632,
+            "h": 849,
             "rot": 0,
             "z": 8,
             "imgPan": {
@@ -156,7 +157,7 @@
             "id": "ipqn7ijr",
             "type": "imagegrid",
             "x": 36,
-            "y": 4504,
+            "y": 4859,
             "w": 1369,
             "h": 592,
             "rot": 0,
@@ -171,11 +172,13 @@
               },
               {
                 "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754241/studio-colby/bass-speaker/IMG_7226_rluvhw.jpg",
-                "type": "image"
+                "type": "image",
+                "w": 1.0097395880889335
               },
               {
                 "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754225/studio-colby/bass-speaker/IMG_6658_gkxa7l.jpg",
-                "type": "image"
+                "type": "image",
+                "w": 0.9902604119110665
               },
               {
                 "src": "IMAGES/BASS-SPEAKER/IMG_6841.webp",
@@ -187,8 +190,8 @@
             "id": "ivrycrdv",
             "type": "image",
             "src": "IMAGES/BASS-SPEAKER/EXPLODED_VIEW_OF_SPEAKER.svg",
-            "x": 291,
-            "y": 2991,
+            "x": 278,
+            "y": 3320,
             "w": 884,
             "h": 715,
             "rot": 0,
@@ -198,8 +201,8 @@
           {
             "id": "iec1z63p",
             "type": "text",
-            "x": 331,
-            "y": 682,
+            "x": 325,
+            "y": 706,
             "w": 461,
             "h": 45,
             "rot": 0,
@@ -223,8 +226,8 @@
           {
             "id": "i414uyem",
             "type": "text",
-            "x": 976,
-            "y": 682,
+            "x": 970,
+            "y": 706,
             "w": 146,
             "h": 45,
             "rot": 0,
@@ -249,7 +252,7 @@
             "id": "iq9y0x04",
             "type": "text",
             "x": 331,
-            "y": 1085,
+            "y": 1093,
             "w": 158,
             "h": 39,
             "rot": 0,
@@ -275,7 +278,7 @@
             "id": "i5j6yh1f",
             "type": "text",
             "x": 513,
-            "y": 1085,
+            "y": 1093,
             "w": 607,
             "h": 39,
             "rot": 0,
@@ -300,8 +303,8 @@
           {
             "id": "iguaemt7",
             "type": "text",
-            "x": 331,
-            "y": 842,
+            "x": 325,
+            "y": 866,
             "w": 158,
             "h": 39,
             "rot": 0,
@@ -325,8 +328,8 @@
           {
             "id": "i97b6itj",
             "type": "text",
-            "x": 513,
-            "y": 842,
+            "x": 507,
+            "y": 866,
             "w": 607,
             "h": 75,
             "rot": 0,
@@ -350,8 +353,8 @@
           {
             "id": "ivcc8pmq",
             "type": "text",
-            "x": 331,
-            "y": 761,
+            "x": 325,
+            "y": 785,
             "w": 158,
             "h": 39,
             "rot": 0,
@@ -375,8 +378,8 @@
           {
             "id": "i653l33h",
             "type": "text",
-            "x": 513,
-            "y": 761,
+            "x": 507,
+            "y": 785,
             "w": 607,
             "h": 39,
             "rot": 0,
@@ -400,10 +403,10 @@
           {
             "id": "icbrtghy",
             "type": "text",
-            "x": 331,
-            "y": 940,
-            "w": 790,
-            "h": 251,
+            "x": 325,
+            "y": 964,
+            "w": 792,
+            "h": 252,
             "rot": 0,
             "z": 32,
             "wPct": 55,
@@ -426,8 +429,8 @@
             "id": "i1uy3zg7",
             "type": "image",
             "src": "IMAGES/BASS-SPEAKER/X_RAY_OF_SPEAKER.svg",
-            "x": 473,
-            "y": 1788,
+            "x": 467,
+            "y": 1835,
             "w": 506,
             "h": 411,
             "rot": 0,
@@ -438,8 +441,8 @@
             "id": "i3c6rg3i",
             "type": "image",
             "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777754223/studio-colby/bass-speaker/IMG_0249_ev4mon.jpg",
-            "x": 556,
-            "y": 1288,
+            "x": 555,
+            "y": 1319,
             "w": 330,
             "h": 403,
             "rot": 0,
@@ -456,7 +459,7 @@
             "id": "iv3uzuwj",
             "type": "image",
             "src": "IMAGES/BASS-SPEAKER/ICON_-_BASS_SPEAKER.svg",
-            "x": 230,
+            "x": 224,
             "y": 110,
             "w": 992,
             "h": 475,
@@ -856,6 +859,7 @@
             "h": 774,
             "rot": 0,
             "z": 5,
+            "captionSize": 17,
             "rows": 2,
             "cols": 3,
             "scale": 0.9,
@@ -884,8 +888,7 @@
                 "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694094/studio-colby/pathway-to-heaven/IMG_3884_my5dof.jpg",
                 "type": "image"
               }
-            ],
-            "captionSize": 17
+            ]
           },
           {
             "id": "id1fygeu",
@@ -904,13 +907,11 @@
             "cells": [
               {
                 "src": "IMAGES/PATHWAY-TO-HEAVEN/5495.webp",
-                "type": "image",
-                "caption": "Opening Night"
+                "type": "image"
               },
               {
                 "src": "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06184.jpg",
-                "type": "image",
-                "caption": "Removal of Pavilion walls"
+                "type": "image"
               }
             ]
           },
@@ -1154,18 +1155,6 @@
             "ibStyleVersion": 4
           },
           {
-            "id": "ij1hhq8v",
-            "type": "image",
-            "src": "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN_2.svg",
-            "x": 145,
-            "y": 105,
-            "w": 1151,
-            "h": 523,
-            "rot": 0,
-            "z": 21,
-            "wPct": 80
-          },
-          {
             "id": "i4p2ag39",
             "type": "image",
             "src": "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_DRAWING_1__READY_TO_EXPORT_.svg",
@@ -1176,6 +1165,18 @@
             "rot": 0,
             "z": 24,
             "wPct": 43
+          },
+          {
+            "id": "ieyz5miw",
+            "type": "image",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759357/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_4_wrdgwh.svg",
+            "x": 336,
+            "y": 116,
+            "w": 772,
+            "h": 464,
+            "rot": 0,
+            "z": 26,
+            "wPct": 54
           }
         ]
       }
@@ -1587,7 +1588,7 @@
     "axis-knife-study": "IMAGES/AXIS-KNIFE-STUDY/ICON_-_AXIS_KNIFE_STUDY.svg",
     "poly-chair": "IMAGES/POLY-CHAIR/ICON_-_Polychair.svg",
     "sound-table": "IMAGES/SOUND-TABLE/ICON_-_SOUND_TABLE.svg",
-    "pathway-to-heaven": "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN_3.svg"
+    "pathway-to-heaven": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759357/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_4_wrdgwh.svg"
   },
   "__projectFlags__": {
     "light-table": {
