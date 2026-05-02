@@ -1167,16 +1167,64 @@
             "wPct": 43
           },
           {
-            "id": "ieyz5miw",
+            "id": "im6bsdkc",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759357/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_4_wrdgwh.svg",
-            "x": 336,
-            "y": 116,
-            "w": 772,
-            "h": 464,
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759311/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_3_ig7gqf.svg",
+            "x": 570,
+            "y": 1390,
+            "w": 300,
+            "h": 136,
             "rot": 0,
-            "z": 26,
-            "wPct": 54
+            "z": 27,
+            "wPct": 28
+          },
+          {
+            "id": "ipc2y49a",
+            "type": "image",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759311/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_3_ig7gqf.svg",
+            "x": 570,
+            "y": 1390,
+            "w": 300,
+            "h": 136,
+            "rot": 0,
+            "z": 28,
+            "wPct": 28
+          },
+          {
+            "id": "imf5t5uh",
+            "type": "image",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759311/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_3_ig7gqf.svg",
+            "x": 570,
+            "y": 1390,
+            "w": 300,
+            "h": 136,
+            "rot": 0,
+            "z": 29,
+            "wPct": 28
+          },
+          {
+            "id": "ih9yyn5k",
+            "type": "image",
+            "src": "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_DRAWING__READY_TO_EXPORT_.svg",
+            "x": 570,
+            "y": 1390,
+            "w": 300,
+            "h": 136,
+            "rot": 0,
+            "z": 30,
+            "wPct": 28
+          },
+          {
+            "id": "iqbe6t2w",
+            "type": "image",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759633/studio-colby/pathway-to-heaven/Artboard_1_cswu9r.svg",
+            "x": 103,
+            "y": 55,
+            "w": 1247,
+            "h": 618,
+            "rot": 0,
+            "z": 31,
+            "wPct": 87
           }
         ]
       }
@@ -1588,7 +1636,7 @@
     "axis-knife-study": "IMAGES/AXIS-KNIFE-STUDY/ICON_-_AXIS_KNIFE_STUDY.svg",
     "poly-chair": "IMAGES/POLY-CHAIR/ICON_-_Polychair.svg",
     "sound-table": "IMAGES/SOUND-TABLE/ICON_-_SOUND_TABLE.svg",
-    "pathway-to-heaven": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759357/studio-colby/pathway-to-heaven/ICON_-_PATHWAY_TO_HEAVEN_4_wrdgwh.svg"
+    "pathway-to-heaven": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777759654/studio-colby/pathway-to-heaven/Artboard_1_sp4mgi.svg"
   },
   "__projectFlags__": {
     "light-table": {
