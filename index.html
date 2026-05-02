@@ -1231,7 +1231,9 @@
       display: flex;
       gap: 22px;
       color: var(--text-mid);
-      font-size: calc(clamp(11px, 1vw, 15px) * var(--grid-label-scale, 1));
+      /* Match the title's font-size so the row reads as one typographic
+         line, not as a small subhead under a larger title. */
+      font-size: calc(clamp(15px, 1.6vw, 26px) * var(--grid-label-scale, 1));
       padding-bottom: 20px;
       border-bottom: 1px solid var(--border);
       margin-bottom: 26px;
@@ -1264,6 +1266,9 @@
       .grid-tile { min-height: 60vh; padding: 20px 0 30px; }
       .grid-tile-title { font-size: calc(clamp(15px, 4.4vw, 22px) * var(--grid-label-scale, 1)); max-width: 72%; }
       .grid-tile-year { font-size: calc(clamp(14px, 4vw, 20px) * var(--grid-label-scale, 1)); }
+      /* Keep mobile categories smaller than the title — only desktop wants
+         them at the same size. */
+      .grid-tile-cats { font-size: calc(clamp(11px, 3vw, 15px) * var(--grid-label-scale, 1)); }
     }
 
     .project-row {

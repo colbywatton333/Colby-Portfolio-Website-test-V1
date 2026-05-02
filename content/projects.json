@@ -64,6 +64,59 @@
       ]
     },
     {
+      "id": "bass-speaker",
+      "categories": [
+        "Object",
+        "Sound"
+      ],
+      "title": "Bass Speaker",
+      "year": 2025,
+      "description": "I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.",
+      "materials": "CNC cut Baltic Birch plywood, epoxy, rubber feet, 3D prints, paint, 18\" subwoofer components, lifting hardware",
+      "process": "CAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.",
+      "images": [
+        [
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0249_ly84pv.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0850_obxtg6.jpg"
+        ],
+        [
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694054/studio-colby/bass-speaker/IMG_6658_uaepgn.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694429/studio-colby/bass-speaker/IMG_6661_walsid.jpg"
+        ],
+        [
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694056/studio-colby/bass-speaker/IMG_6662_vcin5v.jpg"
+        ],
+        [
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694430/studio-colby/bass-speaker/IMG_6841_tlc1vj.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694432/studio-colby/bass-speaker/IMG_7226_jn30lx.jpg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/water-053.jpg"
+        ],
+        [
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694057/studio-colby/bass-speaker/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO_hyqq5k.mov"
+        ],
+        [
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694427/studio-colby/bass-speaker/IMG_1627_o92pnq.jpg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/ICON_-_BASS_SPEAKER.svg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/ICON_-_BASS_SPEAKER.svg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/EXPLODED_VIEW_OF_SPEAKER.svg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/X_RAY_OF_SPEAKER.svg"
+        ],
+        [
+          "IMAGES/BASS-SPEAKER/IMG_6841.webp"
+        ]
+      ]
+    },
+    {
       "id": "motorized-camera-dolly",
       "categories": [
         "Mechanical",
@@ -295,59 +348,6 @@
         ],
         [
           "IMAGES/SOUND-TABLE/ICON_-_SOUND_TABLE.svg"
-        ]
-      ]
-    },
-    {
-      "id": "bass-speaker",
-      "categories": [
-        "Object",
-        "Sound"
-      ],
-      "title": "Bass Speaker",
-      "year": 2025,
-      "description": "I wanted to see if I could create a minimalist approach to a subwoofer. Creating a simple box with large radius round-over edges, responding to the soft form of the subwoofer shape. The result is a monochrome SUB.",
-      "materials": "CNC cut Baltic Birch plywood, epoxy, rubber feet, 3D prints, paint, 18\" subwoofer components, lifting hardware",
-      "process": "CAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.",
-      "images": [
-        [
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0249_ly84pv.jpg",
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0850_obxtg6.jpg"
-        ],
-        [
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694054/studio-colby/bass-speaker/IMG_6658_uaepgn.jpg",
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694429/studio-colby/bass-speaker/IMG_6661_walsid.jpg"
-        ],
-        [
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694056/studio-colby/bass-speaker/IMG_6662_vcin5v.jpg"
-        ],
-        [
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694430/studio-colby/bass-speaker/IMG_6841_tlc1vj.jpg",
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694432/studio-colby/bass-speaker/IMG_7226_jn30lx.jpg"
-        ],
-        [
-          "IMAGES/BASS-SPEAKER/water-053.jpg"
-        ],
-        [
-          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694057/studio-colby/bass-speaker/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO_hyqq5k.mov"
-        ],
-        [
-          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694427/studio-colby/bass-speaker/IMG_1627_o92pnq.jpg"
-        ],
-        [
-          "IMAGES/BASS-SPEAKER/ICON_-_BASS_SPEAKER.svg"
-        ],
-        [
-          "IMAGES/BASS-SPEAKER/ICON_-_BASS_SPEAKER.svg"
-        ],
-        [
-          "IMAGES/BASS-SPEAKER/EXPLODED_VIEW_OF_SPEAKER.svg"
-        ],
-        [
-          "IMAGES/BASS-SPEAKER/X_RAY_OF_SPEAKER.svg"
-        ],
-        [
-          "IMAGES/BASS-SPEAKER/IMG_6841.webp"
         ]
       ]
     },
