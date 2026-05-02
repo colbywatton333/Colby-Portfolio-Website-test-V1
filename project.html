@@ -500,13 +500,14 @@
     }
     .mib__pair { display: flex; flex-direction: column; gap: 4px; }
     .mib__label {
-      font-size: clamp(10px, 2.4cqi, 12px);
-      /* 700 (not 600) so the weight gap stays visible against the body's
-         500 default — Arial commonly maps 500/600 to the same glyph. */
+      /* Match desktop: same font-size as values, same colour, just the
+         heavier weight. No uppercase, no extra letter-spacing — the
+         authored label text (e.g. "Materials:") renders as-is. */
+      font-size: clamp(12px, 3cqi, 15px);
       font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-mid);
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--text);
     }
     .mib__value {
       font-size: clamp(12px, 3cqi, 15px);
