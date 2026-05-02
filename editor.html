@@ -4300,20 +4300,8 @@
     }
 
     async function uploadAboutImage(file) {
-      const b64 = await new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result).split(',')[1]);
-        r.onerror = reject;
-        r.readAsDataURL(file);
-      });
-      const res = await fetch('/api/about/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: file.name, data: b64 }),
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      const json = await res.json();
-      return json.src || json.path || null;
+      // Routes through Cloudinary in the 'about' subfolder.
+      return await uploadToCloudinary(file, 'about');
     }
 
     function autoTagAboutItem(item) {
@@ -5966,6 +5954,40 @@
       }
     }
 
+    // ── CLOUDINARY UPLOAD ─────────────────────────────────
+    // New uploads go to Cloudinary so the repo doesn't grow with each photo.
+    // Preset must be configured Unsigned in the Cloudinary dashboard. Existing
+    // local IMAGES/* paths in old layouts are unaffected — they keep rendering
+    // because the renderer accepts any URL as src.
+    const CLOUDINARY_CLOUD = 'dnr0tmvtk';
+    const CLOUDINARY_PRESET = 'Studio-colby-unsigned';
+    const CLOUDINARY_BASE_FOLDER = 'studio-colby';
+
+    async function uploadToCloudinary(file, folderSuffix) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      const folder = folderSuffix
+        ? CLOUDINARY_BASE_FOLDER + '/' + folderSuffix
+        : CLOUDINARY_BASE_FOLDER;
+      // Send both keys so the upload works regardless of whether the preset
+      // is on Cloudinary's legacy folder system or the newer "asset folders".
+      fd.append('folder', folder);
+      fd.append('asset_folder', folder);
+      // resource_type=auto routes images, videos, and SVGs through one
+      // endpoint — Cloudinary picks the right pipeline by MIME.
+      const url = 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/auto/upload';
+      const res = await fetch(url, { method: 'POST', body: fd });
+      let data = null;
+      try { data = await res.json(); } catch {}
+      if (!res.ok) {
+        const msg = (data && data.error && data.error.message) || ('HTTP ' + res.status);
+        throw new Error('Cloudinary: ' + msg);
+      }
+      if (!data || !data.secure_url) throw new Error('Cloudinary: no secure_url in response');
+      return data.secure_url;
+    }
+
     async function uploadFile(file) {
       const original = file;
       const compressed = await compressImage(file);
@@ -5976,24 +5998,13 @@
       }
       file = compressed;
       if (!state.projectId) {
+        // No project context (rare — new project before save). Inline data
+        // URL keeps the upload reversible until the user saves.
         const src = await fileToDataUrl(file);
         return { src, type: fileType(file) };
       }
-      try {
-        const b64 = await fileToBase64(file);
-        const res = await fetch('/api/projects/' + encodeURIComponent(state.projectId) + '/images', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: file.name, data: b64 }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Upload failed');
-        return { src: data.path, type: fileType(file) };
-      } catch (e) {
-        const src = await fileToDataUrl(file);
-        setStatus('Used data URL (upload failed)', 'err');
-        return { src, type: fileType(file) };
-      }
+      const src = await uploadToCloudinary(file, state.projectId);
+      return { src, type: fileType(file) };
     }
     const fileToDataUrl = (file) => new Promise((resolve, reject) => {
       const r = new FileReader();
