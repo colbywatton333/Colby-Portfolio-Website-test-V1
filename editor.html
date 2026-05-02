@@ -6427,6 +6427,22 @@
       window.addEventListener('pointerup', up);
     }
 
+    // Grow a text item's height to fit its natural content. Only grows —
+    // never shrinks — so users can still pad an item with extra height
+    // intentionally. .item-text is overflow:hidden, so scrollHeight reflects
+    // the full natural content even when the box is currently clipping.
+    function autoGrowTextItem(item, el) {
+      if (!item || item.type !== 'text' || !el) return;
+      const t = el.querySelector('.item-text');
+      if (!t) return;
+      const naturalH = t.scrollHeight;
+      if (naturalH > item.h + 0.5) {
+        item.h = Math.ceil(naturalH);
+        el.style.height = item.h + 'px';
+        if (typeof updateHandlesFor === 'function') updateHandlesFor(el, item);
+      }
+    }
+
     function beginTextEdit(id) {
       const item = findItem(id);
       if (!item || item.type !== 'text') return;
@@ -6455,6 +6471,9 @@
         if (txt && state.selection.size === 1 && state.selection.has(id)) {
           txt.value = t.textContent;
         }
+        // Auto-grow the box as content overflows so nothing gets clipped
+        // mid-typing. setDirty after autoGrow so the new height is saved.
+        autoGrowTextItem(item, el);
       }
       function commit() {
         item.text = t.textContent;
@@ -7760,6 +7779,10 @@
         }
         if (!el.classList.contains('editing')) t.textContent = item.text || '';
         applyItemTextStyle(t, item);
+        // Grow the item box if its current height clips the rendered content
+        // — needed when text was edited via the inspector, when a long-text
+        // item is loaded from JSON, or when font/size changes wrap differently.
+        autoGrowTextItem(item, el);
         // Section header: single-click on text enters edit mode (after short delay)
         if (isAboutHeader && !el._aboutHeaderWired) {
           el._aboutHeaderWired = true;
