@@ -485,14 +485,16 @@
     .mib__title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
     .mib__title {
       font-size: clamp(18px, 5cqi, 26px);
-      font-weight: 500;
+      /* 700 (vs body's 500 default) so title reads distinctly. Arial's 500
+         and 400 are barely distinguishable; 700 is a clean step up. */
+      font-weight: 700;
       letter-spacing: 0;
       line-height: 1.25;
       color: var(--text);
     }
     .mib__year {
       font-size: clamp(12px, 3cqi, 16px);
-      font-weight: 500;
+      font-weight: 700;
       color: var(--text);
       white-space: nowrap;
     }
@@ -1133,12 +1135,13 @@
       el.style.wordBreak = 'break-word';
       el.style.color = item.color || 'inherit';
       el.style.fontSize = responsiveFontSize(item.fontSize || 20, canvasW);
-      // Force info-block group label items (e.g. "Materials:") to 700 so they
-      // visibly outweigh their values. Arial's authored 500 vs 400 collapses
-      // to a single rendered weight in many browsers, which is what the user
-      // sees as "labels look the same as the text".
-      const isIbLabel = isIbGroupMember && /Label$/.test(item.groupKey || '');
-      el.style.fontWeight = isIbLabel ? 700 : (item.fontWeight || 500);
+      // Force info-block group "heavy" keys (title, year, *Label) to 700 so
+      // they visibly outweigh their values. Arial's authored 500 vs 400
+      // collapses to a single rendered weight in many browsers, which is
+      // what the user sees as "title/year/labels look the same as the text".
+      const HEAVY_IB_KEYS = /^(title|year|.+Label)$/;
+      const isHeavyIb = isIbGroupMember && HEAVY_IB_KEYS.test(item.groupKey || '');
+      el.style.fontWeight = isHeavyIb ? 700 : (item.fontWeight || 500);
       el.style.lineHeight = item.lineHeight || 1.4;
       el.style.textAlign = item.align || 'left';
       el.style.padding = (item.padding || 0) + 'px';
