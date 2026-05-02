@@ -15,11 +15,11 @@
           "IMAGES/GLYCERIN-MASK/GLYCERIN MASK.png"
         ],
         [
-          "IMAGES/GLYCERIN-MASK/IMG_4205.jpg",
-          "IMAGES/GLYCERIN-MASK/IMG_4350.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694063/studio-colby/glycerin-mask/IMG_4205_epgkna.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694064/studio-colby/glycerin-mask/IMG_4350_zwmvqa.jpg"
         ],
         [
-          "IMAGES/GLYCERIN-MASK/IMG_4420.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694064/studio-colby/glycerin-mask/IMG_4420_evzljh.jpg"
         ],
         [
           "IMAGES/GLYCERIN-MASK/ICON_-_SMOKE_GOGGLES.svg"
@@ -31,16 +31,16 @@
           "IMAGES/GLYCERIN-MASK/16-9_GLYCERIN_MASK.svg"
         ],
         [
-          "IMAGES/GLYCERIN-MASK/ScreenRecording_02-08-2025_12-03-50_1.mov"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694066/studio-colby/glycerin-mask/ScreenRecording_02-08-2025_12-03-50_1_pfdtdg.mov"
         ],
         [
-          "IMAGES/GLYCERIN-MASK/GOGGLES.18_G.mp4"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694061/studio-colby/glycerin-mask/GOGGLES.18_G_lfus6b.mp4"
         ],
         [
           "IMAGES/GLYCERIN-MASK/16.9_GLYCERIN_MASK_v2.svg"
         ],
         [
-          "IMAGES/GLYCERIN-MASK/GLYCERIN_MASK_EDIT.mov"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694060/studio-colby/glycerin-mask/GLYCERIN_MASK_EDIT_brvdal.mov"
         ]
       ]
     },
@@ -76,8 +76,8 @@
       "process": "CAD design, MIG welding, motor controller programming (Arduino), load testing",
       "images": [
         [
-          "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 232946.png",
-          "IMAGES/MOTORIZED-CAMERA-DOLLY/Screenshot 2026-03-04 234941.png"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694089/studio-colby/motorized-camera-dolly/Screenshot_2026-03-04_232946_dpzgvh.png",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694090/studio-colby/motorized-camera-dolly/Screenshot_2026-03-04_234941_u3wnqo.png"
         ],
         [
           "IMAGES/MOTORIZED-CAMERA-DOLLY/ICON_-_CAMERA_DOLLY.svg"
@@ -89,7 +89,7 @@
           "IMAGES/MOTORIZED-CAMERA-DOLLY/MOTORIZED_CAMERA_DOLLY__EXPLODED_.svg"
         ],
         [
-          "IMAGES/MOTORIZED-CAMERA-DOLLY/IMG_5248.mov"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694088/studio-colby/motorized-camera-dolly/IMG_5248_ufn7qz.mov"
         ],
         [
           "IMAGES/MOTORIZED-CAMERA-DOLLY/MOTORIZED_CAMERA_DOLLY__EXPLODED_.svg"
@@ -113,7 +113,7 @@
           "IMAGES/MOTORIZED-CAMERA-DOLLY/DOLLY_SHOTS__5_.webp"
         ],
         [
-          "IMAGES/MOTORIZED-CAMERA-DOLLY/DOLLY_BLACK_AND_WHITE.mp4"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694085/studio-colby/motorized-camera-dolly/DOLLY_BLACK_AND_WHITE_nwgvzj.mp4"
         ],
         [
           "IMAGES/MOTORIZED-CAMERA-DOLLY/MOTORIZED_CAMERA_DOLLY__EXPLODED__2.svg"
@@ -186,19 +186,19 @@
           "IMAGES/KANAMI -SOUND-BOY/ANTENNA SOUND BOY DRAWING-CLEAR.png"
         ],
         [
-          "IMAGES/KANAMI -SOUND-BOY/IMG_1377.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694070/studio-colby/kanami--sound-boy/IMG_1377_hmytjj.jpg"
         ],
         [
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 220927.png",
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-15 235824.png"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694071/studio-colby/kanami--sound-boy/Screenshot_2026-03-15_220927_fndb0h.png",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694072/studio-colby/kanami--sound-boy/Screenshot_2026-03-15_235824_hdd47d.png"
         ],
         [
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 001027.png",
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 120230.png"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694072/studio-colby/kanami--sound-boy/Screenshot_2026-03-16_001027_arn7rh.png",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694073/studio-colby/kanami--sound-boy/Screenshot_2026-03-16_120230_w0utqr.png"
         ],
         [
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121059.png",
-          "IMAGES/KANAMI -SOUND-BOY/Screenshot 2026-03-16 121249.png"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694074/studio-colby/kanami--sound-boy/Screenshot_2026-03-16_121059_qgrpbr.png",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694075/studio-colby/kanami--sound-boy/Screenshot_2026-03-16_121249_n3edoo.png"
         ],
         [
           "IMAGES/KANAMI-SOUND-BOY/ICON_-_KANAMI_SOUND_BOY.svg"
@@ -218,8 +218,8 @@
       "process": "CAD Design (Fusion 360), CNC machining, heat treatment, hand finishing, anodizing",
       "images": [
         [
-          "IMAGES/MULTITOOL-PROJECT/IMG_4525.PNG",
-          "IMAGES/MULTITOOL-PROJECT/IMG_4706.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694091/studio-colby/multitool-project/IMG_4525_qtuybp.png",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694092/studio-colby/multitool-project/IMG_4706_dttrzv.jpg"
         ],
         [
           "IMAGES/MULTI-TOOL/MULTITOOL_1.svg"
@@ -245,26 +245,26 @@
       "process": "",
       "images": [
         [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1265.PNG",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1335.PNG"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694100/studio-colby/sarcophagus-hull/IMG_1265_gmtyca.png",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694101/studio-colby/sarcophagus-hull/IMG_1335_oabloh.png"
         ],
         [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1336.PNG"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694102/studio-colby/sarcophagus-hull/IMG_1336_brf1iw.png"
         ],
         [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1498.jpeg",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1500.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694103/studio-colby/sarcophagus-hull/IMG_1498_am30e9.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694104/studio-colby/sarcophagus-hull/IMG_1500_bokg5d.jpg"
         ],
         [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1521.jpeg",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1570.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694105/studio-colby/sarcophagus-hull/IMG_1521_tq5iwl.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694106/studio-colby/sarcophagus-hull/IMG_1570_vfhnfm.jpg"
         ],
         [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1691.jpeg",
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1697.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694107/studio-colby/sarcophagus-hull/IMG_1691_urf0ct.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694108/studio-colby/sarcophagus-hull/IMG_1697_zsexp4.jpg"
         ],
         [
-          "IMAGES/SARCOPHAGUS-HULL/IMG_1699.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694109/studio-colby/sarcophagus-hull/IMG_1699_nn6a3u.jpg"
         ],
         [
           "IMAGES/SARCOPHAGUS-HULL/ICON_-_Sarcophagus_Hull.svg"
@@ -284,7 +284,7 @@
       "process": "",
       "images": [
         [
-          "IMAGES/SOUND-TABLE/IMG_9417.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694110/studio-colby/sound-table/IMG_9417_lywgly.jpg"
         ],
         [
           "IMAGES/SOUND-TABLE/Photo 2023-06-24, 2 46 50 AM.jpg",
@@ -311,15 +311,15 @@
       "process": "CAD Design (Fusion 360) — creating a 3D model with recessed and interlocking joints with tight tolerances to fit perfectly together. CNC cutting the plywood, assembly, sanding, painting, subwoofer and sound component installation.",
       "images": [
         [
-          "IMAGES/BASS-SPEAKER/IMG_0249.jpg",
-          "IMAGES/BASS-SPEAKER/IMG_0850.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0249_ly84pv.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694053/studio-colby/bass-speaker/IMG_0850_obxtg6.jpg"
         ],
         [
-          "IMAGES/BASS-SPEAKER/IMG_6658.jpeg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694054/studio-colby/bass-speaker/IMG_6658_uaepgn.jpg",
           "IMAGES/BASS-SPEAKER/IMG_6661.png"
         ],
         [
-          "IMAGES/BASS-SPEAKER/IMG_6662.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694056/studio-colby/bass-speaker/IMG_6662_vcin5v.jpg"
         ],
         [
           "IMAGES/BASS-SPEAKER/IMG_6841.png",
@@ -329,7 +329,7 @@
           "IMAGES/BASS-SPEAKER/water-053.jpg"
         ],
         [
-          "IMAGES/BASS-SPEAKER/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO.mov"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694057/studio-colby/bass-speaker/VERTICAL_BASS_SPEAKER_CONSTRUCTION_VIDEO_hyqq5k.mov"
         ],
         [
           "IMAGES/BASS-SPEAKER/IMG_1627.png"
@@ -384,20 +384,20 @@
           "IMAGES/PATHWAY-TO-HEAVEN/EDITED PAVILION-06184.jpg"
         ],
         [
-          "IMAGES/PATHWAY-TO-HEAVEN/IMG_3868.jpg",
-          "IMAGES/PATHWAY-TO-HEAVEN/IMG_3873.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694092/studio-colby/pathway-to-heaven/IMG_3868_jgywhp.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694093/studio-colby/pathway-to-heaven/IMG_3873_wobqg1.jpg"
         ],
         [
-          "IMAGES/PATHWAY-TO-HEAVEN/IMG_3884.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694094/studio-colby/pathway-to-heaven/IMG_3884_my5dof.jpg"
         ],
         [
           "IMAGES/PATHWAY-TO-HEAVEN/PATHWAY_TO_HEAVEN_TEST.svg"
         ],
         [
-          "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_360_SHOT_RENDER.mov"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694095/studio-colby/pathway-to-heaven/PAVILION_360_SHOT_RENDER_qzs9ag.mov"
         ],
         [
-          "IMAGES/PATHWAY-TO-HEAVEN/PAVILION_360_SHOT_RENDER.mov"
+          "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694095/studio-colby/pathway-to-heaven/PAVILION_360_SHOT_RENDER_qzs9ag.mov"
         ],
         [
           "IMAGES/PATHWAY-TO-HEAVEN/ICON_-_PATHWAY_TO_HEAVEN.svg"
@@ -508,8 +508,8 @@
           "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/DSC06630.jpg"
         ],
         [
-          "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/IMG_3828.jpg",
-          "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/IMG_6900.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694083/studio-colby/modular-aluminum-assembly-system/IMG_3828_viqvny.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694084/studio-colby/modular-aluminum-assembly-system/IMG_6900_hlpb0c.jpg"
         ],
         [
           "IMAGES/MODULAR-ALUMINUM-ASSEMBLY-SYSTEM/MASS PAGE 1@300x-100.jpg",
@@ -539,12 +539,12 @@
           "IMAGES/HULL-CHAIR/DSC06611.jpg"
         ],
         [
-          "IMAGES/HULL-CHAIR/IMG_2346.jpg",
-          "IMAGES/HULL-CHAIR/IMG_2347.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694067/studio-colby/hull-chair/IMG_2346_amdhra.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694068/studio-colby/hull-chair/IMG_2347_nzmsah.jpg"
         ],
         [
-          "IMAGES/HULL-CHAIR/IMG_3282.jpg",
-          "IMAGES/HULL-CHAIR/IMG_3661.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694068/studio-colby/hull-chair/IMG_3282_ht8vfo.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694069/studio-colby/hull-chair/IMG_3661_x0ttuq.jpg"
         ],
         [
           "IMAGES/HULL-CHAIR/fdjhfd.jpg"
@@ -567,22 +567,22 @@
       "process": "",
       "images": [
         [
-          "IMAGES/LIGHT-TABLE/IMG_4370.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694076/studio-colby/light-table/IMG_4370_uhpwbh.jpg"
         ],
         [
-          "IMAGES/LIGHT-TABLE/IMG_4421.jpeg",
-          "IMAGES/LIGHT-TABLE/IMG_4422.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694076/studio-colby/light-table/IMG_4421_kqgbsv.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694077/studio-colby/light-table/IMG_4422_fo08q7.jpg"
         ],
         [
-          "IMAGES/LIGHT-TABLE/IMG_4423.jpeg",
-          "IMAGES/LIGHT-TABLE/IMG_4424.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694078/studio-colby/light-table/IMG_4423_my98qm.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694079/studio-colby/light-table/IMG_4424_f8wwfz.jpg"
         ],
         [
-          "IMAGES/LIGHT-TABLE/IMG_4426.jpeg",
-          "IMAGES/LIGHT-TABLE/IMG_4427.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694080/studio-colby/light-table/IMG_4426_t7iakw.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694081/studio-colby/light-table/IMG_4427_z54e1h.jpg"
         ],
         [
-          "IMAGES/LIGHT-TABLE/IMG_4427BW.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694082/studio-colby/light-table/IMG_4427BW_ee6fq5.jpg"
         ]
       ]
     },
@@ -603,7 +603,7 @@
           "IMAGES/POLY-CHAIR/FINAL EXPORT-fgdfg2.JPG"
         ],
         [
-          "IMAGES/POLY-CHAIR/IMG_0104.png"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694097/studio-colby/poly-chair/IMG_0104_yzxiww.png"
         ],
         [
           "IMAGES/POLY-CHAIR/ICON_-_Polychair.svg"
@@ -624,7 +624,7 @@
       "images": [
         [
           "IMAGES/T1-PLATES/ANODIZED PLATES 1.jpg",
-          "IMAGES/T1-PLATES/IMG_8482.jpg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694110/studio-colby/t1-plates/IMG_8482_pvubeq.jpg"
         ],
         [
           "IMAGES/T1-PLATES/322B9AF8-84B5-4270-BFB2-491BB14996C2.JPG"
@@ -684,8 +684,8 @@
       "process": "Extrusion profile design, thermal simulation, prototype validation, photometric testing",
       "images": [
         [
-          "IMAGES/RAIL-LIGHT/IMG_6609.jpeg",
-          "IMAGES/RAIL-LIGHT/IMG_7105.jpeg"
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694098/studio-colby/rail-light/IMG_6609_scpxmz.jpg",
+          "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694099/studio-colby/rail-light/IMG_7105_mg54lt.jpg"
         ],
         [
           "IMAGES/RAIL-LIGHT/ICON_-_RAIL_LIGHT.svg"
