@@ -2407,7 +2407,7 @@
             "id": "iyo4ownc",
             "type": "image",
             "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694063/studio-colby/glycerin-mask/IMG_4205_epgkna.jpg",
-            "x": 477,
+            "x": 442,
             "y": 2205,
             "w": 557,
             "h": 523,
@@ -2419,7 +2419,7 @@
             "id": "ik093brk",
             "type": "image",
             "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694064/studio-colby/glycerin-mask/IMG_4420_evzljh.jpg",
-            "x": 467,
+            "x": 442,
             "y": 1400,
             "w": 557,
             "h": 717,
@@ -2437,7 +2437,7 @@
             "id": "i1n9noss",
             "type": "image",
             "src": "IMAGES/GLYCERIN-MASK/ICON_-_SMOKE_GOGGLES.svg",
-            "x": 295,
+            "x": 296,
             "y": 99,
             "w": 848,
             "h": 432,
@@ -2448,7 +2448,7 @@
           {
             "id": "ibq3n48u",
             "type": "text",
-            "x": 329,
+            "x": 315,
             "y": 569,
             "w": 479,
             "h": 57,
@@ -2473,7 +2473,7 @@
           {
             "id": "i5v330t6",
             "type": "text",
-            "x": 988,
+            "x": 974,
             "y": 569,
             "w": 151,
             "h": 57,
@@ -2498,7 +2498,7 @@
           {
             "id": "i87j6gsz",
             "type": "text",
-            "x": 329,
+            "x": 315,
             "y": 695,
             "w": 138,
             "h": 33,
@@ -2523,7 +2523,7 @@
           {
             "id": "ilp6zefl",
             "type": "text",
-            "x": 491,
+            "x": 477,
             "y": 695,
             "w": 617,
             "h": 35,
@@ -2548,7 +2548,7 @@
           {
             "id": "iq5n33e9",
             "type": "text",
-            "x": 329,
+            "x": 315,
             "y": 757,
             "w": 138,
             "h": 33,
@@ -2573,7 +2573,7 @@
           {
             "id": "i9p7r4z7",
             "type": "text",
-            "x": 491,
+            "x": 477,
             "y": 757,
             "w": 617,
             "h": 35,
@@ -2598,7 +2598,7 @@
           {
             "id": "ir3nsthc",
             "type": "text",
-            "x": 329,
+            "x": 315,
             "y": 820,
             "w": 138,
             "h": 33,
@@ -2623,7 +2623,7 @@
           {
             "id": "ixvrhh9e",
             "type": "text",
-            "x": 491,
+            "x": 477,
             "y": 820,
             "w": 617,
             "h": 35,
@@ -2648,7 +2648,7 @@
           {
             "id": "ifhqn0gi",
             "type": "text",
-            "x": 329,
+            "x": 315,
             "y": 896,
             "w": 780,
             "h": 448,
@@ -2673,7 +2673,7 @@
           {
             "id": "i46q834d",
             "type": "text",
-            "x": 478,
+            "x": 442,
             "y": 2751,
             "w": 556,
             "h": 57,
@@ -2694,19 +2694,20 @@
             "id": "ixxkgpkn",
             "type": "video",
             "src": "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694061/studio-colby/glycerin-mask/GOGGLES.18_G_lfus6b.mp4",
-            "x": 476,
+            "x": 442,
             "y": 2848,
             "w": 557,
             "h": 557,
             "rot": 0,
             "z": 44,
-            "wPct": 39
+            "wPct": 39,
+            "aspect": 1
           },
           {
             "id": "ihkhmn3d",
             "type": "image",
             "src": "IMAGES/GLYCERIN-MASK/16.9_GLYCERIN_MASK_v2.svg",
-            "x": 223,
+            "x": 224,
             "y": 4165,
             "w": 992,
             "h": 557,
@@ -2718,13 +2719,14 @@
             "id": "idl02ho7",
             "type": "video",
             "src": "https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694060/studio-colby/glycerin-mask/GLYCERIN_MASK_EDIT_brvdal.mov",
-            "x": 477,
+            "x": 442,
             "y": 3446,
             "w": 557,
             "h": 645,
             "rot": 0,
             "z": 46,
-            "wPct": 39
+            "wPct": 39,
+            "aspect": 0.864
           }
         ]
       }
