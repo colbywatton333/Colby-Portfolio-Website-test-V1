@@ -8205,12 +8205,25 @@
       const SKIP = new Set(['image', 'IMAGE']);
       root.querySelectorAll('*').forEach(el => {
         if (SKIP.has(el.nodeName) || SKIP.has(el.tagName)) return;
+        // Mark elements after the first recolor so subsequent theme toggles
+        // always re-paint them — without this, mid-luminance theme colours
+        // (e.g. #5f5f5a / #acaca7) failed both dark/light tests on later
+        // toggles and the SVGs got "stuck" in their previous theme colour.
         const s = el.getAttribute('stroke');
-        if (__hpIsDark(s) || __hpIsLight(s)) el.setAttribute('stroke', color);
+        if (__hpIsDark(s) || __hpIsLight(s) || el.dataset.themedStroke) {
+          el.setAttribute('stroke', color);
+          el.dataset.themedStroke = '1';
+        }
         const f = el.getAttribute('fill');
-        if (__hpIsDark(f) || __hpIsLight(f)) el.setAttribute('fill', color);
+        if (__hpIsDark(f) || __hpIsLight(f) || el.dataset.themedFill) {
+          el.setAttribute('fill', color);
+          el.dataset.themedFill = '1';
+        }
         const tag = (el.tagName || el.nodeName || '').toLowerCase();
-        if ((tag === 'text' || tag === 'tspan') && !f) el.setAttribute('fill', color);
+        if ((tag === 'text' || tag === 'tspan') && !f) {
+          el.setAttribute('fill', color);
+          el.dataset.themedFill = '1';
+        }
       });
       root.querySelectorAll('style').forEach(st => {
         if (st.__origText == null) st.__origText = st.textContent;

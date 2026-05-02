@@ -677,10 +677,19 @@
       const SKIP = new Set(['image', 'IMAGE']);
       root.querySelectorAll('*').forEach(el => {
         if (SKIP.has(el.nodeName) || SKIP.has(el.tagName)) return;
+        // Mark elements after first recolor so future toggles always re-paint
+        // them, even when the stored colour would no longer pass the dark/
+        // light luminance tests on its own.
         const s = el.getAttribute('stroke');
-        if (isDarkColor(s) || isLightColor(s) || s === '__orig-dark') el.setAttribute('stroke', color);
+        if (isDarkColor(s) || isLightColor(s) || s === '__orig-dark' || el.dataset.themedStroke) {
+          el.setAttribute('stroke', color);
+          el.dataset.themedStroke = '1';
+        }
         const f = el.getAttribute('fill');
-        if (isDarkColor(f) || isLightColor(f) || f === '__orig-dark') el.setAttribute('fill', color);
+        if (isDarkColor(f) || isLightColor(f) || f === '__orig-dark' || el.dataset.themedFill) {
+          el.setAttribute('fill', color);
+          el.dataset.themedFill = '1';
+        }
         const tag = (el.tagName || el.nodeName || '').toLowerCase();
         if (tag === 'text' || tag === 'tspan') {
           // Force the SAME color as strokes regardless of how the source
