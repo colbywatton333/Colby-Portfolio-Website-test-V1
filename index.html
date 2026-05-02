@@ -212,7 +212,8 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      animation: entryFadeIn 2s ease 0.3s forwards;
+      /* Slower fade-in for the intro video — settles in over ~5s. */
+      animation: entryFadeIn 5s ease 0.3s forwards;
     }
     #dotOverlay {
       position: absolute;
@@ -7333,6 +7334,11 @@
     let dotMouseX = window.innerWidth / 2, dotMouseY = window.innerHeight / 2;
 
     (function initRippleOverlay() {
+      // Ripple/dot overlay disabled — the rAF loop and ripple math used to
+      // run while the entry video was visible, but the user prefers the
+      // intro video uncovered. Keeping the function shell so any external
+      // hooks (dotAnimId guard at second-click, etc.) don't error.
+      return;
       const cvs = document.getElementById('dotOverlay');
       if (!cvs) return;
       // Returning visitors skip the entry screen (see the hasEntered branch
@@ -8169,6 +8175,22 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
         });
+      }
+
+      // Default landing view: Grid on desktop, all-previews-open on mobile.
+      // Skipped if the URL hash routes the user somewhere specific (about,
+      // rectgrid, search) so we don't fight an explicit deep-link.
+      const hashRoute = (location.hash || '').replace(/^#\/?/, '');
+      const explicitRoute = ['about', 'rectgrid', 'search'].includes(hashRoute);
+      if (!explicitRoute) {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && mobileOpenBtnElLocal) {
+          // Open all previews on mobile.
+          if (!allOpenState) togglePreviews(mobileOpenBtnElLocal);
+        } else if (!isMobile && gridBtn) {
+          // Grid view on desktop.
+          if (!document.body.classList.contains('grid-view')) setGridView(true);
+        }
       }
     }
 
