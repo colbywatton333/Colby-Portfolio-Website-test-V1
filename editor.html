@@ -5936,19 +5936,35 @@
       if (file.size < 300 * 1024) return file;
       if (__uploadShiftHeld) return file;
       if (typeof createImageBitmap !== 'function' || typeof OffscreenCanvas !== 'function') return file;
+      // Cloudinary's free-tier image limit is 10MB. Target a hard ceiling
+      // below that — if the first encode overshoots (huge raw PNGs do), the
+      // loop drops dimensions and quality until it fits or we hit the floor.
+      const CLOUDINARY_IMG_LIMIT = 8 * 1024 * 1024;
       try {
         const bmp = await createImageBitmap(file);
-        const scale = Math.min(1, maxDim / Math.max(bmp.width, bmp.height));
-        const w = Math.max(1, Math.round(bmp.width * scale));
-        const h = Math.max(1, Math.round(bmp.height * scale));
-        const canvas = new OffscreenCanvas(w, h);
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(bmp, 0, 0, w, h);
-        const blob = await canvas.convertToBlob({ type: 'image/webp', quality });
+        let curMax = maxDim;
+        let curQuality = quality;
+        let lastBlob = null;
+        // Try up to 4 passes: original target, then progressively smaller +
+        // lower quality. In practice oversized photos fit on pass 1 or 2.
+        for (let attempt = 0; attempt < 4; attempt++) {
+          const scale = Math.min(1, curMax / Math.max(bmp.width, bmp.height));
+          const w = Math.max(1, Math.round(bmp.width * scale));
+          const h = Math.max(1, Math.round(bmp.height * scale));
+          const canvas = new OffscreenCanvas(w, h);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(bmp, 0, 0, w, h);
+          const blob = await canvas.convertToBlob({ type: 'image/webp', quality: curQuality });
+          lastBlob = blob;
+          if (blob.size <= CLOUDINARY_IMG_LIMIT) break;
+          curMax = Math.round(curMax * 0.7);
+          curQuality = Math.max(0.55, curQuality - 0.1);
+        }
+        if (!lastBlob) return file;
         // Bail if we somehow made it bigger (rare — happens on tiny PNGs).
-        if (blob.size >= file.size) return file;
+        if (lastBlob.size >= file.size) return file;
         const newName = file.name.replace(/\.[^.]+$/, '') + '.webp';
-        return new File([blob], newName, { type: 'image/webp' });
+        return new File([lastBlob], newName, { type: 'image/webp' });
       } catch {
         return file;
       }

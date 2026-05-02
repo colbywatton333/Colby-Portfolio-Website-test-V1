@@ -139,7 +139,7 @@
           {
             "id": "iw2telat",
             "type": "image",
-            "src": "IMAGES/BASS-SPEAKER/IMG_1627.png",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694427/studio-colby/bass-speaker/IMG_1627_o92pnq.jpg",
             "x": 473,
             "y": 3649,
             "w": 485,
@@ -171,7 +171,7 @@
                 "type": "image"
               },
               {
-                "src": "IMAGES/BASS-SPEAKER/IMG_7226.png",
+                "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694432/studio-colby/bass-speaker/IMG_7226_jn30lx.jpg",
                 "type": "image"
               },
               {
