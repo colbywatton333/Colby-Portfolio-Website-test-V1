@@ -1165,6 +1165,18 @@
       transition: opacity 1.2s ease,
                   visibility 0s linear 0s;
     }
+    /* Grid → Index sequenced fade. Mirrors the Open/Close action: phase 1
+       fades the grid out while the list stays hidden, phase 2 (driven from
+       JS by stripping both classes) lets the list fade in via its default
+       transition. */
+    body.grid-view.grid-leaving #projectsGrid {
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+    body.grid-view.grid-leaving #projectsList {
+      opacity: 0;
+      visibility: hidden;
+    }
     .grid-tile {
       display: flex;
       flex-direction: column;
@@ -4943,11 +4955,22 @@
         gridBtn.textContent = 'Index';
         initGridDrawObserver();
       } else {
-        body.classList.remove('grid-view');
-        gridBtn.classList.remove('active');
-        gridBtn.textContent = 'Grid';
-        if (gridDrawIO) gridDrawIO.disconnect();
-        document.querySelectorAll('.grid-tile.in-view').forEach(t => t.classList.remove('in-view'));
+        // Sequenced fade: phase 1 fades the grid out (grid-leaving class
+        // suppresses the list cross-fade); phase 2 strips both classes so
+        // the list fades back in via its default transition. Same shape
+        // as the Open/Close action so the two view toggles feel identical.
+        const FADE_MS = 900;
+        body.classList.add('grid-leaving');
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { window.scrollTo(0, 0); }
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          body.classList.remove('grid-view');
+          body.classList.remove('grid-leaving');
+          gridBtn.classList.remove('active');
+          gridBtn.textContent = 'Grid';
+          if (gridDrawIO) gridDrawIO.disconnect();
+          document.querySelectorAll('.grid-tile.in-view').forEach(t => t.classList.remove('in-view'));
+        }, FADE_MS);
       }
     }
 
