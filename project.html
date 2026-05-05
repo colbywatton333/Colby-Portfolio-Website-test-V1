@@ -1117,7 +1117,13 @@
       const p = item && item.imgPan;
       if (p && (p.sx !== 1 || p.sy !== 1 || p.ox !== 0 || p.oy !== 0)) {
         mediaHost.style.overflow = 'hidden';
-        mediaHost.style.position = mediaHost.style.position || 'relative';
+        // Do NOT override mediaHost.position. The .c-item CSS rule already
+        // makes it position:absolute (its own containing block), so absolute
+        // children below use it as the offset parent. Forcing relative here
+        // turned the c-item into a flow-positioned element, which made the
+        // pixel `top:` written by the mobile reshift act as a flow offset
+        // instead of an absolute coord — items ended up ~200px low and
+        // overlapped the items beneath them.
         mediaHost.querySelectorAll(SEL).forEach(n => {
           n.style.position = 'absolute';
           n.style.left = (-p.ox * 100) + '%';
