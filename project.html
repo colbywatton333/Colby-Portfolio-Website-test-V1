@@ -332,6 +332,18 @@
     html.light-mode .media-overlay-backdrop {
       background: rgba(241, 236, 229, 0.92);
     }
+    /* Mobile: drop the heavy blur (it stutters the fade-in on iOS) and
+       lean on a more opaque solid backdrop instead. */
+    @media (max-width: 768px) {
+      .media-overlay-backdrop {
+        background: rgba(13, 13, 13, 0.96);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      html.light-mode .media-overlay-backdrop {
+        background: rgba(241, 236, 229, 0.97);
+      }
+    }
     .media-overlay-stage {
       position: relative;
       z-index: 1;
@@ -1054,8 +1066,13 @@
       };
       backdrop.addEventListener('click', close);
       closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });
-      // Any click inside the stage — including on the media itself — closes.
-      stage.addEventListener('click', close);
+      // Stage clicks close the overlay — except on a <video>, where taps
+      // need to reach the native controls (play/pause/scrub). Clicking on
+      // empty space inside the stage (the letterbox margins) still closes.
+      stage.addEventListener('click', (e) => {
+        if (e.target && e.target.tagName === 'VIDEO') return;
+        close();
+      });
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && ov.classList.contains('active')) close();
       });
@@ -1091,6 +1108,47 @@
       mediaEl.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
+
+        // Mobile + actual <video>: hand off to native HTML5 fullscreen on
+        // the inline player itself instead of building a new <video> in a
+        // blurred overlay. Reusing the existing element means no reload,
+        // no decode pause, and the standard iOS player UI takes over —
+        // which is the experience users expect from a tapped video.
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        if (isMobile && preferredEl && preferredEl.tagName === 'VIDEO') {
+          const v = preferredEl;
+          const wasMuted = v.muted;
+          const hadControls = v.controls;
+          v.muted = false;
+          v.controls = true;
+          const restore = () => {
+            v.muted = wasMuted;
+            v.controls = hadControls;
+            document.removeEventListener('fullscreenchange', onChange);
+            document.removeEventListener('webkitfullscreenchange', onChange);
+            v.removeEventListener('webkitendfullscreen', restore);
+          };
+          const onChange = () => {
+            const fs = document.fullscreenElement || document.webkitFullscreenElement;
+            if (fs !== v) restore();
+          };
+          document.addEventListener('fullscreenchange', onChange);
+          document.addEventListener('webkitfullscreenchange', onChange);
+          v.addEventListener('webkitendfullscreen', restore, { once: true });
+
+          // iOS Safari (the common case on mobile).
+          if (typeof v.webkitEnterFullscreen === 'function') {
+            try { v.play().catch(() => {}); v.webkitEnterFullscreen(); return; } catch {}
+          }
+          // Modern Android Chrome / Firefox.
+          if (typeof v.requestFullscreen === 'function') {
+            try { v.play().catch(() => {}); v.requestFullscreen(); return; } catch {}
+          }
+          // If neither path worked, drop the temporary state changes and
+          // fall through to the custom overlay.
+          restore();
+        }
+
         // Resolve src + kind from the preferred element when not explicitly passed.
         let src = srcOverride;
         let kind = kindOverride;
