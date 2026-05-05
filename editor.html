@@ -7980,10 +7980,12 @@
         mediaChild.style.top  = (-p.oy * 100) + '%';
         mediaChild.style.width  = (p.sx * 100) + '%';
         mediaChild.style.height = (p.sy * 100) + '%';
-        // Inline SVG must stretch to fill the (now scaled) holder, otherwise
-        // preserveAspectRatio="meet" would letterbox and the crop math
-        // wouldn't line up. non-scaling-stroke keeps stroke widths uniform.
-        if (innerSvg) innerSvg.setAttribute('preserveAspectRatio', 'none');
+        // Preserve the SVG's aspect ratio inside the cropped/panned holder.
+        // "none" stretches the SVG to fill the (non-square) holder which
+        // visibly deforms the artwork. "meet" letterboxes the SVG inside
+        // the scaled holder so the drawing is never distorted; the user
+        // can size the host to match the crop's aspect for a tight fit.
+        if (innerSvg) innerSvg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       } else {
         mediaChild.style.position = '';
         mediaChild.style.left = '';

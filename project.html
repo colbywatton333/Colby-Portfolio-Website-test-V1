@@ -582,6 +582,12 @@
     // ── BACK BUTTON + FOOTER LINKS → navigate back to index.html ────
     function goIndex(view) {
       const url = view ? 'index.html?view=' + view : 'index.html';
+      // On mobile, skip the body fade-out and navigate immediately. iOS
+      // Safari sometimes commits the opacity:0 frame as the bfcache snapshot,
+      // so a back-press from the resulting page lands on a blank screen
+      // (the cached project page with opacity 0) instead of the homepage.
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) { location.href = url; return; }
       document.body.style.opacity = '0';
       setTimeout(() => { location.href = url; }, 450);
     }
@@ -1130,11 +1136,12 @@
           n.style.top  = (-p.oy * 100) + '%';
           n.style.width  = (p.sx * 100) + '%';
           n.style.height = (p.sy * 100) + '%';
-          // Inline SVGs default to preserveAspectRatio="meet" which would
-          // letterbox inside the scaled host. For crop math to line up the
-          // SVG must stretch to fill — non-scaling-stroke keeps strokes uniform.
+          // Preserve aspect ratio for cropped SVGs — stretching ("none")
+          // visibly deforms the artwork. "meet" letterboxes inside the
+          // scaled holder; users can resize the host to match the crop's
+          // aspect ratio for a tight fit.
           if (n.tagName && n.tagName.toLowerCase() === 'svg') {
-            n.setAttribute('preserveAspectRatio', 'none');
+            n.setAttribute('preserveAspectRatio', 'xMidYMid meet');
           }
         });
       }
