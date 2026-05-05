@@ -58,8 +58,8 @@
       /* Warm-tinted palette — ~5% warm hue shift on the tokens the viewer
          sees most (bg, card, border). Text/dim tokens keep their earlier
          neutral values so contrast doesn't drift. */
-      --bg: #11100c;
-      --bg-fade: rgba(17, 16, 12, 0);
+      --bg: #0a0906;
+      --bg-fade: rgba(10, 9, 6, 0);
       --card: #100f0c;
       --text: #e4e4e1;
       --text-dim: #595853;
@@ -3025,11 +3025,11 @@
       }
       #rectGridView::before {
         top: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+        background: linear-gradient(to bottom, var(--bg), transparent);
       }
       #rectGridView::after {
         bottom: 0;
-        background: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
+        background: linear-gradient(to top, var(--bg), transparent);
       }
       /* Archive — 3 columns on mobile, equal spacing */
       #archiveGrid {
