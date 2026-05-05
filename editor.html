@@ -6103,7 +6103,11 @@
         throw new Error('Cloudinary: ' + msg);
       }
       if (!data || !data.secure_url) throw new Error('Cloudinary: no secure_url in response');
-      return data.secure_url;
+      // Cross-browser normalize: .mov plays in Safari only. Cloudinary
+      // auto-transcodes from the source asset when you change the delivery
+      // extension, so swapping .mov -> .mp4 on the URL hands every browser
+      // an H.264 MP4 (Content-Type video/mp4;codecs=avc1) without re-uploading.
+      return data.secure_url.replace(/\.mov(\?|$)/i, '.mp4$1');
     }
 
     async function uploadFile(file) {
