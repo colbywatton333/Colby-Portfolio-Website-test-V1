@@ -1638,7 +1638,7 @@
         },
         "items": [
           {
-            "id": "icsrmgrx",
+            "id": "ix993g6e",
             "type": "text",
             "x": 144,
             "y": 53,
@@ -1649,7 +1649,7 @@
             "wPct": 48,
             "padding": 0,
             "text": "Biography",
-            "fontSize": 14,
+            "fontSize": 18,
             "fontWeight": 500,
             "color": "#ffffff",
             "align": "left",
@@ -1660,7 +1660,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "i2ea7bmr",
+            "id": "icp4hx9f",
             "type": "text",
             "x": 144,
             "y": 117,
@@ -1682,7 +1682,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ith8egmi",
+            "id": "i8q1gmn5",
             "type": "text",
             "x": 144,
             "y": 283,
@@ -1704,7 +1704,7 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "ifoe787i",
+            "id": "izt2i1ms",
             "type": "text",
             "x": 144,
             "y": 572,
@@ -1726,9 +1726,9 @@
             "_aboutFieldIdx": 2
           },
           {
-            "id": "inkpul4j",
+            "id": "i2nx656s",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694052/studio-colby/about/IMG_6273_x53som.jpg",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777743742/studio-colby/about/IMG_6273_npvssf.jpg",
             "x": 925,
             "y": 117,
             "w": 371,
@@ -1739,7 +1739,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "inxf79y5",
+            "id": "irvy5brc",
             "type": "text",
             "x": 144,
             "y": 842,
@@ -1750,7 +1750,7 @@
             "wPct": 48,
             "padding": 0,
             "text": "Contact",
-            "fontSize": 14,
+            "fontSize": 18,
             "fontWeight": 500,
             "color": "#ffffff",
             "align": "left",
@@ -1761,7 +1761,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "i0xchjha",
+            "id": "igraqszk",
             "type": "text",
             "x": 144,
             "y": 887,
@@ -1783,7 +1783,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "il5pak5y",
+            "id": "ieijopsx",
             "type": "text",
             "x": 144,
             "y": 928,
@@ -1805,7 +1805,7 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "iqe6na7s",
+            "id": "i6c7rxv1",
             "type": "text",
             "x": 144,
             "y": 1108,
@@ -1816,7 +1816,7 @@
             "wPct": 48,
             "padding": 0,
             "text": "Info",
-            "fontSize": 14,
+            "fontSize": 18,
             "fontWeight": 500,
             "color": "#ffffff",
             "align": "left",
@@ -1827,7 +1827,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "ip76md42",
+            "id": "i5zsob46",
             "type": "text",
             "x": 144,
             "y": 1164,
@@ -1865,7 +1865,7 @@
         },
         "items": [
           {
-            "id": "iij6a4hw",
+            "id": "idjokc4t",
             "type": "text",
             "x": 102,
             "y": 102,
@@ -1887,7 +1887,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "ie339x42",
+            "id": "ijh6wmq0",
             "type": "text",
             "x": 102,
             "y": 166,
@@ -1909,7 +1909,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ix6plxub",
+            "id": "i829hhyf",
             "type": "text",
             "x": 102,
             "y": 313,
@@ -1931,7 +1931,7 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "iuiiee4z",
+            "id": "idsdcwwd",
             "type": "text",
             "x": 102,
             "y": 578,
@@ -1953,9 +1953,9 @@
             "_aboutFieldIdx": 2
           },
           {
-            "id": "ih7rzms5",
+            "id": "i8puiz7x",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694052/studio-colby/about/IMG_6273_x53som.jpg",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777743742/studio-colby/about/IMG_6273_npvssf.jpg",
             "x": 529,
             "y": 166,
             "w": 189,
@@ -1966,7 +1966,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ihxdnzv8",
+            "id": "i2hkuw8q",
             "type": "text",
             "x": 102,
             "y": 855,
@@ -1988,7 +1988,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "i7fq7b2v",
+            "id": "imu3sazh",
             "type": "text",
             "x": 102,
             "y": 919,
@@ -2010,7 +2010,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "iooavuk6",
+            "id": "i8plkeo0",
             "type": "text",
             "x": 102,
             "y": 961,
@@ -2032,7 +2032,7 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "iu9ps6wx",
+            "id": "iw0aj6km",
             "type": "text",
             "x": 102,
             "y": 1043,
@@ -2054,7 +2054,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "inneltoe",
+            "id": "iao4fjhk",
             "type": "text",
             "x": 102,
             "y": 1107,
@@ -2092,7 +2092,7 @@
         },
         "items": [
           {
-            "id": "it9gkvgn",
+            "id": "i60620qb",
             "type": "text",
             "x": 20,
             "y": 39,
@@ -2114,7 +2114,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "ico4mmdx",
+            "id": "i1yfzlqe",
             "type": "text",
             "x": 20,
             "y": 69,
@@ -2136,7 +2136,7 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "ib8m972v",
+            "id": "ii8dthbf",
             "type": "text",
             "x": 20,
             "y": 239,
@@ -2158,7 +2158,7 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "ifd81w7c",
+            "id": "ino954ji",
             "type": "text",
             "x": 20,
             "y": 517,
@@ -2180,9 +2180,9 @@
             "_aboutFieldIdx": 2
           },
           {
-            "id": "i5vm3bgf",
+            "id": "is7aqtfd",
             "type": "image",
-            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777694052/studio-colby/about/IMG_6273_x53som.jpg",
+            "src": "https://res.cloudinary.com/dnr0tmvtk/image/upload/v1777743742/studio-colby/about/IMG_6273_npvssf.jpg",
             "x": 20,
             "y": 808,
             "w": 351,
@@ -2194,7 +2194,7 @@
             "wPct": 90
           },
           {
-            "id": "ivprf5lq",
+            "id": "ilfvbzfg",
             "type": "text",
             "x": 20,
             "y": 1347,
@@ -2216,11 +2216,11 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "izbqy774",
+            "id": "ie6fadhu",
             "type": "text",
             "x": 20,
             "y": 1394,
-            "w": 350,
+            "w": 351,
             "h": 22,
             "rot": 0,
             "z": 8,
@@ -2238,17 +2238,17 @@
             "_aboutFieldIdx": 0
           },
           {
-            "id": "i951ljxb",
+            "id": "ilvqdot2",
             "type": "text",
             "x": 20,
             "y": 1432,
-            "w": 350,
+            "w": 351,
             "h": 22,
             "rot": 0,
             "z": 9,
             "wPct": 90,
             "padding": 0,
-            "text": "For work related inquiries please contact info@colbyonline.com",
+            "text": "For work related inquiries please contact info@colbyonline.com\n\nAdditional work available on request.",
             "fontSize": 11,
             "fontWeight": 400,
             "color": "#E4E4E4",
@@ -2260,7 +2260,7 @@
             "_aboutFieldIdx": 1
           },
           {
-            "id": "id1egx6n",
+            "id": "im49pst4",
             "type": "text",
             "x": 20,
             "y": 1552,
@@ -2282,7 +2282,7 @@
             "_aboutFieldIdx": -1
           },
           {
-            "id": "ifxwwsnm",
+            "id": "i9it6qx5",
             "type": "text",
             "x": 20,
             "y": 1591,
@@ -2302,28 +2302,6 @@
             "transform": "none",
             "_aboutSectionIdx": 2,
             "_aboutFieldIdx": 0
-          },
-          {
-            "id": "ilzancpn",
-            "type": "text",
-            "x": 21,
-            "y": 1476,
-            "w": 350,
-            "h": 22,
-            "rot": 0,
-            "z": 13,
-            "wPct": 90,
-            "padding": 0,
-            "text": "Additional work available on request.",
-            "fontSize": 11,
-            "fontWeight": 400,
-            "color": "#E4E4E4",
-            "align": "left",
-            "lineHeight": 1.5,
-            "letterSpacing": 0,
-            "transform": "none",
-            "_aboutSectionIdx": 1,
-            "_aboutFieldIdx": 1
           }
         ]
       }
