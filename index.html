@@ -58,8 +58,8 @@
       /* Warm-tinted palette — ~5% warm hue shift on the tokens the viewer
          sees most (bg, card, border). Text/dim tokens keep their earlier
          neutral values so contrast doesn't drift. */
-      --bg: #0a0906;
-      --bg-fade: rgba(10, 9, 6, 0);
+      --bg: #0d0c09;
+      --bg-fade: rgba(13, 12, 9, 0);
       --card: #100f0c;
       --text: #e4e4e1;
       --text-dim: #595853;
@@ -8205,19 +8205,9 @@
         });
       }
 
-      // Default landing view: Grid on desktop, closed list on mobile.
-      // Skipped if the URL hash routes the user somewhere specific (about,
-      // rectgrid, search) so we don't fight an explicit deep-link.
-      const hashRoute = (location.hash || '').replace(/^#\/?/, '');
-      const explicitRoute = ['about', 'rectgrid', 'search'].includes(hashRoute);
-      if (!explicitRoute) {
-        const isMobile = window.innerWidth <= 768;
-        if (!isMobile && gridBtn) {
-          // Grid view on desktop.
-          if (!document.body.classList.contains('grid-view')) setGridView(true);
-        }
-        // Mobile: leave previews closed by default — user opens them manually.
-      }
+      // Default landing view: Index (project list) on desktop and mobile.
+      // No auto-toggle — the page renders in its base state and the user
+      // opts into Grid / Open via the controls.
     }
 
     // ── Homepage-preview SVG inliner (smart recolor) ───────
