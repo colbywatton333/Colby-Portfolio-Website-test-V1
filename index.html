@@ -242,8 +242,7 @@
       padding: 12px 24px;
       pointer-events: auto;
       transition: color 0.2s ease;
-      opacity: 0;
-      animation: entryFadeIn 1s ease 3s forwards;
+      opacity: 1;
     }
     #enterBtn .entry-cursor {
       display: inline-block;
@@ -3438,10 +3437,6 @@
 
   <!-- ENTRY SCREEN -->
   <div id="entryScreen">
-    <video id="entryVideo" autoplay muted playsinline loop>
-      <source src="https://res.cloudinary.com/dnr0tmvtk/video/upload/v1777694782/studio-colby/intro/ENTRY-VIDEO_anuy6o.mp4" type="video/mp4">
-    </video>
-    <canvas id="dotOverlay"></canvas>
     <button id="enterBtn">Start<span class="entry-cursor"></span></button>
   </div>
 
