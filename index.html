@@ -4084,7 +4084,7 @@
           gallery.className = 'project-detail-gallery';
           page.images.forEach(src => {
             const img = document.createElement('img');
-            img.src = src;
+            img.src = optimizeCloudinaryUrl(src, 'image');
             img.loading = 'lazy';
             gallery.appendChild(img);
           });
@@ -4525,7 +4525,7 @@
             gallery.appendChild(buildHoverPlayVideo(src, project && project.title));
           } else {
             const img = document.createElement('img');
-            img.src = src;
+            img.src = optimizeCloudinaryUrl(src, 'image');
             img.alt = (project && project.title) || '';
             img.loading = 'lazy';
             gallery.appendChild(img);
@@ -4544,7 +4544,7 @@
       wrap.className = 'hover-play-card';
 
       const video = document.createElement('video');
-      video.src = src;
+      video.src = optimizeCloudinaryUrl(src, 'video');
       video.loop = true;
       video.playsInline = true;
       video.muted = true;
@@ -5185,7 +5185,15 @@
       positionHeaderFade();
       window.addEventListener('resize', positionHeaderFade);
       new MutationObserver(positionHeaderFade).observe(headerEl, { attributes: true, childList: true, subtree: true });
-      setInterval(positionHeaderFade, 500);
+      // Scroll-driven update covers iOS URL-bar collapse / expand. rAF coalesces
+      // bursts so we do at most one DOM write per frame. (Was a setInterval
+      // firing every 500ms forever — visible as a recurring task in the
+      // Performance panel even when the user was idle.)
+      let __hfRaf = 0;
+      window.addEventListener('scroll', () => {
+        if (__hfRaf) return;
+        __hfRaf = requestAnimationFrame(() => { __hfRaf = 0; positionHeaderFade(); });
+      }, { passive: true });
     })();
 
     searchOverlay.addEventListener('click', (e) => {
@@ -5238,7 +5246,8 @@
     const caption = document.getElementById('lightboxCaption');
     const counter = document.getElementById('lightboxCounter');
     const item = lbImages[lbIndex];
-    img.src = item.src;
+    // Lightbox enlarges, so request a larger derivative.
+    img.src = optimizeCloudinaryUrl(item.src, 'image', { width: 2400 });
     img.alt = item.caption || '';
     caption.textContent = item.caption || '';
     counter.textContent = lbImages.length > 1 ? `${lbIndex + 1} / ${lbImages.length}` : '';
@@ -5337,7 +5346,10 @@
           const img = new Image();
           img.onload = () => { navDimensionMap.set(src, { w: img.naturalWidth, h: img.naturalHeight }); resolve(); };
           img.onerror = () => { navDimensionMap.set(src, { w: 120, h: 90 }); resolve(); };
-          img.src = src;
+          // Only the ASPECT RATIO is used downstream (cards size by ratio).
+          // Pull a 200px derivative so the homepage doesn't fetch every
+          // project's first photo at upload resolution just to measure it.
+          img.src = optimizeCloudinaryUrl(src, 'image', { width: 200 });
         });
       });
       return Promise.allSettled(promises);
@@ -5414,7 +5426,7 @@
 
           if (src) {
             const img = document.createElement('img');
-            img.src = src;
+            img.src = optimizeCloudinaryUrl(src, 'image', { width: 600 });
             img.alt = '';
             img.onerror = () => { img.style.display = 'none'; };
             card.appendChild(img);
@@ -5454,7 +5466,7 @@
       // Create flying image clone
       const flyImg = document.createElement('img');
       flyImg.className = 'nav-flying-img';
-      flyImg.src = src;
+      flyImg.src = optimizeCloudinaryUrl(src, 'image', { width: 600 });
       flyImg.style.top = rect.top + 'px';
       flyImg.style.left = rect.left + 'px';
       flyImg.style.width = rect.width + 'px';
@@ -5485,7 +5497,7 @@
         if (trailFrame % 4 === 0) {
           const r = navFlyingImg.getBoundingClientRect();
           const ghost = document.createElement('img');
-          ghost.src = src;
+          ghost.src = optimizeCloudinaryUrl(src, 'image', { width: 600 });
           ghost.className = 'nav-trail-ghost';
           ghost.style.top = r.top + 'px';
           ghost.style.left = r.left + 'px';
@@ -5746,7 +5758,7 @@
 
         if (src) {
           const img = document.createElement('img');
-          img.src = src;
+          img.src = optimizeCloudinaryUrl(src, 'image', { width: 600 });
           img.alt = '';
           img.onerror = () => { img.style.display = 'none'; }; // hide unsupported formats (HEIC)
           card.appendChild(img);
@@ -5939,6 +5951,28 @@
       sphereZoom = Math.max(0.45, Math.min(1.8, sphereZoom - e.deltaY * 0.00007));
     }, { passive: false });
 
+    // Cloudinary delivery optimizer. JSON stores raw Cloudinary URLs at
+    // upload resolution (often multi-MB JPEGs); inserting f_auto/q_auto/w_
+    // transforms at render time cuts payload 60-90% without modifying the
+    // source asset. Idempotent — skips URLs that already carry transforms,
+    // aren't on Cloudinary, or are SVG / GIF (which would get rasterized).
+    function optimizeCloudinaryUrl(url, kind, opts) {
+      if (!url || typeof url !== 'string') return url;
+      if (!url.includes('res.cloudinary.com')) return url;
+      if (/\.svg(\?|$)/i.test(url) || /\.gif(\?|$)/i.test(url)) return url;
+      const parts = url.split('/upload/');
+      if (parts.length !== 2) return url;
+      if (/^(f_|q_|w_|h_|c_|dpr_)/.test(parts[1])) return url;
+      let xform;
+      if (kind === 'video') {
+        xform = 'q_auto';
+      } else {
+        const w = (opts && opts.width) || 1600;
+        xform = 'f_auto,q_auto,w_' + w;
+      }
+      return parts[0] + '/upload/' + xform + '/' + parts[1];
+    }
+
     // ─── RENDER ABOUT FROM JSON DATA ──────────────────────────────────────────
     function renderAboutFromData(data) {
       const section = document.getElementById('aboutSection');
@@ -6017,13 +6051,13 @@
                 return d;
               })();
               const img = document.createElement('img');
-              img.src = src;
+              img.src = optimizeCloudinaryUrl(src, 'image');
               wrap.appendChild(img);
               imgsDiv.appendChild(wrap);
               return;
             }
             const img = document.createElement('img');
-            img.src = src;
+            img.src = optimizeCloudinaryUrl(src, 'image');
             img.style.cssText = 'width:100%;height:auto;object-fit:contain;';
             wrap.appendChild(img);
             inner.appendChild(wrap);
@@ -6280,7 +6314,7 @@
         const img = document.createElement('img');
         img.loading = 'lazy';
         img.alt = item.project ? item.project.title : '';
-        img.src = item.src;
+        img.src = optimizeCloudinaryUrl(item.src, 'image', { width: 800 });
         cell.appendChild(img);
         grid.appendChild(cell);
       });
@@ -6476,8 +6510,9 @@
       const detail = document.getElementById('archiveDetail');
       const cell = document.querySelector('.archive-cell[data-idx="' + idx + '"]');
 
-      // Populate detail content
-      document.getElementById('detailImg').src = item.src;
+      // Populate detail content — archive detail enlarges, so request a
+      // higher-resolution Cloudinary derivative.
+      document.getElementById('detailImg').src = optimizeCloudinaryUrl(item.src, 'image', { width: 2000 });
       // Typewriter helper
       function typewriterFill(el, text, delay) {
         el.textContent = '';

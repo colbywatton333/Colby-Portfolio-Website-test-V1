@@ -325,10 +325,14 @@
     .media-overlay-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(13, 13, 13, 0.88);
-      backdrop-filter: blur(18px) saturate(0.6);
-      -webkit-backdrop-filter: blur(18px) saturate(0.6);
+      background: rgba(13, 13, 13, 0.92);
+      /* Light blur — 18px+saturate was the dominant cost during the
+         overlay's opacity fade-in. 6px gives a hint of depth without
+         forcing the GPU to recomposite the full page each frame. */
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       cursor: pointer;
+      will-change: backdrop-filter;
     }
     html.light-mode .media-overlay-backdrop {
       background: rgba(241, 236, 229, 0.92);
@@ -1025,6 +1029,31 @@
     function isSvgSrc(src) {
       return (src || '').toLowerCase().endsWith('.svg');
     }
+    // Cloudinary delivery optimizer. JSON stores raw Cloudinary URLs at
+    // upload resolution (often multi-MB JPEGs); inserting f_auto/q_auto/w_
+    // transforms at render time cuts payload 60-90% without modifying the
+    // source asset. Idempotent — skips URLs that already carry transforms
+    // or aren't on Cloudinary.
+    function optimizeCloudinaryUrl(url, kind, opts) {
+      if (!url || typeof url !== 'string') return url;
+      if (!url.includes('res.cloudinary.com')) return url;
+      // SVG and GIF stay vector / animated — width/format transforms would
+      // rasterize them, so skip the helper entirely for those.
+      if (/\.svg(\?|$)/i.test(url) || /\.gif(\?|$)/i.test(url)) return url;
+      const parts = url.split('/upload/');
+      if (parts.length !== 2) return url;
+      // Already has a transform segment (starts with one of these prefixes)
+      // — leave it alone so callers can override per-site.
+      if (/^(f_|q_|w_|h_|c_|dpr_)/.test(parts[1])) return url;
+      let xform;
+      if (kind === 'video') {
+        xform = 'q_auto';
+      } else {
+        const w = (opts && opts.width) || 1600;
+        xform = 'f_auto,q_auto,w_' + w;
+      }
+      return parts[0] + '/upload/' + xform + '/' + parts[1];
+    }
     function isDarkBg(hex) {
       if (!hex) return true;
       const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim());
@@ -1088,14 +1117,15 @@
       let node;
       if (kind === 'video') {
         node = document.createElement('video');
-        node.src = src;
+        node.src = optimizeCloudinaryUrl(src, 'video');
         node.controls = true;
         node.autoplay = true;
         node.loop = true;
         node.playsInline = true;
       } else {
         node = document.createElement('img');
-        node.src = src;
+        // Lightbox enlarges, so request a larger derivative.
+        node.src = optimizeCloudinaryUrl(src, 'image', { width: 2400 });
         node.alt = '';
       }
       stage.appendChild(node);
@@ -1110,13 +1140,12 @@
         e.stopPropagation();
         e.preventDefault();
 
-        // Mobile + actual <video>: hand off to native HTML5 fullscreen on
+        // For an actual <video>, hand off to native HTML5 fullscreen on
         // the inline player itself instead of building a new <video> in a
         // blurred overlay. Reusing the existing element means no reload,
-        // no decode pause, and the standard iOS player UI takes over —
-        // which is the experience users expect from a tapped video.
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        if (isMobile && preferredEl && preferredEl.tagName === 'VIDEO') {
+        // no decode pause, and the standard browser player UI takes over.
+        // The custom overlay below stays for image lightbox.
+        if (preferredEl && preferredEl.tagName === 'VIDEO') {
           const v = preferredEl;
           const wasMuted = v.muted;
           const hadControls = v.controls;
@@ -1339,9 +1368,9 @@
             let media = '';
             if (cell.src) {
               if (cell.type === 'video' || /\.(mp4|webm|mov)$/i.test(cell.src)) {
-                media = `<video src="${esc(cell.src)}" muted loop autoplay playsinline></video>`;
+                media = `<video src="${esc(optimizeCloudinaryUrl(cell.src, 'video'))}" muted loop autoplay playsinline></video>`;
               } else {
-                media = `<img src="${esc(cell.src)}" alt="">`;
+                media = `<img src="${esc(optimizeCloudinaryUrl(cell.src, 'image'))}" alt="">`;
               }
             }
             // Outer-edge cells drop outer-side padding so the grid's bounds
@@ -1435,7 +1464,7 @@
 
       if (isVideo) {
         const v = document.createElement('video');
-        v.src = item.src;
+        v.src = optimizeCloudinaryUrl(item.src, 'video');
         v.muted = true;
         v.loop = true;
         v.playsInline = true;
@@ -1512,7 +1541,7 @@
       } else {
         const img = document.createElement('img');
         img.loading = 'lazy';
-        img.src = item.src;
+        img.src = optimizeCloudinaryUrl(item.src, 'image');
         img.alt = '';
         media.appendChild(img);
         baseEl.appendChild(media);
