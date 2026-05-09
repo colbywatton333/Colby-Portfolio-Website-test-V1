@@ -2432,9 +2432,13 @@
     .lightbox-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(10, 10, 10, 0.92);
-      backdrop-filter: blur(24px) saturate(0.4);
-      -webkit-backdrop-filter: blur(24px) saturate(0.4);
+      background: rgba(10, 10, 10, 0.94);
+      /* Lighter blur — 24px+saturate was the heaviest GPU work on the
+         site and stuttered the open animation. 6px keeps a touch of
+         depth without the recomposite cost. */
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      will-change: backdrop-filter;
     }
 
     .lightbox-inner {
@@ -5246,14 +5250,31 @@
     const caption = document.getElementById('lightboxCaption');
     const counter = document.getElementById('lightboxCounter');
     const item = lbImages[lbIndex];
-    // Lightbox enlarges, so request a larger derivative.
-    img.src = optimizeCloudinaryUrl(item.src, 'image', { width: 2400 });
+    // Two-step load — show the cached w_1600 instantly, then upgrade in
+    // the background to a derivative sized to the actual screen so the
+    // click feels immediate instead of waiting for a fresh fetch.
+    const fast = optimizeCloudinaryUrl(item.src, 'image', { width: 1600 });
+    img.src = fast;
     img.alt = item.caption || '';
     caption.textContent = item.caption || '';
     counter.textContent = lbImages.length > 1 ? `${lbIndex + 1} / ${lbImages.length}` : '';
     img.onerror = () => {
       if (lbImages.length > 1) navigateLightbox(1);
     };
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const wantedW = Math.min(2400, Math.ceil(window.innerWidth * 0.88 * dpr));
+    if (wantedW > 1600) {
+      const high = optimizeCloudinaryUrl(item.src, 'image', { width: wantedW });
+      if (high && high !== fast) {
+        const upgrade = new Image();
+        upgrade.onload = () => {
+          // Only swap if the lightbox is still showing this image — guard
+          // against the user navigating to the next image mid-load.
+          if (lbImages[lbIndex] && lbImages[lbIndex].src === item.src) img.src = high;
+        };
+        upgrade.src = high;
+      }
+    }
   }
 
   // Lightbox controls

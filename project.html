@@ -316,7 +316,8 @@
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.55s ease;
+      /* Snappier reveal — 0.55s felt sluggish for a click response. */
+      transition: opacity 0.18s ease;
     }
     #mediaOverlay.active {
       opacity: 1;
@@ -368,7 +369,7 @@
       object-fit: contain;
       display: block;
       opacity: 0;
-      transition: opacity 0.65s ease;
+      transition: opacity 0.18s ease;
       clip-path: none !important;
       cursor: pointer;
     }
@@ -1124,9 +1125,25 @@
         node.playsInline = true;
       } else {
         node = document.createElement('img');
-        // Lightbox enlarges, so request a larger derivative.
-        node.src = optimizeCloudinaryUrl(src, 'image', { width: 2400 });
         node.alt = '';
+        // Two-step load so the overlay opens INSTANTLY:
+        // (1) show the same w_1600 derivative the inline image already
+        //     fetched — cache hit, no network round-trip.
+        // (2) kick off a higher-res derivative sized to the actual screen
+        //     in the background. Swap when ready. devicePixelRatio is
+        //     factored in so retina displays don't end up upscaling.
+        const fast = optimizeCloudinaryUrl(src, 'image', { width: 1600 });
+        node.src = fast;
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const wantedW = Math.min(2400, Math.ceil(window.innerWidth * 0.82 * dpr));
+        if (wantedW > 1600) {
+          const high = optimizeCloudinaryUrl(src, 'image', { width: wantedW });
+          if (high && high !== fast) {
+            const upgrade = new Image();
+            upgrade.onload = () => { if (node.isConnected) node.src = high; };
+            upgrade.src = high;
+          }
+        }
       }
       stage.appendChild(node);
       requestAnimationFrame(() => el.classList.add('active'));
