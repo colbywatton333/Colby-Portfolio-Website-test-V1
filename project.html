@@ -637,6 +637,15 @@
       const isLight = document.documentElement.classList.toggle('light-mode');
       try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch {}
       syncThemeLabel();
+      // draw() sets the stage's `.dark-bg` class once at first render based
+      // on the document mode at that moment. If the user toggles theme
+      // afterwards we need to keep the class in sync — otherwise the CSS
+      // override `html.light-mode .canvas-stage:not(.dark-bg) .c-item-text`
+      // misses on stages that still carry the original dark-bg marker, and
+      // text saved as white in the JSON stays invisible on the light bg.
+      document.querySelectorAll('.canvas-stage').forEach(stage => {
+        stage.classList.toggle('dark-bg', !isLight);
+      });
       if (typeof recolorAllInlinedSvgs === 'function') recolorAllInlinedSvgs();
       if (typeof reboostAllInlinedSvgs === 'function') reboostAllInlinedSvgs();
     });
